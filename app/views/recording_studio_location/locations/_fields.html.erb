@@ -1,0 +1,89 @@
+<% location = form.object %>
+
+<div class="grid gap-4">
+  <%= render FlatPack::TextInput::Component.new(
+    name: form.field_name(:name),
+    value: location.name,
+    label: "Name",
+    placeholder: "Melbourne Convention Centre",
+    help_text: "Optional. Use a place name when you have one.",
+    error: location.errors[:name].first
+  ) %>
+
+  <%= render FlatPack::TextInput::Component.new(
+    name: form.field_name(:address_line_1),
+    value: location.address_line_1,
+    label: "Address line 1",
+    placeholder: "12 Smith Street",
+    error: location.errors[:address_line_1].first
+  ) %>
+
+  <%= render FlatPack::TextInput::Component.new(
+    name: form.field_name(:address_line_2),
+    value: location.address_line_2,
+    label: "Address line 2",
+    error: location.errors[:address_line_2].first
+  ) %>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    <%= render FlatPack::TextInput::Component.new(
+      name: form.field_name(:locality),
+      value: location.locality,
+      label: "Locality",
+      placeholder: "Fitzroy",
+      error: location.errors[:locality].first
+    ) %>
+
+    <%= render FlatPack::TextInput::Component.new(
+      name: form.field_name(:region),
+      value: location.region,
+      label: "Region",
+      placeholder: "Victoria",
+      error: location.errors[:region].first
+    ) %>
+
+    <%= render FlatPack::TextInput::Component.new(
+      name: form.field_name(:postal_code),
+      value: location.postal_code,
+      label: "Postal code",
+      placeholder: "3065",
+      error: location.errors[:postal_code].first
+    ) %>
+  </div>
+
+  <%= render FlatPack::Select::Component.new(
+    name: form.field_name(:country_code),
+    options: [["Not set", ""]] + RecordingStudio::Location.country_options,
+    value: location.country_code,
+    label: "Country",
+    placeholder: "Select a country",
+    searchable: true,
+    error: location.errors[:country_code].first
+  ) %>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <%= render FlatPack::NumberInput::Component.new(
+      name: form.field_name(:latitude),
+      value: location.latitude,
+      label: "Latitude",
+      placeholder: "-37.798",
+      min: -90,
+      max: 90,
+      step: 0.0000001,
+      help_text: "Optional.",
+      error: location.errors[:latitude].first
+    ) %>
+
+    <%= render FlatPack::NumberInput::Component.new(
+      name: form.field_name(:longitude),
+      value: location.longitude,
+      label: "Longitude",
+      placeholder: "144.978",
+      min: -180,
+      max: 180,
+      step: 0.0000001,
+      help_text: "Optional. Leave both blank when you do not have coordinates.",
+      error: location.errors[:longitude].first
+    ) %>
+  </div>
+</div>

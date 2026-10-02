@@ -41,6 +41,24 @@ begin
   folder_recording = find_or_record_child.call(folder, root_recording, root_recording)
 
   find_or_record_child.call(page, root_recording, folder_recording)
+
+  convention_centre = root_recording.child_recordings.where(
+    recordable_type: RecordingStudio::Location::LOCATION_TYPE,
+    trashed_at: nil
+  ).detect { |recording| recording.recordable.name == "Melbourne Convention Centre" }
+
+  unless convention_centre
+    root_recording.record(RecordingStudio::Location::Location) do |location|
+      location.name = "Melbourne Convention Centre"
+      location.address_line_1 = "1 Convention Centre Place"
+      location.locality = "Melbourne"
+      location.region = "Victoria"
+      location.postal_code = "3006"
+      location.country_code = "AU"
+      location.latitude = -37.8255
+      location.longitude = 144.9531
+    end
+  end
 ensure
   Current.actor = previous_actor
 end
@@ -50,3 +68,4 @@ puts "Seeded: Workspace '#{workspace.name}' with root recording ##{root_recordin
 puts "Seeded: Workspace '#{accessible_workspace.name}' with root recording ##{accessible_root_recording.id}"
 puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{private_root_recording.id}"
 puts "Seeded: Folder '#{folder.name}' and page '#{page.title}'"
+puts "Seeded: Location 'Melbourne Convention Centre' under '#{workspace.name}'"

@@ -1,0 +1,27 @@
+<% dummy_page_nav(title: "Locations", back_url: root_path, back_label: "Home") %>
+
+<div class="flex w-full flex-col gap-6">
+  <%= render FlatPack::PageTitle::Component.new(
+    title: "Locations",
+    subtitle: "Each place is its own recording under Studio Workspace.",
+    variant: :h1
+  ) %>
+
+  <%= render FlatPack::Button::Component.new(
+    text: "Add a location",
+    style: :primary,
+    href: new_location_path
+  ) %>
+
+  <% if @location_recordings.any? %>
+    <div class="grid gap-4">
+      <% @location_recordings.each do |recording| %>
+        <%= link_to location_path(recording), class: "block" do %>
+          <%= recording_studio_location_display(recording.recordable) %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-sm text-(--surface-muted-content-color)">No locations yet.</p>
+  <% end %>
+</div>

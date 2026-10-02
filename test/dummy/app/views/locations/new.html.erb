@@ -1,0 +1,11 @@
+<% dummy_page_nav(title: "New location", back_url: locations_path, back_label: "Locations") %>
+
+<div class="flex w-full max-w-3xl flex-col gap-6">
+  <%= render FlatPack::PageTitle::Component.new(
+    title: "New location",
+    subtitle: "Saved as a recording under Studio Workspace.",
+    variant: :h1
+  ) %>
+
+  <%= render "form", location: @location, url: locations_path, method: :post %>
+</div>

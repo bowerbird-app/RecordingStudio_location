@@ -1,0 +1,11 @@
+<%= form_with model: location, url: url, method: method do |form| %>
+  <div class="flex flex-col gap-6">
+    <%= recording_studio_location_fields(form) %>
+
+    <%= render FlatPack::Button::Component.new(
+      text: "Save location",
+      style: :primary,
+      type: "submit"
+    ) %>
+  </div>
+<% end %>
