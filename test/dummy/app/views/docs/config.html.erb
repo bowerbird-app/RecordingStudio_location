@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "Config",
-    subtitle: "Geocoding is reserved and is not called.",
+    subtitle: "Geocoding stays off until the host sets a provider and key.",
     variant: :h1
   ) %>
 
@@ -11,10 +11,10 @@
     language: :ruby,
     code: <<~'CODE'
       RecordingStudioLocation.configure do |config|
-        # config.geocoder = nil
+        config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
       end
 
-      RecordingStudio::Location.geocoder = nil
+      RecordingStudio::Location.geocoder
     CODE
   ) %>
 </div>

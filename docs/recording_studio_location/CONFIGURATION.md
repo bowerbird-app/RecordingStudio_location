@@ -8,13 +8,31 @@ Location has a small host config. Address fields live on `RecordingStudio::Locat
 
 ```ruby
 RecordingStudioLocation.configure do |config|
-  # Reserved for a future geocoding adapter. This version stores the object and
-  # does not call it, so address text is never sent to an external service.
-  # config.geocoder = nil
+  config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
 end
 ```
 
-`RecordingStudio::Location.geocoder =` writes the same slot.
+`from_rails_credentials` builds a Google adapter when Rails credentials (or ENV) include both `provider` and `api_key`. Either missing value leaves `geocoder` nil. Saving a location never geocodes by itself.
+
+`RecordingStudio::Location.geocoder =` writes the same slot. Assign `RecordingStudioLocation::Geocoder::Fake` in tests.
+
+## Credentials
+
+On the installing app:
+
+```yaml
+recording_studio_location:
+  geocoder:
+    provider: google
+    api_key: "..."
+```
+
+Optional ENV overrides, which win when set:
+
+- `RECORDING_STUDIO_LOCATION_GEOCODER_PROVIDER`
+- `RECORDING_STUDIO_LOCATION_GEOCODER_API_KEY`
+
+Do not commit the key. Do not put it in `config/recording_studio_location.yml`.
 
 ## YAML
 
@@ -54,5 +72,6 @@ include RecordingStudio::Capabilities::Location.to
 | Path | Role |
 | --- | --- |
 | `lib/recording_studio_location/configuration.rb` | Defaults |
+| `lib/recording_studio_location/geocoder.rb` | Factory and credentials |
 | `lib/recording_studio_location/engine.rb` | Loads YAML, `config.x`, then initializer |
 | `lib/generators/recording_studio_location/install/templates/` | Initializer and YAML templates |

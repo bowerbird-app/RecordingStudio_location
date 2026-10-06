@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RecordingStudioLocation.configure do |config|
-  # Reserved for a future geocoding adapter. This version stores the object and
-  # does not call it, so address text is never sent to an external service.
-  # config.geocoder = nil
+  # Builds a Google adapter when Rails credentials (or ENV) supply provider + api_key.
+  # Unset credentials keep this nil, so Location never contacts a network service.
+  config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
 end
 
 # Enable Location on each host recordable that may contain a place.

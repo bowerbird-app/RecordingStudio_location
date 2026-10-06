@@ -34,8 +34,9 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get docs_config_path
     assert_response :success
     assert_select "h1", text: "Config"
-    assert_includes response.body, "Geocoding is reserved and is not called."
+    assert_includes response.body, "Geocoding stays off until the host sets a provider and key."
     assert_includes response.body, "RecordingStudio::Location.geocoder"
+    assert_includes response.body, "from_rails_credentials"
   end
 
   test "recordable types page renders configured recordables dynamically" do
@@ -107,6 +108,8 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "display_name"
     assert_includes response.body, "full_address"
     assert_includes response.body, "coordinates"
+    assert_includes response.body, "geocode!"
+    assert_includes response.body, "reverse!"
     assert_includes response.body, "Fitzroy, Victoria, Australia"
   end
 

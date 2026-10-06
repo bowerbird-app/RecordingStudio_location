@@ -8,10 +8,11 @@ module RecordingStudio
     # RecordingStudio::Capabilities::Location on the recordables that may contain
     # one or more Location recordings.
     #
-    # Coordinates are optional. Nothing in this model contacts a geocoder or map
-    # provider, even when RecordingStudio::Location.geocoder is assigned.
+    # Coordinates are optional. Geocoding runs only when you call geocode! or
+    # reverse! with an adapter assigned to RecordingStudio::Location.geocoder.
     class Location < ActiveRecord::Base
       include Formatting
+      include Geocoding
 
       self.table_name = "recording_studio_locations"
 
