@@ -2,7 +2,7 @@
 
 ## Architecture
 
-- This repository is a Rails mountable engine template for building Recording Studio addons.
+- This repository is the Recording Studio Location addon: a reusable location recordable and `:location` capability.
 - Preserve engine namespace isolation under `RecordingStudioLocation` unless the task is explicitly about renaming the gem.
 - Treat `docs/recording_studio_location/` as architectural reference material. For current addon workflow, prefer the top-level README and the dummy app.
 - Keep changes small and scoped. Do not rewrite template surfaces unless the request requires it.
