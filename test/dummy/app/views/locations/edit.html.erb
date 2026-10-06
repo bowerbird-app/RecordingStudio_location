@@ -1,0 +1,11 @@
+<% dummy_page_nav(title: "Edit location", back_url: location_path(@recording), back_label: "Location") %>
+
+<div class="flex w-full max-w-3xl flex-col gap-6">
+  <%= render FlatPack::PageTitle::Component.new(
+    title: "Edit location",
+    subtitle: "Revises the current recording. The previous snapshot stays in history.",
+    variant: :h1
+  ) %>
+
+  <%= render "form", location: @location, url: location_path(@recording), method: :patch %>
+</div>

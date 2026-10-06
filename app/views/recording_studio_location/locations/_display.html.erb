@@ -1,0 +1,27 @@
+<%# Coordinates are text only. This gem does not load a map or geocoding provider. %>
+<% address = location.full_address %>
+<% coordinates = location.coordinates_label %>
+
+<%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+  <% card.header do %>
+    <%= render FlatPack::PageTitle::Component.new(
+      title: location.display_name,
+      variant: :h3,
+      class: "mb-0 pb-0"
+    ) %>
+  <% end %>
+
+  <% card.body do %>
+    <div class="flex flex-col gap-2 text-sm leading-6">
+      <% if address.present? && address != location.display_name %>
+        <p><%= address %></p>
+      <% end %>
+
+      <% if coordinates.present? %>
+        <p class="text-(--surface-muted-content-color)">
+          <%= coordinates %>
+        </p>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

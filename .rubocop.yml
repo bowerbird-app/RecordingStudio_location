@@ -25,6 +25,11 @@ Metrics/MethodLength:
   Exclude:
     - 'test/**/*'
     - 'lib/generators/**/*'
+    - 'db/migrate/**/*'
+
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/recording_studio/location/countries.rb'
 
 Metrics/AbcSize:
   Exclude:
@@ -42,9 +47,12 @@ Lint/NestedMethodDefinition:
     - 'test/**/*'
 
 # Allow underscores in test method names (test_something_100 is fine)
+# and numbered address columns on the location recordable.
 Naming/VariableNumber:
   Exclude:
     - 'test/**/*'
+  AllowedPatterns:
+    - address_line_\d+
 
 # Don't require super in service initialize methods
 Lint/MissingSuper:
