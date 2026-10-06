@@ -12,7 +12,7 @@ module RecordingStudio
     # reverse! with an adapter assigned to RecordingStudio::Location.geocoder.
     class Location < ActiveRecord::Base
       include Formatting
-      include Geocoding
+      include RecordingStudio::Location::Geocoding
 
       self.table_name = "recording_studio_locations"
 
