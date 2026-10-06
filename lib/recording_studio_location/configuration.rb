@@ -3,8 +3,8 @@
 module RecordingStudioLocation
   # Host configuration for Location.
   #
-  # `geocoder` is a reserved adapter slot. This version stores the object and
-  # never calls it, so addresses are not sent to an external service.
+  # `geocoder` is the optional adapter used by Location#geocode! and #reverse!.
+  # Leave it nil when the host has no provider key. Nothing runs on save.
   class Configuration
     attr_accessor :geocoder
     attr_reader :hooks

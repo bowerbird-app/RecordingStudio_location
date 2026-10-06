@@ -68,6 +68,6 @@ Rebuild with `bin/rails tailwindcss:build`.
 
 ## After install
 
-1. Review the initializer. `geocoder` is reserved and unused in this version.
+1. Review the initializer. Geocoding stays off until Rails credentials include `recording_studio_location.geocoder.provider` and `api_key`.
 2. Copy migrations and migrate.
 3. Enable `:location` on the parents that should hold a place.

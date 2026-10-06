@@ -8,7 +8,7 @@
 - Optional address fields, ISO `country_code`, and nullable latitude/longitude
 - Helpers: `display_name`, `full_address`, `coordinates`
 - FlatPack form fields and a read-only display partial
-- Reserved `geocoder` config that this version never calls
+- Optional geocoder: Google adapter from Rails credentials, `geocode!` / `reverse!` on Location
 - Gemspec: `add_dependency "recording_studio", "~> 4.2"`
 - Dummy GitHub tags: Recording Studio `v4.2.2`, Accessible `v0.10.1`, Root Switchable `v0.5.1`, FlatPack `v0.1.196`
 

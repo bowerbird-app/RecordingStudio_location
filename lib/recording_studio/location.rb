@@ -2,6 +2,7 @@
 
 require "recording_studio/location/countries"
 require "recording_studio/location/formatting"
+require "recording_studio/location/geocoding"
 
 module RecordingStudio
   # Public API for the Location addon.
@@ -17,7 +18,7 @@ module RecordingStudio
         RecordingStudioLocation.configuration
       end
 
-      # Reserved adapter. Assigning it does not geocode or contact a provider.
+      # Optional adapter. Unset means geocode! and reverse! raise Missing.
       def geocoder
         configuration.geocoder
       end

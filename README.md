@@ -2,7 +2,7 @@
 
 Recording Studio Location stores a physical place as a normal Recording Studio recordable.
 
-A location can sit under whatever host recordable a product allows: a press kit, a business, an event, a person, or anything else. Those meanings belong to the parent recording. This gem does not add business, event, or press-kit models, and it does not talk to a map or geocoding provider.
+A location can sit under whatever host recordable a product allows: a press kit, a business, an event, a person, or anything else. Those meanings belong to the parent recording. This gem does not add business, event, or press-kit models. Maps stay out. Geocoding is optional and only runs when you call it.
 
 ## What you get
 
@@ -12,6 +12,7 @@ A location can sit under whatever host recordable a product allows: a press kit,
 - capability: `:location`, opted in with `RecordingStudio::Capabilities::Location.to`
 - optional coordinates and a permissive address
 - `display_name`, `full_address`, and `coordinates`
+- optional `geocode!` / `reverse!` when a host assigns a geocoder
 - FlatPack form fields and a read-only display partial
 
 ```text
@@ -158,21 +159,61 @@ The engine includes these helpers on Action Controller.
 
 ## Maps and geocoding
 
-No geocoding runs. Address text is not sent anywhere.
+There is no map embed and no autocomplete. Geocoding is opt-in and explicit.
 
-`RecordingStudio::Location.geocoder =` stores an adapter on `RecordingStudioLocation.configuration.geocoder` for a later version. This version never calls that object. There is no Google Maps, Mapbox, HERE, Apple Maps, or other provider dependency.
+Leave credentials unset and `RecordingStudio::Location.geocoder` stays nil. Saving a location never contacts a network service.
 
-Add a provider later by calling that adapter from a new service. The `recording_studio_locations` columns do not need to change.
+To turn it on, put the provider and key in Rails credentials on the installing app:
+
+```yaml
+recording_studio_location:
+  geocoder:
+    provider: google
+    api_key: "..."
+```
+
+The install initializer wires an adapter only when both values are present:
+
+```ruby
+RecordingStudioLocation.configure do |config|
+  config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
+end
+```
+
+Optional ENV overrides: `RECORDING_STUDIO_LOCATION_GEOCODER_PROVIDER` and `RECORDING_STUDIO_LOCATION_GEOCODER_API_KEY`. You can also assign `RecordingStudio::Location.geocoder =` yourself (a Google adapter, `RecordingStudioLocation::Geocoder::Fake` in tests, or a later Mapbox/HERE/Nominatim adapter that implements `#geocode` and `#reverse`).
+
+Call the bang methods inside `record` or `revise`. They apply attributes on the location in memory. They do not write Recording rows themselves.
+
+```ruby
+root.record(RecordingStudio::Location::Location) do |location|
+  location.address_line_1 = "12 Smith Street"
+  location.locality = "Fitzroy"
+  location.region = "VIC"
+  location.country_code = "AU"
+  location.geocode!
+end
+
+root.revise(recording) do |location|
+  location.reverse!
+end
+```
+
+- `geocode!` sets latitude and longitude only. Address fields stay as the host typed them.
+- `reverse!` fills blank address fields from the result. Non-blank fields stay put unless you pass `force: true`.
+- Coordinates do not change on reverse.
+- Missing adapter, blank query, no result, and provider errors raise.
+
+Tests should use `RecordingStudioLocation::Geocoder::Fake`. Do not hit Google from CI.
 
 ## Configuration
 
 ```ruby
 RecordingStudioLocation.configure do |config|
-  # config.geocoder = nil
+  config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
 end
 ```
 
-`config/recording_studio_location.yml` is loaded when the host has one. Unknown keys are ignored.
+`config/recording_studio_location.yml` is loaded when the host has one. Unknown keys are ignored. Do not put the API key in YAML.
 
 ## Dummy app
 

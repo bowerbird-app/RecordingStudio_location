@@ -1,3 +1,5 @@
+# Optional. This file cannot hold a live adapter. Put provider and api_key in
+# Rails credentials, then wire config.geocoder in the initializer.
 development:
   geocoder:
 

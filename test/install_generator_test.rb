@@ -145,6 +145,18 @@ class InstallGeneratorTest < Minitest::Test
     refute_includes install_guide, "RecordingStudio v3"
   end
 
+  def test_initializer_template_wires_geocoder_from_credentials
+    initializer = File.read(
+      File.expand_path(
+        "../lib/generators/recording_studio_location/install/templates/recording_studio_location_initializer.rb",
+        __dir__
+      )
+    )
+
+    assert_includes initializer, "RecordingStudioLocation::Geocoder.from_rails_credentials"
+    refute_includes initializer, "Reserved for a future geocoding adapter"
+  end
+
   private
 
   def assert_tailwind_sources_present(css)
