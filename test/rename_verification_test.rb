@@ -250,7 +250,8 @@ class RenameVerificationTest < Minitest::Test
     old_dirs = [
       File.join(@root, "lib", "gem_template"),
       File.join(@root, "app", "controllers", "gem_template"),
-      File.join(@root, "app", "views", "gem_template")
+      File.join(@root, "app", "views", "gem_template"),
+      File.join(@root, "docs", "gem_template")
     ]
 
     existing_old_dirs = old_dirs.select { |d| Dir.exist?(d) }
@@ -297,6 +298,36 @@ class RenameVerificationTest < Minitest::Test
                  "CHANGELOG.md still points at bowerbird-app/gem_template"
     refute_includes content, "https://github.com/bowerbird-app/RecordingStudio_gem_template",
                     "CHANGELOG.md still points at the template homepage"
+  end
+
+  def test_update_summary_describes_location_not_template_kit_pin
+    skip if @gem_name == "gem_template"
+
+    content = File.read(File.join(@root, "UPDATE_SUMMARY.md"))
+    refute_includes content, "kit pin",
+                    "UPDATE_SUMMARY.md still describes a kit pin update"
+    refute_includes content, "Capabilities::Example",
+                    "UPDATE_SUMMARY.md still mentions Capabilities::Example"
+    assert_match(/Location/, content,
+                 "UPDATE_SUMMARY.md should describe Recording Studio Location")
+  end
+
+  def test_dummy_readme_has_no_leftover_rename_guidance
+    skip if @gem_name == "gem_template"
+
+    content = File.read(File.join(@root, "test", "dummy", "README.md"))
+    refute_includes content, "before renaming the gem",
+                    "test/dummy/README.md still talks about renaming the gem"
+    refute_match(/\btemplate likely needs adjustment\b/, content,
+                 "test/dummy/README.md still talks about the gem template")
+  end
+
+  def test_gitignore_covers_coverage_directories
+    content = File.read(File.join(@root, ".gitignore"))
+    assert_includes content, "coverage/",
+                    ".gitignore should ignore coverage/"
+    assert_includes content, "test/dummy/coverage/",
+                    ".gitignore should ignore test/dummy/coverage/"
   end
 
   def test_gemspec_homepage_has_no_leftover_template_identity_after_rename
