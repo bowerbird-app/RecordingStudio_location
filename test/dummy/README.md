@@ -8,8 +8,9 @@ This Rails app exists to validate Recording Studio Location in a real host appli
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio default layout, FlatPack assets, and Tailwind source scanning
-- Mounted `RecordingStudio::Engine` route behavior inside a host app
-- Dummy-only `/docs/*` pages for gem-specific onboarding
+- Mounted `RecordingStudio::Engine` and `RecordingStudioLocation::Engine`
+- Seeded Melbourne Convention Centre location under Studio Workspace
+- Dummy-only `/docs/*` pages for Location onboarding
 
 ## Quick Start
 
@@ -29,16 +30,21 @@ Then open the app and sign in with:
 
 ## Useful Routes
 
-- `/` - dummy app home page and template guidance
+- `/` - seeded Location on Studio Workspace
+- `/locations` - list locations in the workspace
+- `/locations/new` - gem form
+- `/locations/:id` - read-only display
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
 - `/users/sign_in` - Devise sign-in page
-- `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only starter pages
+- `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only Location pages
 - `/up` - Rails health check
 
 ## Why This App Exists
 
-Use this app to verify the generated addon experience before renaming the gem or copying patterns into another host app. If a layout, route, asset source, or Recording Studio initializer change breaks here, the template likely needs adjustment before reuse.
+Use this app to prove Location in a host: capability opt-in, form fields, and read-only display. If a layout, route, asset source, or Recording Studio initializer change breaks here, the gem wiring needs a look before a host copies it.
 
-Authenticated pages use Recording Studio's shared default layout. Devise sign-in keeps `layouts/application`. Replace dummy docs page content so it matches the gem's actual concepts.
+Authenticated pages use Recording Studio's shared default layout. Devise sign-in keeps `layouts/application`.
 
-The home page in `app/views/home/index.html.erb` should stay a minimal demo surface for the gem's core feature. Do not turn it into a wall of documentation; the dummy docs pages exist so deeper explanations can live in focused sections.
+The home page in `app/views/home/index.html.erb` stays a minimal demo of Location. Dummy docs pages hold the longer explanations.
+
+Workspace and Folder enable `:location`. Page does not, so a Location cannot be recorded under a Page.
