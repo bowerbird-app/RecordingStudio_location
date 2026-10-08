@@ -148,7 +148,7 @@ Two edit helpers. `recording_studio_location_fields(form)` is the original long 
 
 The partial is `recording_studio_location/locations/fields`. It uses FlatPack inputs. Coordinates sit last and are marked optional.
 
-Search is a separate helper. The user types a place, picks a result, and the structured fields are filled. Manual entry is a FlatPack modal, not an inline extra form. Hosts choose which helper to render.
+Search is a separate helper. The field is labelled Location. The user types a place, picks a result, and the structured fields are filled. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. Saved places show a summary with Edit address. Hosts choose which helper to render.
 
 ```erb
 <%= recording_studio_location_search_fields(form) %>

@@ -20,8 +20,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     get new_location_path
 
     assert_response :success
-    assert_includes response.body, "Search for a place"
-    assert_includes response.body, "Enter address manually"
+    assert_includes response.body, ">Location</label>"
+    refute_includes response.body, "Search for a place"
+    refute_includes response.body, "Enter address manually"
+    refute_includes response.body, "Pick a place to fill"
     assert_includes response.body, "Add address manually"
     assert_includes response.body, "Enter address"
     assert_includes response.body, "flat-pack--modal"
@@ -102,8 +104,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Seeded Hall"
     assert_includes response.body, "Edit address"
+    assert_includes response.body, ">Location</label>"
     assert_includes response.body, "Enter address"
     assert_includes response.body, "Add address manually"
+    refute_includes response.body, "Enter address manually"
     assert_includes response.body, "flat-pack--modal"
   end
 

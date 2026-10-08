@@ -2,11 +2,15 @@
 <% filled = recording_studio_location_filled?(location) || location.errors.any? %>
 <% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
-<%# Tailwind CSS scanning for JS-built options:
+<% input_id = "#{list_id}-input" %>
+<%# Tailwind CSS scanning for JS-built Combobox options:
   "cursor-pointer px-3 py-2 text-sm text-[var(--surface-content-color)] hover:bg-[var(--list-item-hover-background-color)]"
   "bg-[var(--list-item-hover-background-color)]"
+  "aria-selected:bg-[var(--list-item-active-background-color)]"
+  "bg-[var(--list-item-active-background-color)]"
   "absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
   "px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
+  "flex items-center gap-2 w-full rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] px-[var(--form-control-padding)] py-[var(--form-control-padding)] focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring"
 %>
 
 <div class="grid gap-4"
@@ -20,38 +24,35 @@
      data-recording-studio-location--place-search-list-id-value="<%= list_id %>"
      data-recording-studio-location--place-search-searching-text-value="<%= t("recording_studio_location.search.searching") %>"
      data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio_location.search.add_manually") %>">
-  <div class="relative">
-    <%= render FlatPack::SearchInput::Component.new(
-      name: "place_search_query",
-      value: nil,
-      label: t("recording_studio_location.search.label"),
-      placeholder: t("recording_studio_location.search.placeholder"),
-      help_text: t("recording_studio_location.search.help")
-    ) %>
+  <div class="relative w-full">
+    <label for="<%= input_id %>" class="mb-1 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio_location.search.label") %></label>
+
+    <div class="flex items-center gap-2 w-full rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] px-[var(--form-control-padding)] py-[var(--form-control-padding)] focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring">
+      <input id="<%= input_id %>"
+             type="text"
+             value=""
+             placeholder="<%= t("recording_studio_location.search.placeholder") %>"
+             autocomplete="off"
+             role="combobox"
+             aria-expanded="false"
+             aria-autocomplete="list"
+             aria-controls="<%= list_id %>"
+             aria-haspopup="listbox"
+             class="min-w-0 flex-1 bg-transparent text-sm text-[var(--surface-content-color)] placeholder:text-[var(--surface-muted-content-color)] outline-none"
+             data-recording-studio-location--place-search-target="input">
+      <span class="pointer-events-none text-[var(--surface-muted-content-color)]" aria-hidden="true">
+        <%= render FlatPack::Shared::IconComponent.new(name: "chevron-down", size: :sm) %>
+      </span>
+    </div>
 
     <ul id="<%= list_id %>"
         class="absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
         role="listbox"
         data-recording-studio-location--place-search-target="list"></ul>
-    <p class="hidden px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
-       data-recording-studio-location--place-search-target="status"
-       role="status"></p>
-    <p class="hidden mt-1 text-xs text-[var(--surface-muted-content-color)]"
-       data-recording-studio-location--place-search-target="attribution"></p>
   </div>
 
-  <div>
-    <%= render FlatPack::Button::Component.new(
-      text: t("recording_studio_location.search.enter_manually"),
-      style: :ghost,
-      size: :sm,
-      type: "button",
-      data: {
-        modal_id: modal_id,
-        "recording-studio-location--place-search-target": "manualButton"
-      }
-    ) %>
-  </div>
+  <p class="hidden mt-1 text-xs text-[var(--surface-muted-content-color)]"
+     data-recording-studio-location--place-search-target="attribution"></p>
 
   <div class="<%= filled ? '' : 'hidden' %>"
        data-recording-studio-location--place-search-target="summary">
@@ -71,6 +72,7 @@
             style: :ghost,
             size: :sm,
             type: "button",
+            class: "self-start",
             data: {
               modal_id: modal_id,
               "recording-studio-location--place-search-target": "editButton"
@@ -97,6 +99,7 @@
           text: t("recording_studio_location.search.done"),
           style: :primary,
           type: "button",
+          class: "self-start",
           data: { action: "click->flat-pack--modal#close" }
         ) %>
       <% end %>

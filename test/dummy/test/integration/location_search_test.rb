@@ -75,6 +75,7 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "recording-studio-location--place-search"
     assert_includes response.body, "Address line 1"
     refute_includes response.body, "Search for a place"
+    refute_includes response.body, ">Location</label>"
   ensure
     RecordingStudio::Location.geocoder = previous
   end

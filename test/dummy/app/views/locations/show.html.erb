@@ -17,6 +17,7 @@
   <%= render FlatPack::Button::Component.new(
     text: "Edit location",
     style: :secondary,
-    href: edit_location_path(@recording)
+    href: edit_location_path(@recording),
+    class: "self-start"
   ) %>
 </div>

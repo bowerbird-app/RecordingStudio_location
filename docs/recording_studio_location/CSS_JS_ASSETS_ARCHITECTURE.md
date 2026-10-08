@@ -2,6 +2,8 @@
 
 Location ships FlatPack ERB partials and a Stimulus controller for place search. It does not ship a compiled CSS bundle or a mapping SDK.
 
+The search dropdown copies FlatPack Combobox listbox markup, option classes, surface tokens, and overlay motion (`playOverlayEnter` / `playOverlayExit`). Combobox only filters a static `options:` list. Select remote search loads `{value, label}` rows into a closed trigger, not a typeahead that fills structured address fields. There is no reusable FlatPack listbox partial for remote structured results, so Location keeps its Stimulus controller and matches Combobox visuals. A first-class FlatPack component would need a remote Combobox that emits the picked row (id/label plus a details callback) without submitting a single hidden value.
+
 - Form: `app/views/recording_studio_location/locations/_fields.html.erb`
 - Search: `app/views/recording_studio_location/locations/_search_fields.html.erb`
 - Display: `app/views/recording_studio_location/locations/_display.html.erb`

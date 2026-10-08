@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { playOverlayEnter, playOverlayExit, cancelOverlayHide } from "controllers/flat_pack/reduced_motion"
 
 const FIELD_NAMES = [
   "name",
@@ -12,15 +13,23 @@ const FIELD_NAMES = [
   "longitude"
 ]
 
+const OPTION_CLASSES = [
+  "cursor-pointer px-3 py-2 text-sm",
+  "text-[var(--surface-content-color)]",
+  "aria-selected:bg-[var(--list-item-active-background-color)]",
+  "hover:bg-[var(--list-item-hover-background-color)]"
+].join(" ")
+
+const MUTED_ROW_CLASSES = "px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
+
 export default class extends Controller {
   static targets = [
+    "input",
     "list",
-    "status",
     "attribution",
     "summary",
     "summaryTitle",
     "summaryDetail",
-    "manualButton",
     "editButton",
     "fields"
   ]
@@ -40,26 +49,21 @@ export default class extends Controller {
   connect() {
     this.activeIndex = -1
     this.results = []
+    this.openList = false
     this.debounceTimer = null
     this.abortController = null
-    this.input = this.element.querySelector("input[type='search']")
     this.boundSearch = this.search.bind(this)
     this.boundKeydown = this.keydown.bind(this)
     this.boundOutside = this.outside.bind(this)
 
-    if (this.input) {
-      this.input.setAttribute("role", "combobox")
-      this.input.setAttribute("aria-autocomplete", "list")
-      this.input.setAttribute("aria-expanded", "false")
-      this.input.setAttribute("autocomplete", "off")
-      if (this.listIdValue) this.input.setAttribute("aria-controls", this.listIdValue)
-      this.input.addEventListener("input", this.boundSearch)
-      this.input.addEventListener("keydown", this.boundKeydown)
+    if (this.hasInputTarget) {
+      this.inputTarget.addEventListener("input", this.boundSearch)
+      this.inputTarget.addEventListener("keydown", this.boundKeydown)
     }
 
     document.addEventListener("mousedown", this.boundOutside)
 
-    if (this.fieldsTarget.querySelector("[aria-invalid='true']")) {
+    if (this.fieldsTarget.querySelector("[aria-invalid='true']") && this.hasEditButtonTarget) {
       this.summaryTarget.classList.remove("hidden")
       this.editButtonTarget.click()
     }
@@ -68,9 +72,10 @@ export default class extends Controller {
   disconnect() {
     this.clearDebounce()
     this.abortPending()
-    if (this.input) {
-      this.input.removeEventListener("input", this.boundSearch)
-      this.input.removeEventListener("keydown", this.boundKeydown)
+    cancelOverlayHide(this.listTarget)
+    if (this.hasInputTarget) {
+      this.inputTarget.removeEventListener("input", this.boundSearch)
+      this.inputTarget.removeEventListener("keydown", this.boundKeydown)
     }
     document.removeEventListener("mousedown", this.boundOutside)
   }
@@ -96,9 +101,11 @@ export default class extends Controller {
 
     if (event.key === "ArrowDown") {
       event.preventDefault()
+      this.open()
       this.move(1)
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
+      this.open()
       this.move(-1)
     } else if (event.key === "Enter") {
       const option = this.visibleOptions()[this.activeIndex]
@@ -141,7 +148,6 @@ export default class extends Controller {
   renderResults(results) {
     this.results = results
     this.listTarget.replaceChildren()
-    this.hideStatus()
 
     if (results.length === 0) {
       this.listTarget.append(this.manualOption())
@@ -163,7 +169,8 @@ export default class extends Controller {
     const option = document.createElement("li")
     option.id = `${this.listIdValue}-option-${index}`
     option.setAttribute("role", "option")
-    option.className = "cursor-pointer px-3 py-2 text-sm text-[var(--surface-content-color)] hover:bg-[var(--list-item-hover-background-color)]"
+    option.setAttribute("aria-selected", "false")
+    option.className = OPTION_CLASSES
     option.textContent = result.label || result.name || ""
     option.dataset.id = result.id
     option.dataset.kind = "place"
@@ -178,7 +185,8 @@ export default class extends Controller {
     const option = document.createElement("li")
     option.id = `${this.listIdValue}-manual`
     option.setAttribute("role", "option")
-    option.className = "cursor-pointer px-3 py-2 text-sm text-[var(--surface-content-color)] hover:bg-[var(--list-item-hover-background-color)]"
+    option.setAttribute("aria-selected", "false")
+    option.className = OPTION_CLASSES
     option.dataset.kind = "manual"
     option.textContent = this.addManuallyTextValue
     option.addEventListener("mousedown", (event) => {
@@ -266,7 +274,15 @@ export default class extends Controller {
 
   openManual() {
     this.close()
-    this.manualButtonTarget.click()
+    const modal = this.element.querySelector("[data-controller~='flat-pack--modal']")
+    const controller = modal
+      ? this.application.getControllerForElementAndIdentifier(modal, "flat-pack--modal")
+      : null
+
+    if (!controller || typeof controller.open !== "function") return
+
+    controller.previousActiveElement = this.hasInputTarget ? this.inputTarget : document.activeElement
+    controller.open()
   }
 
   activate(option) {
@@ -280,32 +296,38 @@ export default class extends Controller {
   }
 
   open() {
-    this.listTarget.classList.remove("hidden")
-    this.input?.setAttribute("aria-expanded", "true")
+    if (this.openList) return
+
+    this.openList = true
+    this.inputTarget?.setAttribute("aria-expanded", "true")
+    playOverlayEnter(this.listTarget, { placement: "bottom" })
   }
 
   close() {
-    this.listTarget.classList.add("hidden")
-    this.input?.setAttribute("aria-expanded", "false")
-    this.input?.removeAttribute("aria-activedescendant")
+    if (!this.openList) {
+      this.listTarget.classList.add("hidden")
+      return
+    }
+
+    this.openList = false
+    this.inputTarget?.setAttribute("aria-expanded", "false")
+    this.inputTarget?.removeAttribute("aria-activedescendant")
     this.activeIndex = -1
+    playOverlayExit(this.listTarget, { placement: "bottom" })
   }
 
   resetList() {
     this.results = []
     this.listTarget.replaceChildren()
-    this.hideStatus()
   }
 
   showStatus(text) {
-    this.statusTarget.textContent = text
-    this.statusTarget.classList.remove("hidden")
-    this.listTarget.replaceChildren()
+    this.resetList()
+    const row = document.createElement("li")
+    row.className = MUTED_ROW_CLASSES
+    row.textContent = text
+    this.listTarget.append(row)
     this.open()
-  }
-
-  hideStatus() {
-    this.statusTarget.classList.add("hidden")
   }
 
   setAttribution(attribution) {
@@ -334,7 +356,8 @@ export default class extends Controller {
     options.forEach((option, index) => {
       const active = index === this.activeIndex
       option.classList.toggle("bg-[var(--list-item-hover-background-color)]", active)
-      if (active && option.id) this.input?.setAttribute("aria-activedescendant", option.id)
+      option.setAttribute("aria-selected", active ? "true" : "false")
+      if (active && option.id) this.inputTarget?.setAttribute("aria-activedescendant", option.id)
     })
   }
 
@@ -347,7 +370,7 @@ export default class extends Controller {
   }
 
   query() {
-    return (this.input?.value || "").trim()
+    return (this.hasInputTarget ? this.inputTarget.value : "").trim()
   }
 
   clearDebounce() {
