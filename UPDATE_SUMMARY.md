@@ -10,6 +10,6 @@
 - FlatPack form fields and a read-only display partial
 - Optional geocoder: Google adapter from Rails credentials, `geocode!` / `reverse!` on Location
 - Gemspec: `add_dependency "recording_studio", "~> 4.2"`
-- Dummy GitHub tags: Recording Studio `v4.2.2`, Accessible `v0.10.1`, Root Switchable `v0.5.1`, FlatPack `v0.1.196`
+- Dummy GitHub tags: Recording Studio `v4.3.0`, Accessible `v0.10.1`, Root Switchable `v0.5.1`, FlatPack `v0.1.196`
 
 Installing the gem does not enable Location on every type. Enable `:location` on each parent that may contain a place.
