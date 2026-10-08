@@ -30,6 +30,20 @@ module RecordingStudioLocation
         template "recording_studio_location.yml", "config/recording_studio_location.yml"
       end
 
+      def add_importmap_pin
+        importmap_path = Rails.root.join("config/importmap.rb")
+        return unless File.exist?(importmap_path)
+
+        contents = File.read(importmap_path)
+        if contents.include?(importmap_pin_marker)
+          say "Importmap already pins RecordingStudioLocation controllers.", :green
+          return
+        end
+
+        append_to_file importmap_path, "\n#{importmap_pin_block}"
+        say "Pinned RecordingStudioLocation Stimulus controllers in config/importmap.rb.", :green
+      end
+
       def add_tailwind_source
         tailwind_css_path = Rails.root.join("app/assets/tailwind/application.css")
         return show_missing_tailwind_notice unless File.exist?(tailwind_css_path)
@@ -95,6 +109,17 @@ module RecordingStudioLocation
 
       def yaml_config_prompt
         "Would you like to add `config/recording_studio_location.yml` for environment-specific settings? [y/N]"
+      end
+
+      def importmap_pin_marker
+        "recording_studio_location/controllers"
+      end
+
+      def importmap_pin_block
+        <<~RUBY
+          # Recording Studio Location place search
+          pin_all_from RecordingStudioLocation::Engine.root.join("app/javascript/recording_studio_location/controllers"), under: "controllers/recording_studio_location", to: "recording_studio_location/controllers"
+        RUBY
       end
 
       def tailwind_source_lines

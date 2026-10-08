@@ -33,6 +33,8 @@ class ConfigurationTest < Minitest::Test
     configuration = RecordingStudioLocation::Configuration.new
 
     assert_nil configuration.geocoder
+    assert_nil configuration.authenticate
+    assert_equal :full, configuration.lookup_depth
     assert_instance_of RecordingStudio::Hooks, configuration.hooks
   end
 
@@ -50,6 +52,8 @@ class ConfigurationTest < Minitest::Test
     result = @configuration.to_h
 
     assert_nil result.fetch(:geocoder)
+    assert_nil result.fetch(:authenticate)
+    assert_equal :full, result.fetch(:lookup_depth)
     assert_equal 2, result.fetch(:hooks_registered).fetch(:before_initialize)
     assert_equal 1, result.fetch(:hooks_registered).fetch(:after_service)
   end

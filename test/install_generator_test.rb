@@ -145,6 +145,29 @@ class InstallGeneratorTest < Minitest::Test
     refute_includes install_guide, "RecordingStudio v3"
   end
 
+  def test_add_importmap_pin_appends_controller_pin
+    with_temp_app do |dir|
+      FileUtils.mkdir_p(File.join(dir, "config"))
+      importmap_path = File.join(dir, "config/importmap.rb")
+      File.write(importmap_path, "pin \"application\"\n")
+      generator = build_generator(dir)
+
+      Rails.stub(:root, Pathname.new(dir)) do
+        generator.stub(:say, nil) do
+          generator.stub(:append_to_file, lambda { |path, content|
+            File.write(path, File.read(path) + content)
+          }) do
+            generator.add_importmap_pin
+          end
+        end
+      end
+
+      pinned = File.read(importmap_path)
+      assert_includes pinned, "recording_studio_location/controllers"
+      assert_includes pinned, "place search"
+    end
+  end
+
   def test_initializer_template_wires_geocoder_from_credentials
     initializer = File.read(
       File.expand_path(
@@ -154,6 +177,8 @@ class InstallGeneratorTest < Minitest::Test
     )
 
     assert_includes initializer, "RecordingStudioLocation::Geocoder.from_rails_credentials"
+    assert_includes initializer, "config.lookup_depth = :full"
+    assert_includes initializer, "config.authenticate"
     refute_includes initializer, "Reserved for a future geocoding adapter"
   end
 

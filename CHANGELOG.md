@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.0] - 2026-10-08
+
+### Added
+
+- `recording_studio_location_search_fields(form)` — search-first editor. Pick a result to fill structured fields. Manual entry opens a FlatPack modal. Existing `recording_studio_location_fields(form)` is unchanged.
+- Provider adapter surface: `#search`, `#details`, `#attribution`, `#capabilities`, plus existing `#geocode` / `#reverse`. Register extra providers with `Geocoder.register`.
+- Google adapter: Places Autocomplete while typing, Place Details on pick (`lookup_depth: :full`), or Geocoding-by-id (`:address`). Attribution is provider-driven.
+- `Geocoder::Fake#stub_search` / `#stub_details` and `Fake.demo` for dummy/dev without a live key.
+- Engine JSON endpoints `GET /searches` and `GET /places`, authenticated (`config.authenticate` or Devise `authenticate_user!`, else 401). API keys never reach the browser.
+- Stimulus controller `recording-studio-location--place-search`. Install generator pins it in `config/importmap.rb`.
+- English locale keys under `recording_studio_location.*`.
+
+### Upgrade notes
+
+- Bump to `0.3.0`. No database migration.
+- Enable the Places API (legacy) on the same key if you want search. Geocoding-only keys keep `geocode!` / `reverse!` working; the search helper falls back to the full form when the adapter cannot search.
+- Pin Location Stimulus controllers (the install generator does this). Rebuild Tailwind so new view classes are included.
+- Switch a host form to `recording_studio_location_search_fields(form)` when you want search. Presskits should do that in a follow-up.
+- Optional `config.lookup_depth = :full` (default) or `:address`. Optional `config.authenticate` proc if the host is not Devise.
+- Saving still never geocodes. A pick overwrites structured fields, including `name` when the lookup returns one. Users can edit or clear anything afterwards.
+
 ## [0.2.0] - 2026-10-06
 
 ### Added

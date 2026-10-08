@@ -16,10 +16,16 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     @root = RecordingStudio.root_recording_for(@workspace)
   end
 
-  test "new location form renders the gem fields" do
+  test "new location form renders the search helper and nested fields" do
     get new_location_path
 
     assert_response :success
+    assert_includes response.body, "Search for a place"
+    assert_includes response.body, "Enter address manually"
+    assert_includes response.body, "Add address manually"
+    assert_includes response.body, "Enter address"
+    assert_includes response.body, "flat-pack--modal"
+    assert_includes response.body, "recording-studio-location--place-search"
     assert_includes response.body, "Address line 1"
     assert_includes response.body, "Locality"
     assert_includes response.body, "Country"
@@ -82,6 +88,23 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "-37.798, 144.978"
     assert_nil recording.recordable.coordinates
     assert_equal "Fitzroy Showroom", recording.recordable.display_name
+  end
+
+  test "edit form shows a saved place summary and the manual address modal" do
+    recording = @root.record(RecordingStudio::Location::Location) do |location|
+      location.name = "Seeded Hall"
+      location.locality = "Melbourne"
+      location.country_code = "AU"
+    end
+
+    get edit_location_path(recording)
+
+    assert_response :success
+    assert_includes response.body, "Seeded Hall"
+    assert_includes response.body, "Edit address"
+    assert_includes response.body, "Enter address"
+    assert_includes response.body, "Add address manually"
+    assert_includes response.body, "flat-pack--modal"
   end
 
   test "partial location submits without coordinates or a street" do

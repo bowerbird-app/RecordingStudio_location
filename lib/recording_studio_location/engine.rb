@@ -129,6 +129,10 @@ module RecordingStudioLocation
       end
     end
 
+    initializer "recording_studio_location.assets" do |app|
+      app.config.assets.paths << root.join("app/javascript") if app.config.respond_to?(:assets)
+    end
+
     initializer "recording_studio_location.recordable_types", after: :load_config_initializers do
       config.to_prepare do
         RecordingStudioLocation::RecordableRegistration.register!

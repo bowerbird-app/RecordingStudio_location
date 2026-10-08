@@ -32,6 +32,7 @@ Keep `config.require_recordable_declarations = true`.
 2. Copies `config/initializers/recording_studio_location.rb`.
 3. Optionally copies `config/recording_studio_location.yml`.
 4. Adds Tailwind `@source` lines for Location views and FlatPack components when `app/assets/tailwind/application.css` exists.
+5. Pins Location Stimulus controllers in `config/importmap.rb` when that file exists.
 
 Mount line:
 
@@ -39,7 +40,7 @@ Mount line:
 mount RecordingStudioLocation::Engine, at: "/recording_studio_location"
 ```
 
-The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` and `recording_studio_location_display` themselves.
+The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`.
 
 ## Enable it on a parent
 
@@ -68,6 +69,7 @@ Rebuild with `bin/rails tailwindcss:build`.
 
 ## After install
 
-1. Review the initializer. Geocoding stays off until Rails credentials include `recording_studio_location.geocoder.provider` and `api_key`.
+1. Review the initializer. Geocoding and search stay off until Rails credentials include `recording_studio_location.geocoder.provider` and `api_key`. Enable Places API (legacy) on a Google key if you want search.
 2. Copy migrations and migrate.
 3. Enable `:location` on the parents that should hold a place.
+4. Rebuild Tailwind and confirm the importmap pin for Location controllers.

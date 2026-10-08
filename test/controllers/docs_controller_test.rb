@@ -34,9 +34,10 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get docs_config_path
     assert_response :success
     assert_select "h1", text: "Config"
-    assert_includes response.body, "Geocoding stays off until the host sets a provider and key."
+    assert_includes response.body, "Search and geocoding stay off until the host assigns a searchable adapter."
     assert_includes response.body, "RecordingStudio::Location.geocoder"
     assert_includes response.body, "from_rails_credentials"
+    assert_includes response.body, "lookup_depth"
   end
 
   test "recordable types page renders configured recordables dynamically" do

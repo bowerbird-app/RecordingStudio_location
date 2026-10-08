@@ -1,0 +1,105 @@
+<% location = form.object %>
+<% filled = recording_studio_location_filled?(location) || location.errors.any? %>
+<% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
+<% list_id = "location-search-#{SecureRandom.hex(4)}" %>
+<%# Tailwind CSS scanning for JS-built options:
+  "cursor-pointer px-3 py-2 text-sm text-[var(--surface-content-color)] hover:bg-[var(--list-item-hover-background-color)]"
+  "bg-[var(--list-item-hover-background-color)]"
+  "absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
+  "px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
+%>
+
+<div class="grid gap-4"
+     data-controller="recording-studio-location--place-search"
+     data-recording-studio-location--place-search-search-url-value="<%= recording_studio_location.searches_path %>"
+     data-recording-studio-location--place-search-details-url-value="<%= recording_studio_location.places_path %>"
+     data-recording-studio-location--place-search-lookup-value="<%= lookup_depth %>"
+     data-recording-studio-location--place-search-session-value="<%= SecureRandom.uuid %>"
+     data-recording-studio-location--place-search-min-length-value="<%= RecordingStudioLocation::PlaceSearch::MIN_QUERY_LENGTH %>"
+     data-recording-studio-location--place-search-debounce-value="300"
+     data-recording-studio-location--place-search-list-id-value="<%= list_id %>"
+     data-recording-studio-location--place-search-searching-text-value="<%= t("recording_studio_location.search.searching") %>"
+     data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio_location.search.add_manually") %>">
+  <div class="relative">
+    <%= render FlatPack::SearchInput::Component.new(
+      name: "place_search_query",
+      value: nil,
+      label: t("recording_studio_location.search.label"),
+      placeholder: t("recording_studio_location.search.placeholder"),
+      help_text: t("recording_studio_location.search.help")
+    ) %>
+
+    <ul id="<%= list_id %>"
+        class="absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
+        role="listbox"
+        data-recording-studio-location--place-search-target="list"></ul>
+    <p class="hidden px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
+       data-recording-studio-location--place-search-target="status"
+       role="status"></p>
+    <p class="hidden mt-1 text-xs text-[var(--surface-muted-content-color)]"
+       data-recording-studio-location--place-search-target="attribution"></p>
+  </div>
+
+  <div>
+    <%= render FlatPack::Button::Component.new(
+      text: t("recording_studio_location.search.enter_manually"),
+      style: :ghost,
+      size: :sm,
+      type: "button",
+      data: {
+        modal_id: modal_id,
+        "recording-studio-location--place-search-target": "manualButton"
+      }
+    ) %>
+  </div>
+
+  <div class="<%= filled ? '' : 'hidden' %>"
+       data-recording-studio-location--place-search-target="summary">
+    <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+      <% card.body do %>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div class="text-sm leading-6">
+            <p class="font-medium" data-recording-studio-location--place-search-target="summaryTitle">
+              <%= location.display_name.presence || t("recording_studio_location.search.summary_empty") %>
+            </p>
+            <p class="text-(--surface-muted-content-color)" data-recording-studio-location--place-search-target="summaryDetail">
+              <%= location.full_address %>
+            </p>
+          </div>
+          <%= render FlatPack::Button::Component.new(
+            text: t("recording_studio_location.search.edit"),
+            style: :ghost,
+            size: :sm,
+            type: "button",
+            data: {
+              modal_id: modal_id,
+              "recording-studio-location--place-search-target": "editButton"
+            }
+          ) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div data-recording-studio-location--place-search-target="fields">
+    <%= render FlatPack::Modal::Component.new(
+      id: modal_id,
+      title: t("recording_studio_location.search.modal_title"),
+      size: :lg,
+      close_on_escape: true,
+      close_on_backdrop: true
+    ) do |modal| %>
+      <% modal.body do %>
+        <%= recording_studio_location_fields(form) %>
+      <% end %>
+      <% modal.footer do %>
+        <%= render FlatPack::Button::Component.new(
+          text: t("recording_studio_location.search.done"),
+          style: :primary,
+          type: "button",
+          data: { action: "click->flat-pack--modal#close" }
+        ) %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

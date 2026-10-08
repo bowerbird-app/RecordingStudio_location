@@ -161,6 +161,105 @@ class GeocoderGoogleTest < Minitest::Test
     assert started
   end
 
+  AUTOCOMPLETE_PAYLOAD = {
+    "status" => "OK",
+    "predictions" => [
+      {
+        "description" => "Melbourne Convention and Exhibition Centre, South Wharf VIC, Australia",
+        "place_id" => "ChIJ-mcec",
+        "structured_formatting" => { "main_text" => "Melbourne Convention and Exhibition Centre" }
+      }
+    ]
+  }.freeze
+
+  DETAILS_PAYLOAD = {
+    "status" => "OK",
+    "result" => {
+      "name" => "Melbourne Convention and Exhibition Centre",
+      "formatted_address" => "1 Convention Centre Place, South Wharf VIC 3006, Australia",
+      "geometry" => { "location" => { "lat" => -37.8253, "lng" => 144.952 } },
+      "address_components" => [
+        { "long_name" => "1", "short_name" => "1", "types" => ["street_number"] },
+        { "long_name" => "Convention Centre Place", "short_name" => "Convention Centre Pl", "types" => ["route"] },
+        { "long_name" => "South Wharf", "short_name" => "South Wharf", "types" => %w[locality political] },
+        { "long_name" => "Victoria", "short_name" => "VIC", "types" => %w[administrative_area_level_1 political] },
+        { "long_name" => "Australia", "short_name" => "AU", "types" => %w[country political] },
+        { "long_name" => "3006", "short_name" => "3006", "types" => ["postal_code"] }
+      ]
+    }
+  }.freeze
+
+  def test_search_maps_autocomplete_predictions_without_live_network
+    captured = []
+    adapter = google_adapter(captured, "200", JSON.generate(AUTOCOMPLETE_PAYLOAD))
+
+    results = adapter.search("melbourne", session: "session-1")
+
+    assert_equal 1, results.size
+    assert_equal "ChIJ-mcec", results.first.id
+    assert_equal "Melbourne Convention and Exhibition Centre, South Wharf VIC, Australia", results.first.label
+    assert_equal "Melbourne Convention and Exhibition Centre", results.first.name
+    assert_includes captured.first.path, "/maps/api/place/autocomplete/json"
+    assert_includes captured.first.query, "input=melbourne"
+    assert_includes captured.first.query, "sessiontoken=session-1"
+    refute_includes JSON.generate(results.first.as_json), "test-key"
+  end
+
+  def test_search_returns_empty_for_zero_results_and_blank_query
+    captured = []
+    adapter = google_adapter(captured, "200", JSON.generate({ "status" => "ZERO_RESULTS", "predictions" => [] }))
+
+    assert_equal [], adapter.search("nowhere")
+    assert_equal [], adapter.search(" ")
+    assert_equal 1, captured.size
+  end
+
+  def test_details_full_uses_place_details_and_maps_name
+    captured = []
+    adapter = google_adapter(captured, "200", JSON.generate(DETAILS_PAYLOAD))
+
+    result = adapter.details("ChIJ-mcec", depth: :full, session: "session-1")
+
+    assert_equal "Melbourne Convention and Exhibition Centre", result.name
+    assert_equal "1 Convention Centre Place", result.address_line_1
+    assert_equal "South Wharf", result.locality
+    assert_equal "VIC", result.region
+    assert_equal "3006", result.postal_code
+    assert_equal "AU", result.country_code
+    assert_in_delta(-37.8253, result.latitude)
+    assert_includes captured.first.path, "/maps/api/place/details/json"
+    assert_includes captured.first.query, "place_id=ChIJ-mcec"
+    assert_includes captured.first.query, "sessiontoken=session-1"
+  end
+
+  def test_details_address_uses_geocode_by_id
+    captured = []
+    adapter = google_adapter(captured, "200", payload_json)
+
+    result = adapter.details("ChIJ-fitzroy", depth: :address)
+
+    assert_nil result.name
+    assert_equal "Fitzroy", result.locality
+    assert_includes captured.first.path, "/maps/api/geocode/json"
+    assert_includes captured.first.query, "place_id=ChIJ-fitzroy"
+  end
+
+  def test_attribution_is_required_for_this_adapter
+    adapter = google_adapter([], "200", payload_json)
+
+    assert adapter.attribution.required?
+    assert_equal "Powered by Google", adapter.attribution.text
+    assert adapter.capabilities[:search]
+    assert_equal %i[full address], adapter.capabilities[:lookup_depths]
+  end
+
+  def test_search_and_details_errors_do_not_leak_the_key
+    denied = google_adapter([], "200", JSON.generate({ "status" => "REQUEST_DENIED" }))
+
+    error = assert_raises(RecordingStudioLocation::Geocoder::RequestError) { denied.search("Melbourne") }
+    refute_includes error.message, "test-key"
+  end
+
   def test_transport_errors_become_request_errors
     adapter = RecordingStudioLocation::Geocoder::Google.new(api_key: "test-key")
 

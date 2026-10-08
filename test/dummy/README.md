@@ -32,7 +32,7 @@ Then open the app and sign in with:
 
 - `/` - seeded Location on Studio Workspace
 - `/locations` - list locations in the workspace
-- `/locations/new` - gem form
+- `/locations/new` - search helper (Fake demo adapter when no live key)
 - `/locations/:id` - read-only display
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
 - `/users/sign_in` - Devise sign-in page
@@ -41,7 +41,7 @@ Then open the app and sign in with:
 
 ## Why This App Exists
 
-Use this app to prove Location in a host: capability opt-in, form fields, and read-only display. If a layout, route, asset source, or Recording Studio initializer change breaks here, the gem wiring needs a look before a host copies it.
+Use this app to prove Location in a host: capability opt-in, search and form fields, and read-only display. If a layout, route, asset source, or Recording Studio initializer change breaks here, the gem wiring needs a look before a host copies it.
 
 Authenticated pages use Recording Studio's shared default layout. Devise sign-in keeps `layouts/application`.
 
