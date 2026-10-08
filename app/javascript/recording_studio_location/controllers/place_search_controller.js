@@ -445,6 +445,8 @@ export default class extends Controller {
   }
 
   coordinatePair(latitude, longitude) {
+    if (latitude === "" || longitude === "") return null
+
     const lat = Number(latitude)
     const lng = Number(longitude)
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null

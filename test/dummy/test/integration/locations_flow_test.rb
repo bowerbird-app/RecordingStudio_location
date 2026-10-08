@@ -41,6 +41,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select "iframe[title]"
     assert_select "iframe[src]", count: 0
     assert_select "iframe[tabindex='-1']"
+    assert_select "figure.hidden"
   end
 
   test "creating and revising a location uses the recording and the display" do
