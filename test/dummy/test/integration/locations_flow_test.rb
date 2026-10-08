@@ -24,7 +24,13 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "Search for a place"
     refute_includes response.body, "Enter address manually"
     refute_includes response.body, "Pick a place to fill"
+    refute_includes response.body, "Edit address"
     assert_includes response.body, "Add address manually"
+    assert_includes response.body, "Clear location"
+    assert_includes response.body, "recording-studio-location--place-search#clear"
+    assert_select "input[role='combobox'][value='']"
+    assert_select "[data-modal-id]", count: 0
+    assert_select "[aria-label='Clear location']"
     assert_includes response.body, "Enter address"
     assert_includes response.body, "flat-pack--modal"
     assert_includes response.body, "recording-studio-location--place-search"
@@ -108,7 +114,12 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Seeded Hall"
-    assert_includes response.body, "Edit address"
+    refute_includes response.body, "Edit address"
+    assert_includes response.body, "Clear location"
+    assert_includes response.body, "recording-studio-location--place-search#clear"
+    assert_select "[aria-label='Clear location']"
+    assert_select "[data-modal-id]", count: 0
+    assert_select "input[role='combobox'][value='Seeded Hall']"
     assert_includes response.body, ">Location</label>"
     assert_includes response.body, "Enter address"
     assert_includes response.body, "Add address manually"

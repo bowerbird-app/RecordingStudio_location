@@ -1,5 +1,6 @@
 <% location = form.object %>
 <% filled = recording_studio_location_filled?(location) || location.errors.any? %>
+<% selected_label = recording_studio_location_filled?(location) ? location.display_name : "" %>
 <% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
 <% input_id = "#{list_id}-input" %>
@@ -35,7 +36,7 @@
     <div class="flex items-center gap-2 w-full rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] px-[var(--form-control-padding)] py-[var(--form-control-padding)] focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring">
       <input id="<%= input_id %>"
              type="text"
-             value=""
+             value="<%= selected_label %>"
              placeholder="<%= t("recording_studio_location.search.placeholder") %>"
              autocomplete="off"
              role="combobox"
@@ -77,14 +78,16 @@
             </p>
           </div>
           <%= render FlatPack::Button::Component.new(
-            text: t("recording_studio_location.search.edit"),
+            icon: "x-mark",
+            icon_only: true,
             style: :ghost,
             size: :sm,
+            text: t("recording_studio_location.search.clear"),
             type: "button",
-            class: "self-start",
+            class: "self-start shrink-0",
             data: {
-              modal_id: modal_id,
-              "recording-studio-location--place-search-target": "editButton"
+              action: "click->recording-studio-location--place-search#clear",
+              "recording-studio-location--place-search-target": "clearButton"
             }
           ) %>
         </div>

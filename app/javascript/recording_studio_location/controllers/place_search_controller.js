@@ -30,7 +30,7 @@ export default class extends Controller {
     "summary",
     "summaryTitle",
     "summaryDetail",
-    "editButton",
+    "clearButton",
     "fields",
     "map",
     "mapFrame"
@@ -75,9 +75,9 @@ export default class extends Controller {
 
     this.syncMap()
 
-    if (this.fieldsTarget.querySelector("[aria-invalid='true']") && this.hasEditButtonTarget) {
-      this.summaryTarget.classList.remove("hidden")
-      this.editButtonTarget.click()
+    if (this.hasFieldsTarget && this.fieldsTarget.querySelector("[aria-invalid='true']")) {
+      if (this.hasSummaryTarget) this.summaryTarget.classList.remove("hidden")
+      this.openManual()
     }
   }
 
@@ -282,11 +282,40 @@ export default class extends Controller {
   }
 
   refreshSummary(payload, candidate) {
-    const title = payload.name || candidate.name || payload.formatted_address || candidate.label || ""
+    const title = this.placeLabel(payload, candidate)
     const detail = payload.formatted_address || candidate.label || ""
     if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = title
     if (this.hasSummaryDetailTarget) this.summaryDetailTarget.textContent = detail === title ? "" : detail
-    this.summaryTarget.classList.remove("hidden")
+    if (this.hasSummaryTarget) this.summaryTarget.classList.remove("hidden")
+    this.setInputValue(title)
+  }
+
+  placeLabel(payload, candidate) {
+    return payload.name || candidate?.name || candidate?.label || payload.formatted_address || ""
+  }
+
+  setInputValue(value) {
+    if (!this.hasInputTarget) return
+
+    this.inputTarget.value = value
+  }
+
+  clear(event) {
+    event?.preventDefault()
+    this.clearDebounce()
+    this.abortPending()
+    this.close()
+    this.resetList()
+    if (this.hasFieldsTarget) {
+      FIELD_NAMES.forEach((name) => this.setField(name, ""))
+    }
+    this.setAttribution(null)
+    if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = ""
+    if (this.hasSummaryDetailTarget) this.summaryDetailTarget.textContent = ""
+    if (this.hasSummaryTarget) this.summaryTarget.classList.add("hidden")
+    this.syncMap()
+    this.setInputValue("")
+    this.inputTarget?.focus()
   }
 
   openManual() {

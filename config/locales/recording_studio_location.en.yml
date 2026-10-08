@@ -28,7 +28,7 @@ en:
       no_results: "No places found"
       searching: "Searching"
       add_manually: "Add address manually"
-      edit: "Edit address"
+      clear: "Clear location"
       done: "Done"
       modal_title: "Enter address"
       summary_empty: "No place selected yet."

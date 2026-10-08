@@ -4,7 +4,7 @@
 
 ### Added
 
-- `recording_studio_location_search_fields(form)` — search-first editor labelled Location. Pick a result to fill structured fields. No results offers Add address manually, which opens a FlatPack modal. Existing `recording_studio_location_fields(form)` is unchanged. The dropdown uses FlatPack Combobox listbox classes and tokens.
+- `recording_studio_location_search_fields(form)` — search-first editor labelled Location. Pick a result to fill structured fields; the search field then shows the place name. No results offers Add address manually, which opens a FlatPack modal. A picked or saved place shows a summary with a Clear location control (X) instead of an edit action. Existing `recording_studio_location_fields(form)` is unchanged. The dropdown uses FlatPack Combobox listbox classes and tokens.
 - Provider adapter surface: `#search`, `#details`, `#attribution`, `#capabilities`, plus existing `#geocode` / `#reverse`. Register extra providers with `Geocoder.register`.
 - Google adapter: Places Autocomplete while typing, Place Details on pick (`lookup_depth: :full`), or Geocoding-by-id (`:address`). Attribution is provider-driven.
 - `Geocoder::Fake#stub_search` / `#stub_details` and `Fake.demo` for dummy/dev without a live key.
@@ -21,7 +21,7 @@
 - Switch a host form to `recording_studio_location_search_fields(form)` when you want search. Presskits should do that in a follow-up.
 - Optional `config.lookup_depth = :full` (default) or `:address`. Optional `config.authenticate` proc if the host is not Devise.
 - Optional `config.map` for a pin preview. Google Embed needs `recording_studio_location.map.browser_api_key` (HTTP-referrer restricted, never the geocoding server key) or use `Map.build(provider: "open_street_map")`. Unset shows nothing.
-- Saving still never geocodes. A pick overwrites structured fields, including `name` when the lookup returns one. Users can edit or clear anything afterwards. The map only loads after the user picks or types both coordinates.
+- Saving still never geocodes. A pick overwrites structured fields, including `name` when the lookup returns one. Clear location wipes the selection (all fields, summary, map, and the search text) and returns focus to search. Manual typing stays on Add address manually in the no-results dropdown. The map only loads after the user picks or types both coordinates.
 
 ## [0.2.0] - 2026-10-06
 

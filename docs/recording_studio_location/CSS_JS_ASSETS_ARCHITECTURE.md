@@ -4,6 +4,8 @@ Location ships FlatPack ERB partials and a Stimulus controller for place search.
 
 The search dropdown copies FlatPack Combobox listbox markup, option classes, surface tokens, and overlay motion (`playOverlayEnter` / `playOverlayExit`). Combobox only filters a static `options:` list. Select remote search loads `{value, label}` rows into a closed trigger, not a typeahead that fills structured address fields. There is no reusable FlatPack listbox partial for remote structured results, so Location keeps its Stimulus controller and matches Combobox visuals. A first-class FlatPack component would need a remote Combobox that emits the picked row (id/label plus a details callback) without submitting a single hidden value.
 
+Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` from i18n) on the saved-place summary. SearchInput's in-field clear does not wrap this Combobox, so the control sits on the summary rather than inside the input. Clicking it empties structured fields, hides the summary and map, and focuses the search field.
+
 The pin preview is an iframe sized with FlatPack radius/border tokens. FlatPack has no map component. The iframe `src` comes from `config.map` (`url_template` with `{lat}` / `{lng}`). No adapter, or missing coordinates, means no `src` and no map request. `tabindex="-1"` keeps it out of the tab order.
 
 - Form: `app/views/recording_studio_location/locations/_fields.html.erb`

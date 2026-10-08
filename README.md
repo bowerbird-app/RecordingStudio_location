@@ -148,7 +148,7 @@ Two edit helpers. `recording_studio_location_fields(form)` is the original long 
 
 The partial is `recording_studio_location/locations/fields`. It uses FlatPack inputs. Coordinates sit last and are marked optional.
 
-Search is a separate helper. The field is labelled Location. The user types a place, picks a result, and the structured fields are filled. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. Saved places show a summary with Edit address. Hosts choose which helper to render.
+Search is a separate helper. The field is labelled Location. The user types a place, picks a result, and the structured fields are filled. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. A saved or picked place shows a summary with a Clear location control (X). That control empties every location field, including coordinates, hides the summary and map, and focuses search so the user can pick again. Hosts choose which helper to render.
 
 ```erb
 <%= recording_studio_location_search_fields(form) %>
@@ -307,7 +307,7 @@ end
 `test/dummy` is a host, not a location product. Sign in as `admin@admin.com` / `Password`.
 
 - `/` shows the seeded Melbourne Convention Centre recording under Studio Workspace
-- `/locations/new` uses the search helper. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy". Local dummy also assigns the OpenStreetMap map adapter so a pin appears after a pick
+- `/locations/new` uses the search helper. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy". After a pick, the field shows the place name; the summary X clears the selection. Local dummy also assigns the OpenStreetMap map adapter so a pin appears after a pick
 - `/locations/:id` uses the read-only display with `map: true` and names the parent recording
 
 Workspace and Folder enable `:location`. Page does not, so a Location cannot be recorded under a Page.
