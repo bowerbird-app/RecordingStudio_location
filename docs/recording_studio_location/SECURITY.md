@@ -5,7 +5,8 @@ Location stores address text and optional coordinates. Geocoding and place searc
 When a host assigns an adapter:
 
 - `geocode!` / `reverse!` send address text or coordinates to that provider in the same request.
-- The search helper sends the typed query to `GET /recording_studio_location/searches`, which calls `#search` server-side. A pick calls `GET /recording_studio_location/places`, which calls `#details`. The browser never receives the API key.
+- The search helper sends the typed query to `GET /recording_studio_location/searches`, which calls `#search` server-side. A pick calls `GET /recording_studio_location/places`, which calls `#details`. The geocoding API key never reaches the browser.
+- A map pin is a separate adapter. It loads only after the user picks a result or types both coordinates (or when displaying a saved pair). Empty coordinates make no map request. Google Embed puts a **browser** key in the iframe URL: restrict that key by HTTP referrer and never reuse the server Geocoding key. OpenStreetMap embed needs no key. Hosts may need `frame-src` CSP for the provider origin.
 
 Treat those as data-sharing choices in the host's own policy.
 
@@ -20,7 +21,7 @@ A pick fills form fields only after the user chooses a result. Users can edit or
 - CSRF is on. In Codespaces only (`ENV["CODESPACES"] == "true"`), the origin check is relaxed so forwarded URLs work. Tokens stay required.
 - Database passwords come from environment variables. Defaults are for local development.
 - `test/dummy/config/credentials.yml.enc` uses the shared RecordingStudio_* development master key. `test/dummy/config/master.key` is gitignored. Do not commit secrets.
-- Dummy credentials do not include a provider key. The dummy initializer assigns `Geocoder::Fake.demo` in local environments so search can be demonstrated without a network call.
+- Dummy credentials do not include a provider key. The dummy initializer assigns `Geocoder::Fake.demo` and the OpenStreetMap map adapter in local environments so search and the pin preview can be demonstrated without a Google key. The OSM iframe does load osm.org when coordinates exist.
 - Gemspec sets `rubygems_mfa_required`.
 
 ## Hosts

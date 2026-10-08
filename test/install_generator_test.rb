@@ -177,6 +177,7 @@ class InstallGeneratorTest < Minitest::Test
     )
 
     assert_includes initializer, "RecordingStudioLocation::Geocoder.from_rails_credentials"
+    assert_includes initializer, "RecordingStudioLocation::Map.from_rails_credentials"
     assert_includes initializer, "config.lookup_depth = :full"
     assert_includes initializer, "config.authenticate"
     refute_includes initializer, "Reserved for a future geocoding adapter"

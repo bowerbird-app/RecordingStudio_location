@@ -165,15 +165,19 @@ Read-only display:
 <%= recording_studio_location_display(location) %>
 ```
 
-The card shows `display_name`, the formatted address when it adds detail, and coordinates only when both values exist. It does not embed a map.
+The card shows `display_name`, the formatted address when it adds detail, and coordinates only when both values exist. Pass `map: true` to embed a pin preview when a map adapter is configured and both coordinates are present:
+
+```erb
+<%= recording_studio_location_display(location, map: true) %>
+```
 
 The engine includes these helpers on Action Controller. Copy lives under `recording_studio_location.*` locale keys.
 
 ## Maps, geocoding, and search
 
-There is no map embed. Saving a location never contacts a network service.
+Saving a location never contacts a network service. The map pin is a separate adapter from geocoding. It renders only when both coordinates are present (after a pick, after typing lat/long, or on a saved place). No coordinates means no map and no map network request.
 
-Leave credentials unset and `RecordingStudio::Location.geocoder` stays nil. `geocode!` / `reverse!` raise `Missing`. The search helper falls back to the full form.
+Leave credentials unset and `RecordingStudio::Location.geocoder` stays nil. `geocode!` / `reverse!` raise `Missing`. The search helper falls back to the full form. Leave `config.map` unset and the search helper shows no map.
 
 To turn search and geocoding on, put the provider and key in Rails credentials:
 
@@ -184,15 +188,46 @@ recording_studio_location:
     api_key: "..."
 ```
 
-Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check.
+Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check.
 
 ```ruby
 RecordingStudioLocation.configure do |config|
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
+  config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.lookup_depth = :full # or :address
   # config.authenticate = ->(controller) { controller.authenticate_user! }
 end
 ```
+
+### Map adapters
+
+`config.map` is independent of `config.geocoder`. A host can search with Google and preview with OpenStreetMap, or skip the map entirely.
+
+**Google Maps Embed** (first built-in, interactive pan/zoom and a pin). Enable Maps Embed API. Put a **browser** key in credentials, restricted by HTTP referrer. Do not reuse the server Geocoding/Places key.
+
+```yaml
+recording_studio_location:
+  geocoder:
+    provider: google
+    api_key: "SERVER_KEY"
+  map:
+    provider: google
+    browser_api_key: "BROWSER_KEY"
+```
+
+The browser key appears in the iframe URL. Restrict it to your host origins. ENV: `RECORDING_STUDIO_LOCATION_MAP_PROVIDER` and `RECORDING_STUDIO_LOCATION_MAP_BROWSER_API_KEY`.
+
+**OpenStreetMap export embed** (keyless). No key, no extra JavaScript library. The iframe loads osm.org’s embed (this gem does not fetch tiles). Fine for dummy/dev and moderate traffic. Heavy production use should follow OSM tile policy or switch to Google Embed.
+
+```ruby
+config.map = RecordingStudioLocation::Map.build(provider: "open_street_map")
+```
+
+Maps JavaScript API and Static Maps were not chosen as the default: JS API is a heavier SDK and easier to turn into a keyboard trap; Static Maps still needs a key in the image URL or a new proxy endpoint, and is not pannable. Either can be registered later as an adapter.
+
+The preview is an iframe with a title, `tabindex="-1"` so it is not a tab stop, FlatPack radius/border tokens, full field width, and a fixed height. Hosts may need `frame-src` CSP for the provider origin.
+
+Register another class with `RecordingStudioLocation::Map.register("mapbox", MyAdapter)` or assign `config.map = MyAdapter.new(...)`. `#preview` must return a `Map::Preview` with a `url_template` using `{lat}` / `{lng}` (and `{west}` `{south}` `{east}` `{north}` if needed).
 
 `lookup_depth` `:full` (default) loads venue name, address, and coordinates on pick. `:address` is cheaper and skips venue name. Override one form with `recording_studio_location_search_fields(form, lookup: :address)`.
 
@@ -260,6 +295,7 @@ Keep provider-specific HTTP and attribution inside the adapter. The search UI an
 ```ruby
 RecordingStudioLocation.configure do |config|
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
+  config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.lookup_depth = :full
 end
 ```
@@ -271,8 +307,8 @@ end
 `test/dummy` is a host, not a location product. Sign in as `admin@admin.com` / `Password`.
 
 - `/` shows the seeded Melbourne Convention Centre recording under Studio Workspace
-- `/locations/new` uses the search helper. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy"
-- `/locations/:id` uses the read-only display and names the parent recording
+- `/locations/new` uses the search helper. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy". Local dummy also assigns the OpenStreetMap map adapter so a pin appears after a pick
+- `/locations/:id` uses the read-only display with `map: true` and names the parent recording
 
 Workspace and Folder enable `:location`. Page does not, so a Location cannot be recorded under a Page.
 

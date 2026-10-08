@@ -31,8 +31,22 @@ module RecordingStudioLocation
       end
     end
 
-    def recording_studio_location_display(location)
-      render partial: "recording_studio_location/locations/display", locals: { location: location }
+    def recording_studio_location_display(location, map: false)
+      render partial: "recording_studio_location/locations/display", locals: {
+        location: location,
+        show_map: map
+      }
+    end
+
+    def recording_studio_location_map(latitude: nil, longitude: nil, live: false)
+      preview = RecordingStudioLocation::Map.preview(latitude: latitude, longitude: longitude)
+      return if preview.nil?
+      return if !live && !preview.visible?
+
+      render partial: "recording_studio_location/locations/map", locals: {
+        preview: preview,
+        live: live
+      }
     end
 
     def recording_studio_location_filled?(location)

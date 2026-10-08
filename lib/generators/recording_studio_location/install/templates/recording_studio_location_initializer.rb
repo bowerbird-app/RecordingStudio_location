@@ -7,6 +7,12 @@ RecordingStudioLocation.configure do |config|
   # the adapter is missing or does not support search.
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
 
+  # Optional map pin under the search field. Distinct from geocoder: Google
+  # Embed needs a referrer-restricted browser key (never the server geocoding
+  # key). OpenStreetMap embed needs no key. Unset shows no map.
+  # config.map = RecordingStudioLocation::Map.from_rails_credentials
+  # config.map = RecordingStudioLocation::Map.build(provider: "open_street_map")
+
   # :full (default) loads venue name + address + coordinates on pick.
   # :address is a cheaper address-only lookup (no venue name).
   # Override per form with recording_studio_location_search_fields(form, lookup: :address).

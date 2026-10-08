@@ -31,7 +31,9 @@ export default class extends Controller {
     "summaryTitle",
     "summaryDetail",
     "editButton",
-    "fields"
+    "fields",
+    "map",
+    "mapFrame"
   ]
 
   static values = {
@@ -43,7 +45,9 @@ export default class extends Controller {
     debounce: { type: Number, default: 300 },
     listId: String,
     searchingText: { type: String, default: "Searching" },
-    addManuallyText: { type: String, default: "Add address manually" }
+    addManuallyText: { type: String, default: "Add address manually" },
+    mapUrlTemplate: { type: String, default: "" },
+    mapTitleTemplate: { type: String, default: "" }
   }
 
   connect() {
@@ -55,13 +59,21 @@ export default class extends Controller {
     this.boundSearch = this.search.bind(this)
     this.boundKeydown = this.keydown.bind(this)
     this.boundOutside = this.outside.bind(this)
+    this.boundFields = this.onFieldsInput.bind(this)
 
     if (this.hasInputTarget) {
       this.inputTarget.addEventListener("input", this.boundSearch)
       this.inputTarget.addEventListener("keydown", this.boundKeydown)
     }
 
+    if (this.hasFieldsTarget) {
+      this.fieldsTarget.addEventListener("input", this.boundFields)
+      this.fieldsTarget.addEventListener("change", this.boundFields)
+    }
+
     document.addEventListener("mousedown", this.boundOutside)
+
+    this.syncMap()
 
     if (this.fieldsTarget.querySelector("[aria-invalid='true']") && this.hasEditButtonTarget) {
       this.summaryTarget.classList.remove("hidden")
@@ -76,6 +88,10 @@ export default class extends Controller {
     if (this.hasInputTarget) {
       this.inputTarget.removeEventListener("input", this.boundSearch)
       this.inputTarget.removeEventListener("keydown", this.boundKeydown)
+    }
+    if (this.hasFieldsTarget) {
+      this.fieldsTarget.removeEventListener("input", this.boundFields)
+      this.fieldsTarget.removeEventListener("change", this.boundFields)
     }
     document.removeEventListener("mousedown", this.boundOutside)
   }
@@ -229,6 +245,7 @@ export default class extends Controller {
     })
 
     this.refreshSummary(payload, candidate)
+    this.syncMap()
   }
 
   setField(name, value) {
@@ -371,6 +388,73 @@ export default class extends Controller {
 
   query() {
     return (this.hasInputTarget ? this.inputTarget.value : "").trim()
+  }
+
+  onFieldsInput(event) {
+    const name = event.target?.name || ""
+    if (name.includes("[latitude]") || name.includes("[longitude]")) this.syncMap()
+  }
+
+  syncMap() {
+    if (!this.hasMapTarget || !this.hasMapFrameTarget || !this.mapUrlTemplateValue) return
+
+    const latitude = this.fieldValue("latitude")
+    const longitude = this.fieldValue("longitude")
+    const url = this.mapUrl(latitude, longitude)
+
+    if (!url) {
+      this.mapTarget.classList.add("hidden")
+      this.mapFrameTarget.removeAttribute("src")
+      return
+    }
+
+    this.mapFrameTarget.title = this.mapTitle(latitude, longitude)
+    if (this.mapFrameTarget.getAttribute("src") !== url) {
+      this.mapFrameTarget.setAttribute("src", url)
+    }
+    this.mapTarget.classList.remove("hidden")
+  }
+
+  mapUrl(latitude, longitude) {
+    const pair = this.coordinatePair(latitude, longitude)
+    if (!pair) return ""
+
+    const [lat, lng] = pair
+    const span = 0.012
+    const west = Math.max(-180, lng - span)
+    const east = Math.min(180, lng + span)
+    const south = Math.max(-90, lat - span)
+    const north = Math.min(90, lat + span)
+    const format = (value) => value.toFixed(6)
+
+    return this.mapUrlTemplateValue
+      .replaceAll("{lat}", format(lat))
+      .replaceAll("{lng}", format(lng))
+      .replaceAll("{west}", format(west))
+      .replaceAll("{south}", format(south))
+      .replaceAll("{east}", format(east))
+      .replaceAll("{north}", format(north))
+  }
+
+  mapTitle(latitude, longitude) {
+    if (!this.mapTitleTemplateValue) return this.mapFrameTarget.title
+
+    return this.mapTitleTemplateValue
+      .replace("%{latitude}", Number(latitude).toFixed(6))
+      .replace("%{longitude}", Number(longitude).toFixed(6))
+  }
+
+  coordinatePair(latitude, longitude) {
+    const lat = Number(latitude)
+    const lng = Number(longitude)
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null
+    return [lat, lng]
+  }
+
+  fieldValue(name) {
+    const field = this.fieldsTarget.querySelector(`[name$="[${name}]"]`)
+    return field ? field.value.trim() : ""
   }
 
   clearDebounce() {

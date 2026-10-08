@@ -37,6 +37,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "location[country_code]"
     refute_includes response.body, "mapbox"
     refute_includes response.body, "googleapis"
+    assert_includes response.body, "map-url-template-value"
+    assert_select "iframe[title]"
+    assert_select "iframe[src]", count: 0
+    assert_select "iframe[tabindex='-1']"
   end
 
   test "creating and revising a location uses the recording and the display" do
@@ -109,6 +113,31 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Add address manually"
     refute_includes response.body, "Enter address manually"
     assert_includes response.body, "flat-pack--modal"
+    assert_select "iframe[src]", count: 0
+  end
+
+  test "a saved place with coordinates renders a map on edit and display" do
+    recording = @root.record(RecordingStudio::Location::Location) do |location|
+      location.name = "Pinned Hall"
+      location.locality = "South Wharf"
+      location.country_code = "AU"
+      location.latitude = -37.8253
+      location.longitude = 144.952
+    end
+
+    get edit_location_path(recording)
+
+    assert_response :success
+    assert_select "iframe[src]"
+    iframe_src = css_select("iframe[src]").first["src"]
+    assert_includes iframe_src, "marker=-37.825300,144.952000"
+    refute_includes iframe_src, "key="
+
+    get location_path(recording)
+
+    assert_response :success
+    assert_select "iframe[src]"
+    assert_includes css_select("iframe[src]").first["src"], "marker=-37.825300,144.952000"
   end
 
   test "partial location submits without coordinates or a street" do

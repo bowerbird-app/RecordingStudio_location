@@ -1,0 +1,12 @@
+<%# Provider URLs come from the map adapter. This template does not name a vendor. %>
+<%# Tailwind: "hidden w-full overflow-hidden rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] block h-56 w-full border-0" %>
+<figure class="<%= preview.visible? ? "w-full" : "hidden w-full" %> overflow-hidden rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)]"
+        <% if live %>data-recording-studio-location--place-search-target="map"<% end %>>
+  <iframe <% if preview.visible? %>src="<%= preview.url %>"<% end %>
+          title="<%= preview.title %>"
+          class="block h-56 w-full border-0"
+          tabindex="-1"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          <% if live %>data-recording-studio-location--place-search-target="mapFrame"<% end %>></iframe>
+</figure>

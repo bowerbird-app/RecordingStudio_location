@@ -10,6 +10,7 @@
 - `Geocoder::Fake#stub_search` / `#stub_details` and `Fake.demo` for dummy/dev without a live key.
 - Engine JSON endpoints `GET /searches` and `GET /places`, authenticated (`config.authenticate` or Devise `authenticate_user!`, else 401). API keys never reach the browser.
 - Stimulus controller `recording-studio-location--place-search`. Install generator pins it in `config/importmap.rb`.
+- Optional map pin under the search field via `config.map`. Google Maps Embed (referrer-restricted browser key) and keyless OpenStreetMap embed are built in. No adapter means no map and no network request. `recording_studio_location_display(location, map: true)` is off by default.
 - English locale keys under `recording_studio_location.*`.
 
 ### Upgrade notes
@@ -19,7 +20,8 @@
 - Pin Location Stimulus controllers (the install generator does this). Rebuild Tailwind so new view classes are included.
 - Switch a host form to `recording_studio_location_search_fields(form)` when you want search. Presskits should do that in a follow-up.
 - Optional `config.lookup_depth = :full` (default) or `:address`. Optional `config.authenticate` proc if the host is not Devise.
-- Saving still never geocodes. A pick overwrites structured fields, including `name` when the lookup returns one. Users can edit or clear anything afterwards.
+- Optional `config.map` for a pin preview. Google Embed needs `recording_studio_location.map.browser_api_key` (HTTP-referrer restricted, never the geocoding server key) or use `Map.build(provider: "open_street_map")`. Unset shows nothing.
+- Saving still never geocodes. A pick overwrites structured fields, including `name` when the lookup returns one. Users can edit or clear anything afterwards. The map only loads after the user picks or types both coordinates.
 
 ## [0.2.0] - 2026-10-06
 

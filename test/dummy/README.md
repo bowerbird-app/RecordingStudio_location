@@ -32,8 +32,8 @@ Then open the app and sign in with:
 
 - `/` - seeded Location on Studio Workspace
 - `/locations` - list locations in the workspace
-- `/locations/new` - search helper (Fake demo adapter when no live key)
-- `/locations/:id` - read-only display
+- `/locations/new` - search helper (Fake demo adapter and OpenStreetMap pin when no live key)
+- `/locations/:id` - read-only display with optional map
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
 - `/users/sign_in` - Devise sign-in page
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only Location pages

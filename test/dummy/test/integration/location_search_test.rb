@@ -65,6 +65,19 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "api_key"
   end
 
+  test "search helper omits the map when no map adapter is configured" do
+    previous = RecordingStudioLocation.configuration.map
+    RecordingStudioLocation.configuration.map = nil
+
+    get new_location_path
+
+    assert_response :success
+    refute_includes response.body, "map-url-template-value"
+    assert_select "iframe", count: 0
+  ensure
+    RecordingStudioLocation.configuration.map = previous
+  end
+
   test "search helper degrades to the full form when search is unavailable" do
     previous = RecordingStudio::Location.geocoder
     RecordingStudio::Location.geocoder = nil
@@ -76,6 +89,7 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Address line 1"
     refute_includes response.body, "Search for a place"
     refute_includes response.body, ">Location</label>"
+    assert_select "iframe", count: 0
   ensure
     RecordingStudio::Location.geocoder = previous
   end

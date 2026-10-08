@@ -35,3 +35,6 @@ en:
       results_count:
         one: "%{count} place"
         other: "%{count} places"
+    map:
+      title: "Map of this location"
+      title_with_coordinates: "Map of %{latitude}, %{longitude}"

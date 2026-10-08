@@ -3,7 +3,9 @@
 development:
   lookup_depth: full
   geocoder:
+  map:
 
 production:
   lookup_depth: full
   geocoder:
+  map:

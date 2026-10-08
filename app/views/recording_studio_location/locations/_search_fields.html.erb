@@ -3,6 +3,7 @@
 <% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
 <% input_id = "#{list_id}-input" %>
+<% map_preview = RecordingStudioLocation::Map.preview(latitude: location.latitude, longitude: location.longitude) %>
 <%# Tailwind CSS scanning for JS-built Combobox options:
   "cursor-pointer px-3 py-2 text-sm text-[var(--surface-content-color)] hover:bg-[var(--list-item-hover-background-color)]"
   "bg-[var(--list-item-hover-background-color)]"
@@ -23,7 +24,11 @@
      data-recording-studio-location--place-search-debounce-value="300"
      data-recording-studio-location--place-search-list-id-value="<%= list_id %>"
      data-recording-studio-location--place-search-searching-text-value="<%= t("recording_studio_location.search.searching") %>"
-     data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio_location.search.add_manually") %>">
+     data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio_location.search.add_manually") %>"
+     <% if map_preview %>
+     data-recording-studio-location--place-search-map-url-template-value="<%= map_preview.url_template %>"
+     data-recording-studio-location--place-search-map-title-template-value="<%= t("recording_studio_location.map.title_with_coordinates") %>"
+     <% end %>>
   <div class="relative z-40 w-full">
     <label for="<%= input_id %>" class="mb-1 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio_location.search.label") %></label>
 
@@ -50,6 +55,10 @@
         role="listbox"
         data-recording-studio-location--place-search-target="list"></ul>
   </div>
+
+  <% if map_preview %>
+    <%= render "recording_studio_location/locations/map", preview: map_preview, live: true %>
+  <% end %>
 
   <p class="hidden mt-1 text-xs text-[var(--surface-muted-content-color)]"
      data-recording-studio-location--place-search-target="attribution"></p>
