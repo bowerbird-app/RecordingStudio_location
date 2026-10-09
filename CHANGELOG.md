@@ -4,7 +4,7 @@
 
 ### Added
 
-- `recording_studio_location_search_fields(form)` — search-first editor labelled Location. Pick a result to fill structured fields; the search field then shows the place name. No results offers Add address manually, which opens a FlatPack modal. A picked or saved place shows a summary with a Clear location control (X) instead of an edit action. Existing `recording_studio_location_fields(form)` is unchanged. The dropdown uses FlatPack Combobox listbox classes and tokens.
+- `recording_studio_location_search_fields(form)` — search-first editor labelled Location. The field uses FlatPack Search chrome (leading magnifying-glass, search tokens, no chevron). Pick a result to fill structured fields; the search field then shows the place name. No results offers Add address manually, which opens a FlatPack modal. A picked or saved place shows a summary with a Clear location control (X) instead of an edit action. Existing `recording_studio_location_fields(form)` is unchanged. The dropdown uses FlatPack Combobox listbox classes and tokens.
 - Provider adapter surface: `#search`, `#details`, `#attribution`, `#capabilities`, plus existing `#geocode` / `#reverse`. Register extra providers with `Geocoder.register`.
 - Google adapter: Places Autocomplete while typing, Place Details on pick (`lookup_depth: :full`), or Geocoding-by-id (`:address`). Attribution is provider-driven.
 - `Geocoder::Fake#stub_search` / `#stub_details` and `Fake.demo` for dummy/dev without a live key.

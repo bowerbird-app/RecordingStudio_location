@@ -12,7 +12,6 @@
   "bg-[var(--list-item-active-background-color)]"
   "absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
   "px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
-  "flex items-center gap-2 w-full rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] px-[var(--form-control-padding)] py-[var(--form-control-padding)] focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring"
 %>
 
 <div class="grid gap-4"
@@ -31,9 +30,12 @@
      data-recording-studio-location--place-search-map-title-template-value="<%= t("recording_studio_location.map.title_with_coordinates") %>"
      <% end %>>
   <div class="relative z-40 w-full">
-    <label for="<%= input_id %>" class="mb-1 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio_location.search.label") %></label>
+    <label for="<%= input_id %>" class="mb-1.5 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio_location.search.label") %></label>
 
-    <div class="flex items-center gap-2 w-full rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] px-[var(--form-control-padding)] py-[var(--form-control-padding)] focus-within:ring-2 focus-within:ring-inset focus-within:ring-ring">
+    <div class="relative w-full">
+      <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--search-icon-color)]" aria-hidden="true">
+        <%= render FlatPack::Shared::IconComponent.new(name: "magnifying-glass", size: :sm) %>
+      </span>
       <input id="<%= input_id %>"
              type="text"
              value="<%= selected_label %>"
@@ -44,11 +46,8 @@
              aria-autocomplete="list"
              aria-controls="<%= list_id %>"
              aria-haspopup="listbox"
-             class="min-w-0 flex-1 bg-transparent text-sm text-[var(--surface-content-color)] placeholder:text-[var(--surface-muted-content-color)] outline-none"
+             class="w-full rounded-[var(--radius-lg)] border border-[var(--search-input-border-color)] bg-[var(--search-input-background-color)] py-[var(--search-padding-y-md)] pl-[var(--search-padding-inline-md)] pr-[var(--search-padding-inline-md)] text-sm text-[var(--search-input-text-color)] placeholder:text-[var(--search-input-placeholder-color)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[var(--search-input-focus-ring-color)]"
              data-recording-studio-location--place-search-target="input">
-      <span class="pointer-events-none text-[var(--surface-muted-content-color)]" aria-hidden="true">
-        <%= render FlatPack::Shared::IconComponent.new(name: "chevron-down", size: :sm) %>
-      </span>
     </div>
 
     <ul id="<%= list_id %>"

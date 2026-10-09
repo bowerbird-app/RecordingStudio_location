@@ -2,9 +2,13 @@
 
 Location ships FlatPack ERB partials and a Stimulus controller for place search. It does not ship a compiled CSS bundle or a mapping SDK.
 
-The search dropdown copies FlatPack Combobox listbox markup, option classes, surface tokens, and overlay motion (`playOverlayEnter` / `playOverlayExit`). Combobox only filters a static `options:` list. Select remote search loads `{value, label}` rows into a closed trigger, not a typeahead that fills structured address fields. There is no reusable FlatPack listbox partial for remote structured results, so Location keeps its Stimulus controller and matches Combobox visuals. A first-class FlatPack component would need a remote Combobox that emits the picked row (id/label plus a details callback) without submitting a single hidden value.
+The field copies FlatPack Search chrome: `IconComponent` `magnifying-glass`, `--search-input-*` / `--search-padding-*` tokens, no chevron. SearchInput and Search cannot host this control as wrappers (see below). The dropdown still copies FlatPack Combobox listbox markup, option classes, surface tokens, and overlay motion (`playOverlayEnter` / `playOverlayExit`).
 
-Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` from i18n) on the saved-place summary. SearchInput's in-field clear does not wrap this Combobox, so the control sits on the summary rather than inside the input. Clicking it empties structured fields, hides the summary and map, and focuses the search field.
+SearchInput is a named form control (`type="search"`, trailing clear, no leading icon). Search is nav live-search (`{title, description, url}` rows that navigate). Combobox filters a static `options:` list behind a chevron trigger. Select remote search loads `{value, label}` into a closed trigger. None of those fill structured address fields or accept `role="combobox"` on the input without taking over submit/clear/navigation. Location keeps its Stimulus controller.
+
+A first-class FlatPack component would need a remote search field that looks like Search, exposes combobox/listbox semantics on the input, and emits the picked row (id/label plus a details callback) without submitting a single hidden value.
+
+Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` from i18n) on the saved-place summary. Search and SearchInput both ship an in-field clear that only empties the query; using that would desync the picked place. The summary X empties structured fields, hides the summary and map, and focuses the search field.
 
 The pin preview is an iframe sized with FlatPack radius/border tokens. FlatPack has no map component. The iframe `src` comes from `config.map` (`url_template` with `{lat}` / `{lng}`). No adapter, or missing coordinates, means no `src` and no map request. `tabindex="-1"` keeps it out of the tab order.
 

@@ -24,7 +24,7 @@ en:
       longitude_help: "Optional. Leave both blank when you do not have coordinates."
     search:
       label: "Location"
-      placeholder: "Search"
+      placeholder: "Search for a place or address"
       no_results: "No places found"
       searching: "Searching"
       add_manually: "Add address manually"

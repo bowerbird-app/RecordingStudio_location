@@ -21,7 +21,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, ">Location</label>"
-    refute_includes response.body, "Search for a place"
+    assert_includes response.body, "Search for a place or address"
     refute_includes response.body, "Enter address manually"
     refute_includes response.body, "Pick a place to fill"
     refute_includes response.body, "Edit address"
@@ -29,6 +29,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Clear location"
     assert_includes response.body, "recording-studio-location--place-search#clear"
     assert_select "input[role='combobox'][value='']"
+    assert_select "input[role='combobox'][placeholder='Search for a place or address']"
+    search_field = css_select("input[role='combobox']").first.parent
+    assert_includes search_field.to_html, "magnifying-glass"
+    refute_includes search_field.to_html, "chevron-down"
     assert_select "[data-modal-id]", count: 0
     assert_select "[aria-label='Clear location']"
     assert_includes response.body, "Enter address"
@@ -120,6 +124,9 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select "[aria-label='Clear location']"
     assert_select "[data-modal-id]", count: 0
     assert_select "input[role='combobox'][value='Seeded Hall']"
+    search_field = css_select("input[role='combobox']").first.parent
+    assert_includes search_field.to_html, "magnifying-glass"
+    refute_includes search_field.to_html, "chevron-down"
     assert_includes response.body, ">Location</label>"
     assert_includes response.body, "Enter address"
     assert_includes response.body, "Add address manually"
