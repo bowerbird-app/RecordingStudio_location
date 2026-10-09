@@ -186,7 +186,10 @@ The card shows the resolved icon and title (or venue name when title is blank), 
 <%= recording_studio_location_display(location, map: true) %>
 ```
 
-The engine includes these helpers on Action Controller. Copy lives under `recording_studio_location.*` locale keys.
+The engine includes these helpers on Action Controller. Interface copy lives under
+`recording_studio.location.*` in the gem's `config/locales/en.yml`. Hosts may still
+override with the deprecated top-level `recording_studio_location.*` keys; a host
+legacy key wins when present.
 
 ## Maps, geocoding, and search
 
@@ -324,7 +327,17 @@ RecordingStudioLocation.configure do |config|
 end
 ```
 
-Those identity values are the defaults. Type labels go through i18n (`recording_studio_location.location_types.*`); the config `label` is the fallback for custom keys.
+Those identity values are the defaults. Type labels go through i18n
+`recording_studio.location.location_types.*`. The config `label` is the fallback
+for custom keys (and when neither namespace has a translation).
+
+### Interface text
+
+Static labels, placeholders, help text, search chrome, and map titles in this
+gem's own views resolve through Rails I18n under `recording_studio.location` in
+`config/locales/en.yml`. English only ships with the gem. Lookups prefer a
+host-defined deprecated `recording_studio_location.*` key when present, then the
+nested gem key. Hosts should migrate overrides to `recording_studio.location.*`.
 
 `icon_mode`:
 

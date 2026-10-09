@@ -18,9 +18,9 @@
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:title),
       value: location.title,
-      label: t("recording_studio_location.fields.title"),
-      placeholder: t("recording_studio_location.fields.title_placeholder"),
-      help_text: t("recording_studio_location.fields.title_help"),
+      label: recording_studio_location_t("fields.title"),
+      placeholder: recording_studio_location_t("fields.title_placeholder"),
+      help_text: recording_studio_location_t("fields.title_help"),
       max_characters: RecordingStudio::Location::Location::TITLE_MAX_LENGTH,
       error: location.errors[:title].first
     ) %>
@@ -31,7 +31,7 @@
       name: form.field_name(:location_type),
       options: type_options,
       value: location.location_type,
-      label: t("recording_studio_location.fields.location_type"),
+      label: recording_studio_location_t("fields.location_type"),
       variant: :inline,
       error: location.errors[:location_type].first
     ) %>
@@ -42,7 +42,7 @@
       name: form.field_name(:icon),
       options: icon_options,
       value: location.icon,
-      label: t("recording_studio_location.fields.icon"),
+      label: recording_studio_location_t("fields.icon"),
       variant: :inline,
       error: location.errors[:icon].first
     ) %>

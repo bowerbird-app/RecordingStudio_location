@@ -53,6 +53,11 @@ module RecordingStudioLocation
       end
     end
 
+    # Explicit append so hosts always see gem English files regardless of load order.
+    initializer "recording_studio_location.locales", before: :load_config_initializers do |app|
+      app.config.i18n.load_path |= root.glob("config/locales/**/*.{rb,yml}").map(&:to_s)
+    end
+
     # Run before_initialize hooks
     initializer "recording_studio_location.before_initialize", before: "recording_studio_location.load_config" do |_app|
       RecordingStudioLocation.configuration.hooks.run(:before_initialize, self)

@@ -56,6 +56,11 @@ module RecordingStudioLocation
       LOCATION_FIELD_NAMES.any? { |attribute| location.public_send(attribute).present? }
     end
 
+    # Host legacy `recording_studio_location.*` wins; else nested gem English.
+    def recording_studio_location_t(key, **)
+      RecordingStudioLocation::Copy.t(key, **)
+    end
+
     private
 
     def search_fields_locals(form, lookup, title, location_type, icon)

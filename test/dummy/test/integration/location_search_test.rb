@@ -86,9 +86,26 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     refute_includes response.body, "recording-studio-location--place-search"
+    assert_includes response.body, "Title"
+    assert_includes response.body, "Office HQ"
+    assert_includes response.body, "Optional. Your name for this place."
+    assert_includes response.body, "Type"
+    assert_includes response.body, "Office"
+    assert_includes response.body, "Name"
+    assert_includes response.body, "Melbourne Convention Centre"
     assert_includes response.body, "Address line 1"
+    assert_includes response.body, "12 Smith Street"
+    assert_includes response.body, "Locality"
+    assert_includes response.body, "Country"
+    assert_includes response.body, "Not set"
+    assert_includes response.body, "Select a country"
+    assert_includes response.body, "Latitude"
+    assert_includes response.body, "Longitude"
+    assert_includes response.body, "Optional. Leave both blank when you do not have coordinates."
     refute_includes response.body, "Search for a place"
     refute_includes response.body, ">Location</label>"
+    refute_includes response.body, "Add address manually"
+    refute_includes response.body, "Clear location"
     assert_select "iframe", count: 0
   ensure
     RecordingStudio::Location.geocoder = previous

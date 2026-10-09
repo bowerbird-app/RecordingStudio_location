@@ -27,6 +27,16 @@ class EngineTest < Minitest::Test
     assert after_called
   end
 
+  def test_locales_initializer_appends_english_locale_files
+    i18n = Struct.new(:load_path).new([])
+    app = Struct.new(:config).new(Struct.new(:i18n).new(i18n))
+
+    find_initializer("recording_studio_location.locales").block.call(app)
+
+    assert(i18n.load_path.any? { |path| path.end_with?("config/locales/en.yml") })
+    refute(i18n.load_path.any? { |path| path.end_with?("recording_studio_location.en.yml") })
+  end
+
   def test_load_config_merges_config_sources_and_runs_on_configuration_hook
     hook_called = false
     hook_payload = nil
