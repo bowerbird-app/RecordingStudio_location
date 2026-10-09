@@ -18,13 +18,12 @@ module RecordingStudio
     class Location < ActiveRecord::Base
       include Formatting
       include Identity
+      include IdentityValidations
       include RecordingStudio::Location::Geocoding
 
       self.table_name = "recording_studio_locations"
 
       recording_studio_recordable label: "Location", plural_label: "Locations", root: false
-
-      TITLE_MAX_LENGTH = 80
 
       PERMITTED_ATTRIBUTES = %i[
         title
@@ -55,21 +54,8 @@ module RecordingStudio
 
       before_validation :normalize_location
 
-      validates :title, length: { maximum: TITLE_MAX_LENGTH }, allow_blank: true
       validates :name, :address_line_1, :address_line_2, :locality, :region, :postal_code, :icon,
                 length: { maximum: 255 },
-                allow_blank: true
-      validates :location_type,
-                inclusion: {
-                  in: ->(_) { RecordingStudioLocation.configuration.location_type_keys },
-                  message: "is not in the list of types"
-                },
-                allow_blank: true
-      validates :icon,
-                inclusion: {
-                  in: ->(_) { RecordingStudioLocation.configuration.allowed_icons },
-                  message: "is not in the list of icons"
-                },
                 allow_blank: true
       validates :country_code,
                 format: {

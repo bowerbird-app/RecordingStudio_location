@@ -76,3 +76,67 @@ class LocationIconTest < Minitest::Test
     refute_includes source, "data-icon-name"
   end
 end
+
+class LocationIdentityMethodsTest < Minitest::Test
+  class Place
+    include RecordingStudio::Location::Formatting
+    include RecordingStudio::Location::Identity
+
+    PERMITTED_ATTRIBUTES = %i[title location_type icon name].freeze
+
+    attr_accessor :title, :location_type, :icon, :name, :address_line_1, :address_line_2,
+                  :locality, :region, :postal_code, :country_code, :latitude, :longitude
+
+    def initialize(**attributes)
+      attributes.each { |name, value| public_send(:"#{name}=", value) }
+    end
+  end
+
+  def setup
+    @configuration = RecordingStudioLocation.configuration
+    @previous_mode = @configuration.icon_mode
+  end
+
+  def teardown
+    @configuration.icon_mode = @previous_mode
+  end
+
+  def test_resolved_icon_and_type_label
+    place = Place.new(location_type: "office")
+
+    assert_equal "building-office", place.resolved_icon
+    assert_equal "Office", place.location_type_label
+    assert_nil Place.new.location_type_label
+  end
+
+  def test_api_payload_includes_identity_fields
+    @configuration.icon_mode = :choose
+    place = Place.new(title: "Office HQ", location_type: "office", icon: "star", name: "Hall")
+
+    payload = place.api_payload
+
+    assert_equal "Office HQ", payload[:title]
+    assert_equal "office", payload[:location_type]
+    assert_equal "star", payload[:icon]
+    assert_equal "star", payload[:resolved_icon]
+    assert_equal "Office HQ", payload[:display_name]
+    assert_includes payload.keys, :coordinates
+  end
+
+  def test_type_mode_clears_a_submitted_icon
+    @configuration.icon_mode = :type
+    place = Place.new(location_type: "home", icon: "star")
+    place.send(:clear_icon_unless_choose)
+
+    assert_nil place.icon
+    assert_equal "home", place.resolved_icon
+  end
+
+  def test_choose_mode_keeps_a_submitted_icon
+    @configuration.icon_mode = :choose
+    place = Place.new(icon: "star")
+    place.send(:clear_icon_unless_choose)
+
+    assert_equal "star", place.icon
+  end
+end
