@@ -393,7 +393,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.4.0`, Accessible `v0.13.0`, Root Switchable `v0.5.1`, and FlatPack `v0.1.213`. Location is `0.4.0`.
+The dummy app pins Recording Studio `v4.4.0`, Accessible `v0.13.0`, Root Switchable `v0.6.0`, and FlatPack `v0.1.213`. Location is `0.4.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 
