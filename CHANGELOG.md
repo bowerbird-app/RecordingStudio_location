@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.5.1] - 2026-10-09
+
+### Fixed
+
+- Stop appending the gem's locale files to `I18n.load_path` in an engine
+  initializer. Rails engines already load `config/locales` automatically; the
+  explicit append reloaded gem English after the host's locales on Rails 8.1,
+  so host overrides under `recording_studio.location.*` lost. Host nested
+  overrides win again; legacy `recording_studio_location.*` lookup is unchanged.
+
+### Upgrade notes
+
+- Bump to `0.5.1`. No migration. Prefer host overrides under
+  `recording_studio.location.*` in `config/locales` (no need to touch
+  `I18n.load_path`).
+
 ## [0.5.0] - 2026-10-09
 
 ### Added

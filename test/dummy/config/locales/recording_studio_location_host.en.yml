@@ -1,0 +1,9 @@
+# Host nested override for a rarely shown key (map title template, only in a
+# Stimulus data attribute on the location search form). Loaded by Rails from
+# config/locales — do not append this path in tests. Common visible labels
+# stay on gem English.
+en:
+  recording_studio:
+    location:
+      map:
+        title_with_coordinates: "HOST map %{latitude}, %{longitude}"
