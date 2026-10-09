@@ -1,0 +1,51 @@
+<% location = form.object %>
+<% configuration = RecordingStudioLocation.configuration %>
+<% show_title = local_assigns.fetch(:show_title, true) %>
+<% type_options = configuration.location_type_radio_options %>
+<% icon_options = configuration.allowed_icon_radio_options %>
+<% show_location_type = local_assigns.fetch(:show_location_type, true) && type_options.any? %>
+<% show_icon = local_assigns.fetch(:show_icon, true) && configuration.icon_mode_choose? && icon_options.any? %>
+<% picker = show_icon %>
+
+<% if show_title || show_location_type || show_icon %>
+<div class="flex flex-col gap-4"
+     <% if picker %>
+     data-controller="recording-studio-location--identity"
+     data-action="change->recording-studio-location--identity#typeChanged"
+     data-recording-studio-location--identity-type-icons-value="<%= ERB::Util.html_escape(configuration.type_icon_map.to_json) %>"
+     <% end %>>
+  <% if show_title %>
+    <%= render FlatPack::TextInput::Component.new(
+      name: form.field_name(:title),
+      value: location.title,
+      label: t("recording_studio_location.fields.title"),
+      placeholder: t("recording_studio_location.fields.title_placeholder"),
+      help_text: t("recording_studio_location.fields.title_help"),
+      max_characters: RecordingStudio::Location::Location::TITLE_MAX_LENGTH,
+      error: location.errors[:title].first
+    ) %>
+  <% end %>
+
+  <% if show_location_type %>
+    <%= render FlatPack::RadioGroup::Component.new(
+      name: form.field_name(:location_type),
+      options: type_options,
+      value: location.location_type,
+      label: t("recording_studio_location.fields.location_type"),
+      variant: :inline,
+      error: location.errors[:location_type].first
+    ) %>
+  <% end %>
+
+  <% if show_icon %>
+    <%= render FlatPack::RadioGroup::Component.new(
+      name: form.field_name(:icon),
+      options: icon_options,
+      value: location.icon,
+      label: t("recording_studio_location.fields.icon"),
+      variant: :inline,
+      error: location.errors[:icon].first
+    ) %>
+  <% end %>
+</div>
+<% end %>

@@ -11,6 +11,7 @@ RecordingStudioLocation.configure do |config|
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
   config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.lookup_depth = :full
+  config.icon_mode = :type
   # config.authenticate = ->(controller) { controller.authenticate_user! }
 end
 ```
@@ -46,6 +47,23 @@ The UI only uses `#preview`, which returns a `Map::Preview` (`url`, `url_templat
 
 Override one form: `recording_studio_location_search_fields(form, lookup: :address)`.
 
+### title, type, and icon
+
+A location can carry a user title, a host type, and an icon. `name` stays the venue the search fills.
+
+| Setting | Default | Notes |
+| --- | --- | --- |
+| `location_types` | `office`, `home`, `venue`, `other` | Hash of `{ label:, icon: }`. Keys are stored on the row. Labels use i18n `recording_studio_location.location_types.*`; `label` is the fallback for custom keys. Default icons are real FlatPack names. |
+| `icon_mode` | `:type` | `:type` — icon from the type, no picker, stored `icon` stays blank. `:choose` — user picks from `allowed_icons` with the same RadioGroup; picking a type checks that type's icon radio. `:none` — no icon in the form or display. |
+| `allowed_icons` | `home building-office map-pin star briefcase` | FlatPack icon names. Used in `:choose` mode and as the inclusion list for stored icons. |
+| `default_icon` | `map-pin` | Last fallback for `resolved_icon`. |
+
+`Location#resolved_icon` is stored icon → type icon → `default_icon`. A type or icon later dropped from config is skipped, not an error.
+
+Form helpers accept `title:`, `location_type:`, and `icon:` (all default true) to hide those fields. Type and icon use FlatPack RadioGroup `variant: :inline` (icon + label buttons, real radios). The search helper's manual-address modal is address-only.
+
+Use `RecordingStudio::Location.permitted_attributes` and `location.api_payload` on host forms, APIs, and MCP serializers.
+
 ### authenticate
 
 Search endpoints require a logged-in user. Set `config.authenticate` to a proc if the host is not Devise. Default is `authenticate_user!` when that method exists, otherwise `401`.
@@ -80,11 +98,15 @@ Optional `config/recording_studio_location.yml`:
 ```yaml
 development:
   lookup_depth: full
+  icon_mode: type
+  default_icon: map-pin
   geocoder:
   map:
 
 production:
   lookup_depth: full
+  icon_mode: type
+  default_icon: map-pin
   geocoder:
   map:
 ```
@@ -105,10 +127,12 @@ The UI and engine endpoints only call the geocoder adapter interface: `#search`,
 RecordingStudioLocation.configuration.geocoder
 RecordingStudioLocation.configuration.map
 RecordingStudioLocation.configuration.lookup_depth
+RecordingStudioLocation.configuration.icon_mode
+RecordingStudioLocation.configuration.location_types
 RecordingStudioLocation.configuration.to_h
 ```
 
-`to_h` includes `geocoder`, `map`, `authenticate`, `lookup_depth`, and a count of registered hooks. It is for inspection, not persistence.
+`to_h` includes `geocoder`, `map`, `authenticate`, `lookup_depth`, identity settings, and a count of registered hooks. It is for inspection, not persistence.
 
 ## Capability is not configuration
 

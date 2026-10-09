@@ -8,11 +8,10 @@ module RecordingStudio
     # addresses do not render as strings of commas.
     module Formatting
       def display_name
-        text(name) ||
+        text(optional(:title)) ||
+          text(name) ||
           place_line.presence ||
-          text(address_line_1) ||
-          text(address_line_2) ||
-          full_address.presence ||
+          street_or_address ||
           coordinates_label ||
           "Location"
       end
@@ -55,6 +54,14 @@ module RecordingStudio
 
       def locality_line
         [text(locality), text(region), text(postal_code)].compact.join(" ")
+      end
+
+      def street_or_address
+        text(address_line_1) || text(address_line_2) || full_address.presence
+      end
+
+      def optional(attribute)
+        public_send(attribute) if respond_to?(attribute)
       end
 
       def text(value)

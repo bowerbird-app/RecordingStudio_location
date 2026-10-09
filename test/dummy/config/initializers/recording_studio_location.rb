@@ -8,4 +8,5 @@ RecordingStudioLocation.configure do |config|
   config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.map ||= RecordingStudioLocation::Map.build(provider: "open_street_map") if Rails.env.local?
   config.lookup_depth = :full
+  config.icon_mode = :type
 end

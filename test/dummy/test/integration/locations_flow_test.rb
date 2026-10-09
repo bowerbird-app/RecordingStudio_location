@@ -20,6 +20,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     get new_location_path
 
     assert_response :success
+    assert_includes response.body, "Title"
+    assert_includes response.body, "location[title]"
+    assert_includes response.body, "Type"
+    assert_includes response.body, "location[location_type]"
     assert_includes response.body, ">Location</label>"
     assert_includes response.body, "Search for a place or address"
     refute_includes response.body, "Enter address manually"
@@ -58,6 +62,8 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_difference -> { RecordingStudio::Location::Location.count }, 1 do
       post locations_path, params: {
         location: {
+          title: "Showroom HQ",
+          location_type: "office",
           name: "Fitzroy Showroom",
           address_line_1: "12 Smith Street",
           locality: "Fitzroy",
@@ -75,6 +81,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_response :success
+    assert_includes response.body, "Showroom HQ"
     assert_includes response.body, "Fitzroy Showroom"
     assert_includes response.body, "12 Smith Street, Fitzroy VIC 3065, Australia"
     assert_includes response.body, "-37.798, 144.978"
@@ -85,6 +92,8 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_difference -> { RecordingStudio::Location::Location.count }, 1 do
       patch location_path(recording), params: {
         location: {
+          title: "Showroom HQ",
+          location_type: "office",
           name: "Fitzroy Showroom",
           address_line_1: "12 Smith Street",
           locality: "Fitzroy",
@@ -104,7 +113,8 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "12 Smith Street, Fitzroy Victoria 3065, Australia"
     refute_includes response.body, "-37.798, 144.978"
     assert_nil recording.recordable.coordinates
-    assert_equal "Fitzroy Showroom", recording.recordable.display_name
+    assert_equal "Showroom HQ", recording.recordable.display_name
+    assert_equal "Fitzroy Showroom", recording.recordable.name
   end
 
   test "edit form shows a saved place summary and the manual address modal" do

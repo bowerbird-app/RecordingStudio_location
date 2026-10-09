@@ -13,10 +13,12 @@ Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` fr
 The pin preview is an iframe sized with FlatPack radius/border tokens. FlatPack has no map component. The iframe `src` comes from `config.map` (`url_template` with `{lat}` / `{lng}`). No adapter, or missing coordinates, means no `src` and no map request. `tabindex="-1"` keeps it out of the tab order.
 
 - Form: `app/views/recording_studio_location/locations/_fields.html.erb`
+- Identity: `app/views/recording_studio_location/locations/_identity_fields.html.erb` — Title (TextInput), Type (RadioGroup `variant: :inline`, icon + label), and in `:choose` mode the same RadioGroup for `allowed_icons`. Radios stay real inputs (`sr-only` in the visual face).
 - Search: `app/views/recording_studio_location/locations/_search_fields.html.erb`
 - Map: `app/views/recording_studio_location/locations/_map.html.erb`
-- Display: `app/views/recording_studio_location/locations/_display.html.erb`
+- Display: `app/views/recording_studio_location/locations/_display.html.erb` — resolved icon plus title, then venue name and address
 - Stimulus: `app/javascript/recording_studio_location/controllers/place_search_controller.js`
+- Stimulus: `app/javascript/recording_studio_location/controllers/identity_controller.js` — type change preselects an icon in `:choose` mode
 
 Helpers `recording_studio_location_fields`, `recording_studio_location_search_fields`, and `recording_studio_location_display` include those partials from the host.
 
@@ -28,7 +30,7 @@ The install generator appends:
 pin_all_from RecordingStudioLocation::Engine.root.join("app/javascript/recording_studio_location/controllers"), under: "controllers/recording_studio_location", to: "recording_studio_location/controllers"
 ```
 
-The engine adds `app/javascript` to `config.assets.paths`. Dummy `config/importmap.rb` has the same pin. The controller identifier is `recording-studio-location--place-search`.
+The engine adds `app/javascript` to `config.assets.paths`. Dummy `config/importmap.rb` has the same pin. Controller identifiers are `recording-studio-location--place-search` and `recording-studio-location--identity`.
 
 Host apps already lazy-load `controllers` the way they load FlatPack.
 

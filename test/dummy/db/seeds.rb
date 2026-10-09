@@ -49,6 +49,8 @@ begin
 
   unless convention_centre
     root_recording.record(RecordingStudio::Location::Location) do |location|
+      location.title = "Convention HQ"
+      location.location_type = "venue"
       location.name = "Melbourne Convention Centre"
       location.address_line_1 = "1 Convention Centre Place"
       location.locality = "Melbourne"
@@ -57,6 +59,14 @@ begin
       location.country_code = "AU"
       location.latitude = -37.8255
       location.longitude = 144.9531
+    end
+  else
+    recordable = convention_centre.recordable
+    if recordable.title.blank? || recordable.location_type.blank?
+      root_recording.revise(convention_centre) do |location|
+        location.title = "Convention HQ" if location.title.blank?
+        location.location_type = "venue" if location.location_type.blank?
+      end
     end
   end
 ensure

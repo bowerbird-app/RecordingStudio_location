@@ -47,6 +47,9 @@ class LocationProviderBoundaryTest < Minitest::Test
     assert_same adapter, RecordingStudioLocation.configuration.geocoder
     assert_nil RecordingStudio::Location.country_name(nil)
     assert_equal "Australia", RecordingStudio::Location.country_name("au")
+    australia = RecordingStudio::Location.country_options.find { |_label, value| value == "AU" }
+    assert australia
+    assert_includes australia.first, "Australia"
   ensure
     RecordingStudio::Location.geocoder = previous
   end

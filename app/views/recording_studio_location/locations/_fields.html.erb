@@ -1,6 +1,15 @@
 <% location = form.object %>
+<% show_title = local_assigns.fetch(:show_title, true) %>
+<% show_location_type = local_assigns.fetch(:show_location_type, true) %>
+<% show_icon = local_assigns.fetch(:show_icon, true) %>
 
 <div class="grid gap-4">
+  <%= render "recording_studio_location/locations/identity_fields",
+        form: form,
+        show_title: show_title,
+        show_location_type: show_location_type,
+        show_icon: show_icon %>
+
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:name),
     value: location.name,

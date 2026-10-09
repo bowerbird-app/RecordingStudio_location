@@ -1,9 +1,25 @@
 en:
   recording_studio_location:
+    location_types:
+      office: "Office"
+      home: "Home"
+      venue: "Venue"
+      other: "Other"
+    icons:
+      home: "Home"
+      "building-office": "Building"
+      "map-pin": "Pin"
+      star: "Star"
+      briefcase: "Briefcase"
     fields:
+      title: "Title"
+      title_placeholder: "Office HQ"
+      title_help: "Optional. Your name for this place."
+      location_type: "Type"
+      icon: "Icon"
       name: "Name"
       name_placeholder: "Melbourne Convention Centre"
-      name_help: "Optional. Use a place name when you have one."
+      name_help: "Optional. The venue or place name."
       address_line_1: "Address line 1"
       address_line_1_placeholder: "12 Smith Street"
       address_line_2: "Address line 2"

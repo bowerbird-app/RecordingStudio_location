@@ -14,21 +14,22 @@ module RecordingStudioLocation
       longitude
     ].freeze
 
-    def recording_studio_location_fields(form)
-      render partial: "recording_studio_location/locations/fields", locals: { form: form }
+    def recording_studio_location_fields(form, title: true, location_type: true, icon: true)
+      render partial: "recording_studio_location/locations/fields", locals: {
+        form: form,
+        show_title: title,
+        show_location_type: location_type,
+        show_icon: icon
+      }
     end
 
-    def recording_studio_location_search_fields(form, lookup: nil)
-      if RecordingStudioLocation::Geocoder.searchable?
-        render partial: "recording_studio_location/locations/search_fields", locals: {
-          form: form,
-          lookup_depth: RecordingStudioLocation::Geocoder::LookupDepth.normalize(
-            lookup.presence || RecordingStudioLocation.configuration.lookup_depth
-          )
-        }
-      else
-        recording_studio_location_fields(form)
+    def recording_studio_location_search_fields(form, lookup: nil, title: true, location_type: true, icon: true)
+      unless RecordingStudioLocation::Geocoder.searchable?
+        return recording_studio_location_fields(form, title: title, location_type: location_type, icon: icon)
       end
+
+      render partial: "recording_studio_location/locations/search_fields",
+             locals: search_fields_locals(form, lookup, title, location_type, icon)
     end
 
     def recording_studio_location_display(location, map: false)
@@ -53,6 +54,20 @@ module RecordingStudioLocation
       return false unless location
 
       LOCATION_FIELD_NAMES.any? { |attribute| location.public_send(attribute).present? }
+    end
+
+    private
+
+    def search_fields_locals(form, lookup, title, location_type, icon)
+      {
+        form: form,
+        lookup_depth: RecordingStudioLocation::Geocoder::LookupDepth.normalize(
+          lookup.presence || RecordingStudioLocation.configuration.lookup_depth
+        ),
+        show_title: title,
+        show_location_type: location_type,
+        show_icon: icon
+      }
     end
   end
 end

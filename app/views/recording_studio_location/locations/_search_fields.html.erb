@@ -1,6 +1,9 @@
 <% location = form.object %>
+<% show_title = local_assigns.fetch(:show_title, true) %>
+<% show_location_type = local_assigns.fetch(:show_location_type, true) %>
+<% show_icon = local_assigns.fetch(:show_icon, true) %>
 <% filled = recording_studio_location_filled?(location) || location.errors.any? %>
-<% selected_label = recording_studio_location_filled?(location) ? location.display_name : "" %>
+<% selected_label = recording_studio_location_filled?(location) ? (location.name.presence || location.display_name) : "" %>
 <% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
 <% input_id = "#{list_id}-input" %>
@@ -13,6 +16,13 @@
   "absolute z-40 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-[var(--radius-md)] border border-[var(--surface-border-color)] bg-[var(--surface-background-color)] shadow-md py-1"
   "px-3 py-2 text-sm text-[var(--surface-muted-content-color)]"
 %>
+
+<div class="grid gap-4">
+  <%= render "recording_studio_location/locations/identity_fields",
+        form: form,
+        show_title: show_title,
+        show_location_type: show_location_type,
+        show_icon: show_icon %>
 
 <div class="grid gap-4"
      data-controller="recording-studio-location--place-search"
@@ -70,7 +80,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div class="text-sm leading-6">
             <p class="font-medium" data-recording-studio-location--place-search-target="summaryTitle">
-              <%= location.display_name.presence || t("recording_studio_location.search.summary_empty") %>
+              <%= location.name.presence || location.display_name.presence || t("recording_studio_location.search.summary_empty") %>
             </p>
             <p class="text-(--surface-muted-content-color)" data-recording-studio-location--place-search-target="summaryDetail">
               <%= location.full_address %>
@@ -103,7 +113,7 @@
       close_on_backdrop: true
     ) do |modal| %>
       <% modal.body do %>
-        <%= recording_studio_location_fields(form) %>
+        <%= recording_studio_location_fields(form, title: false, location_type: false, icon: false) %>
       <% end %>
       <% modal.footer do %>
         <%= render FlatPack::Button::Component.new(
@@ -116,4 +126,5 @@
       <% end %>
     <% end %>
   </div>
+</div>
 </div>
