@@ -21,6 +21,22 @@ RecordingStudioLocation.configure do |config|
   # Optional. Proc receives the engine controller. Default is Devise
   # authenticate_user! when present, otherwise 401.
   # config.authenticate = ->(controller) { controller.authenticate_user! }
+
+  # User title, type, and icon. name stays the venue the search fills.
+  # Labels are English defaults; hosts override with i18n under
+  # recording_studio_location.location_types.*.
+  # config.location_types = {
+  #   office: { label: "Office", icon: "building-office" },
+  #   home:   { label: "Home",   icon: "home" },
+  #   venue:  { label: "Venue",  icon: "map-pin" },
+  #   other:  { label: "Other",  icon: "map-pin" }
+  # }
+  # :type (default) — icon follows the type, no picker, stored icon stays blank
+  # :choose — RadioGroup of allowed_icons; picking a type checks that type's icon
+  # :none — no icon in the form or display
+  # config.icon_mode = :type
+  # config.allowed_icons = %w[home building-office map-pin star briefcase]
+  # config.default_icon = "map-pin"
 end
 
 # Enable Location on each host recordable that may contain a place.

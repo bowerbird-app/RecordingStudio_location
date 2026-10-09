@@ -3,6 +3,7 @@
 require "recording_studio/location/countries"
 require "recording_studio/location/formatting"
 require "recording_studio/location/geocoding"
+require "recording_studio/location/identity"
 
 module RecordingStudio
   # Public API for the Location addon.
@@ -33,6 +34,10 @@ module RecordingStudio
 
       def country_options
         Countries.select_options
+      end
+
+      def permitted_attributes
+        RecordingStudio::Location::Location::PERMITTED_ATTRIBUTES
       end
     end
   end

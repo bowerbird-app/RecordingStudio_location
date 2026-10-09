@@ -11,7 +11,8 @@ A location can sit under whatever host recordable a product allows: a press kit,
 - recordable: `RecordingStudio::Location::Location`
 - capability: `:location`, opted in with `RecordingStudio::Capabilities::Location.to`
 - optional coordinates and a permissive address
-- `display_name`, `full_address`, and `coordinates`
+- optional `title`, `location_type`, and `icon`
+- `display_name`, `full_address`, `coordinates`, and `resolved_icon`
 - optional `geocode!` / `reverse!` when a host assigns a geocoder
 - optional place search (`#search` / `#details`) behind engine JSON endpoints
 - FlatPack form fields, a search helper, and a read-only display partial
@@ -73,6 +74,8 @@ The engine also registers `RecordingStudio::Location::Location` after the host i
 root = RecordingStudio.root_recording_for(workspace)
 
 recording = root.record(RecordingStudio::Location::Location) do |location|
+  location.title = "Office HQ"
+  location.location_type = "office"
   location.name = "Melbourne Convention Centre"
   location.locality = "Melbourne"
   location.region = "Victoria"
@@ -80,7 +83,7 @@ recording = root.record(RecordingStudio::Location::Location) do |location|
 end
 
 recording.recordable.display_name
-# => "Melbourne Convention Centre"
+# => "Office HQ"
 ```
 
 A second place is another `record` call on the same parent. Nothing in this gem models "multiple locations" as its own object.
@@ -97,7 +100,10 @@ end
 
 | Column | Notes |
 | --- | --- |
-| `name` | Optional. "Head Office", "Fitzroy Showroom". |
+| `title` | Optional. A short user label, "Office HQ". Max 80 characters. |
+| `location_type` | Optional. A key from `config.location_types` (`office`, `home`, `venue`, `other`). |
+| `icon` | Optional FlatPack icon name. Stored only when `icon_mode` is `:choose`. |
+| `name` | Optional venue or place name the search fills, "Melbourne Convention Centre". |
 | `address_line_1`, `address_line_2` | Optional street lines. |
 | `locality` | City, suburb, or town. |
 | `region` | State, province, or region. |
@@ -106,9 +112,9 @@ end
 | `latitude` | Optional decimal, precision 10 scale 7. |
 | `longitude` | Optional decimal, precision 11 scale 7. |
 
-A location is valid with any subset of these. `Melbourne, Victoria, Australia` is enough. Coordinates alone are enough. A full street address is not required.
+A location is valid with any subset of these. `Melbourne, Victoria, Australia` is enough. Coordinates alone are enough. A full street address is not required. Existing rows stay valid: the new columns are nullable.
 
-`country_code` must be two letters when it is present. Latitude must be between -90 and 90, and longitude between -180 and 180, when present. One coordinate without the other is stored, but `coordinates` returns nil until both exist.
+`location_type` must be a configured key when present. `icon` must be in `allowed_icons` when present. `country_code` must be two letters when it is present. Latitude must be between -90 and 90, and longitude between -180 and 180, when present. One coordinate without the other is stored, but `coordinates` returns nil until both exist.
 
 Indexes: `country_code`, `locality`, and `name`. There is no PostGIS column and no radius search.
 
@@ -116,9 +122,14 @@ Indexes: `country_code`, `locality`, and `name`. There is no PostGIS column and 
 
 ```ruby
 location.display_name
-# "Fitzroy, Victoria, Australia"
+# "Office HQ"                     when title is present
 # "Melbourne Convention Centre"   when name is present
-# "Melbourne, Australia"
+# "Fitzroy, Victoria, Australia"
+
+location.resolved_icon
+# "building-office"               type icon when icon_mode is :type
+# "star"                          stored icon when icon_mode is :choose
+# "map-pin"                       default_icon otherwise
 
 location.full_address
 # "12 Smith Street, Fitzroy VIC 3065, Australia"
@@ -128,7 +139,9 @@ location.coordinates
 # nil unless both latitude and longitude are present
 ```
 
-`display_name` prefers `name`, then locality, region, and country, then a street line, then coordinates. Blank pieces are dropped, so you do not get `", , Australia"`.
+`display_name` prefers `title`, then `name`, then locality, region, and country, then a street line, then coordinates. Blank pieces are dropped, so you do not get `", , Australia"`.
+
+`resolved_icon` is stored icon, then the type's icon, then `default_icon`. A type or icon later removed from config does not raise.
 
 `full_address` joins the street lines, then locality, region, and postal code as one segment, then the country name. It is a simple formatter, not a country-specific postal layout.
 
@@ -138,21 +151,23 @@ Country names come from a built-in ISO list. An unknown two-letter code is shown
 
 ## UI
 
-Two edit helpers. `recording_studio_location_fields(form)` is the original long form and stays unchanged.
+Two edit helpers. Both put Title and Type above the venue search or address fields. Pass `title: false`, `location_type: false`, or `icon: false` to hide those controls. The icon picker only renders when `icon_mode` is `:choose`.
 
 ```erb
 <%= form_with model: location, url: location_path(recording), method: :patch do |form| %>
   <%= recording_studio_location_fields(form) %>
+  <%= recording_studio_location_fields(form, title: false, location_type: false) %>
 <% end %>
 ```
 
-The partial is `recording_studio_location/locations/fields`. It uses FlatPack inputs. Coordinates sit last and are marked optional.
+The partial is `recording_studio_location/locations/fields`. It uses FlatPack TextInput, RadioGroup, Select, NumberInput, and Button. Type and (in `:choose` mode) icon are RadioGroup `variant: :inline` — real radios drawn as icon + label buttons. Coordinates sit last and are marked optional.
 
-Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address, picks a result, and the structured fields are filled. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. A saved or picked place shows a summary with a Clear location control (X). That control empties every location field, including coordinates, hides the summary and map, and focuses search so the user can pick again. Hosts choose which helper to render.
+Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address, picks a result, and the structured fields are filled. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. Title, type, and icon stay outside that modal. A saved or picked place shows a summary with a Clear location control (X). That control empties the venue and address fields, including coordinates, hides the summary and map, and focuses search so the user can pick again. It does not clear title, type, or icon. Hosts choose which helper to render.
 
 ```erb
 <%= recording_studio_location_search_fields(form) %>
 <%= recording_studio_location_search_fields(form, lookup: :address) %>
+<%= recording_studio_location_search_fields(form, title: false, location_type: false, icon: false) %>
 ```
 
 `lookup:` overrides `config.lookup_depth` for that form (`:full` by default, or `:address` for a cheaper address-only pick).
@@ -165,7 +180,7 @@ Read-only display:
 <%= recording_studio_location_display(location) %>
 ```
 
-The card shows `display_name`, the formatted address when it adds detail, and coordinates only when both values exist. Pass `map: true` to embed a pin preview when a map adapter is configured and both coordinates are present:
+The card shows the resolved icon and title (or venue name when title is blank), then the venue name and address beneath when they add detail, and coordinates only when both values exist. Missing title, type, or icon is fine. Pass `map: true` to embed a pin preview when a map adapter is configured and both coordinates are present:
 
 ```erb
 <%= recording_studio_location_display(location, map: true) %>
@@ -297,8 +312,31 @@ RecordingStudioLocation.configure do |config|
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
   config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.lookup_depth = :full
+  config.location_types = {
+    office: {label: "Office", icon: "building-office"},
+    home: {label: "Home", icon: "home"},
+    venue: {label: "Venue", icon: "map-pin"},
+    other: {label: "Other", icon: "map-pin"}
+  }
+  config.icon_mode = :type
+  config.allowed_icons = %w[home building-office map-pin star briefcase]
+  config.default_icon = "map-pin"
 end
 ```
+
+Those identity values are the defaults. Type labels go through i18n (`recording_studio_location.location_types.*`); the config `label` is the fallback for custom keys.
+
+`icon_mode`:
+
+| Value | Form | Stored `icon` | Display |
+| --- | --- | --- | --- |
+| `:type` (default) | No picker | Left blank | Type icon, then `default_icon` |
+| `:choose` | RadioGroup from `allowed_icons` | The picked name | Stored icon, then type, then default |
+| `:none` | No picker | Left blank | No icon |
+
+Picking a type in `:choose` mode checks that type's icon radio. Type and icon both use FlatPack RadioGroup `variant: :inline`.
+
+Strong params, duplication, and JSON payloads should include the three columns. Use `RecordingStudio::Location.permitted_attributes` and `location.api_payload` (attributes plus `resolved_icon`, `display_name`, `full_address`, and `coordinates`). Recording Studio's `duplicate_recordable` copies them with the rest of the row.
 
 `config/recording_studio_location.yml` is loaded when the host has one. Unknown keys are ignored. Do not put the API key in YAML.
 
@@ -307,7 +345,7 @@ end
 `test/dummy` is a host, not a location product. Sign in as `admin@admin.com` / `Password`.
 
 - `/` shows the seeded Melbourne Convention Centre recording under Studio Workspace
-- `/locations/new` uses the search helper. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy". After a pick, the field shows the place name; the summary X clears the selection. Local dummy also assigns the OpenStreetMap map adapter so a pin appears after a pick
+- `/locations/new` uses the search helper, with Title and Type above Location. Add `?icon_mode=choose` to try the icon picker. Without a live key the dummy assigns `Geocoder::Fake.demo` so you can type "melbourne" or "fitzroy". After a pick, the field shows the place name; the summary X clears the venue, not the title. Local dummy also assigns the OpenStreetMap map adapter so a pin appears after a pick
 - `/locations/:id` uses the read-only display with `map: true` and names the parent recording
 
 Workspace and Folder enable `:location`. Page does not, so a Location cannot be recorded under a Page.
@@ -342,7 +380,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.3.0`, Accessible `v0.10.1`, Root Switchable `v0.5.1`, and FlatPack `v0.1.196`. Location is `0.3.0`.
+The dummy app pins Recording Studio `v4.3.0`, Accessible `v0.10.1`, Root Switchable `v0.5.1`, and FlatPack `v0.1.213`. Location is `0.4.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

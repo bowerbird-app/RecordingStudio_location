@@ -34,7 +34,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get docs_config_path
     assert_response :success
     assert_select "h1", text: "Config"
-    assert_includes response.body, "Search, geocoding, and the map pin stay off until the host assigns adapters."
+    assert_includes response.body, "Search, geocoding, map pin, types, and icons."
     assert_includes response.body, "RecordingStudio::Location.geocoder"
     assert_includes response.body, "from_rails_credentials"
     assert_includes response.body, "lookup_depth"

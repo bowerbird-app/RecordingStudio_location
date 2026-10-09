@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class LocationsController < ApplicationController
+  around_action :with_demo_icon_mode, only: %i[new edit]
+
   def index
     @root_recording = studio_root
     @location_recordings = location_recordings(@root_recording)
@@ -85,16 +87,23 @@ class LocationsController < ApplicationController
   end
 
   def location_params
-    params.require(:location).permit(
-      :name,
-      :address_line_1,
-      :address_line_2,
-      :locality,
-      :region,
-      :postal_code,
-      :country_code,
-      :latitude,
-      :longitude
-    )
+    params.require(:location).permit(*RecordingStudio::Location.permitted_attributes)
+  end
+
+  def with_demo_icon_mode
+    requested = params[:icon_mode].to_s.to_sym
+    unless RecordingStudioLocation::Configuration::ICON_MODES.include?(requested)
+      yield
+      return
+    end
+
+    configuration = RecordingStudioLocation.configuration
+    previous = configuration.icon_mode
+    configuration.icon_mode = requested
+    begin
+      yield
+    ensure
+      configuration.icon_mode = previous
+    end
   end
 end

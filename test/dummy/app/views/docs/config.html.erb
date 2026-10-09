@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "Config",
-    subtitle: "Search, geocoding, and the map pin stay off until the host assigns adapters.",
+    subtitle: "Search, geocoding, map pin, types, and icons.",
     variant: :h1
   ) %>
 
@@ -14,6 +14,10 @@
         config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
         config.map = RecordingStudioLocation::Map.from_rails_credentials
         config.lookup_depth = :full # or :address
+        config.icon_mode = :type    # or :choose, :none
+        config.location_types
+        config.allowed_icons
+        config.default_icon = "map-pin"
       end
 
       RecordingStudio::Location.geocoder

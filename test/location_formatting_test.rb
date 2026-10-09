@@ -4,6 +4,7 @@ require "test_helper"
 
 class LocationFormattingTest < Minitest::Test
   Place = Struct.new(
+    :title,
     :name,
     :address_line_1,
     :address_line_2,
@@ -22,6 +23,12 @@ class LocationFormattingTest < Minitest::Test
     place = Place.new(name: "Melbourne Convention Centre", locality: "Melbourne", country_code: "AU")
 
     assert_equal "Melbourne Convention Centre", place.display_name
+  end
+
+  def test_display_name_prefers_a_user_title_over_the_venue_name
+    place = Place.new(title: "Office HQ", name: "Melbourne Convention Centre", locality: "Melbourne")
+
+    assert_equal "Office HQ", place.display_name
   end
 
   def test_display_name_joins_locality_region_and_country_and_skips_blanks

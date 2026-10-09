@@ -2,10 +2,14 @@
 # Rails credentials, then wire config.geocoder in the initializer.
 development:
   lookup_depth: full
+  icon_mode: type
+  default_icon: map-pin
   geocoder:
   map:
 
 production:
   lookup_depth: full
+  icon_mode: type
+  default_icon: map-pin
   geocoder:
   map:

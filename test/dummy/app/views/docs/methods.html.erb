@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "Methods",
-    subtitle: "Formatting helpers, plus explicit geocode! and reverse!.",
+    subtitle: "Formatting helpers, resolved_icon, plus explicit geocode! and reverse!.",
     variant: :h1
   ) %>
 
@@ -43,6 +43,19 @@
     code: <<~'CODE'
       location.coordinates
       # [-37.798, 144.978]
+    CODE
+  ) %>
+
+  <%= render FlatPack::SectionTitle::Component.new(
+    title: "resolved_icon",
+    subtitle: "location.resolved_icon",
+  ) %>
+
+  <%= render FlatPack::CodeBlock::Component.new(
+    language: :ruby,
+    code: <<~'CODE'
+      location.resolved_icon
+      # "building-office"
     CODE
   ) %>
 

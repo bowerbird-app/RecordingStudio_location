@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.4.0] - 2026-10-09
+
+### Added
+
+- `title`, `location_type`, and `icon` columns on `recording_studio_locations`. All nullable, so existing rows stay valid. `name` remains the venue the search fills.
+- Host config: `location_types`, `icon_mode` (`:type` default, `:choose`, `:none`), `allowed_icons`, and `default_icon`. Type labels use i18n (`recording_studio_location.location_types.*`).
+- `Location#resolved_icon` — stored icon, then the type's icon, then `default_icon`. Removed types and icons do not raise.
+- Title (FlatPack TextInput) and Type (FlatPack RadioGroup `variant: :inline`, icon + label) on `recording_studio_location_fields` and `recording_studio_location_search_fields`, above the venue search/address fields. Opt out with `title:`, `location_type:`, and `icon:`.
+- Icon picker in `:choose` mode uses the same RadioGroup. Picking a type checks that type's icon radio. Real radio inputs stay in the tab order.
+- Display shows the resolved icon and title, then venue name and address. Missing title, type, or icon is fine.
+- `RecordingStudio::Location.permitted_attributes` and `Location#api_payload` for strong params, duplication, API, and MCP serializers.
+
+### Upgrade notes
+
+- Bump to `0.4.0`.
+- Bump FlatPack to `>= 0.1.212` (visual RadioGroup). Dummy pins `v0.1.213`. Rebuild Tailwind so the new radio utilities are generated.
+- Copy and run the new migration:
+
+  ```bash
+  bin/rails generate recording_studio_location:migrations
+  bin/rails db:migrate
+  ```
+
+- Existing locations keep working with blank title, type, and icon.
+- Defaults: types `office` / `home` / `venue` / `other`, `icon_mode: :type`, allowed icons `home building-office map-pin star briefcase`, `default_icon: "map-pin"`.
+- In `:type` mode the gem does not store `icon`; display resolves it. In `:choose` mode the picked icon is stored. In `:none` mode the form and display omit the icon.
+- Permit `:title`, `:location_type`, and `:icon` on host forms and APIs, or use `RecordingStudio::Location.permitted_attributes`.
+- Rebuild Tailwind so the new view classes are included.
+
 ## [0.3.0] - 2026-10-08
 
 ### Added

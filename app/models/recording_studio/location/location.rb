@@ -10,15 +10,41 @@ module RecordingStudio
     #
     # Coordinates are optional. Geocoding runs only when you call geocode! or
     # reverse! with an adapter assigned to RecordingStudio::Location.geocoder.
+    #
+    # `title` is the host user's label ("Office HQ"). `name` is the venue the
+    # search fills. `location_type` is a key from host config. `icon` is stored
+    # only when icon_mode is :choose; otherwise resolved_icon reads the type
+    # then default_icon.
     class Location < ActiveRecord::Base
       include Formatting
+      include Identity
       include RecordingStudio::Location::Geocoding
 
       self.table_name = "recording_studio_locations"
 
       recording_studio_recordable label: "Location", plural_label: "Locations", root: false
 
+      TITLE_MAX_LENGTH = 80
+
+      PERMITTED_ATTRIBUTES = %i[
+        title
+        location_type
+        icon
+        name
+        address_line_1
+        address_line_2
+        locality
+        region
+        postal_code
+        country_code
+        latitude
+        longitude
+      ].freeze
+
       STRING_ATTRIBUTES = %i[
+        title
+        location_type
+        icon
         name
         address_line_1
         address_line_2
@@ -29,8 +55,21 @@ module RecordingStudio
 
       before_validation :normalize_location
 
-      validates :name, :address_line_1, :address_line_2, :locality, :region, :postal_code,
+      validates :title, length: { maximum: TITLE_MAX_LENGTH }, allow_blank: true
+      validates :name, :address_line_1, :address_line_2, :locality, :region, :postal_code, :icon,
                 length: { maximum: 255 },
+                allow_blank: true
+      validates :location_type,
+                inclusion: {
+                  in: ->(_) { RecordingStudioLocation.configuration.location_type_keys },
+                  message: "is not in the list of types"
+                },
+                allow_blank: true
+      validates :icon,
+                inclusion: {
+                  in: ->(_) { RecordingStudioLocation.configuration.allowed_icons },
+                  message: "is not in the list of icons"
+                },
                 allow_blank: true
       validates :country_code,
                 format: {
@@ -50,6 +89,10 @@ module RecordingStudio
         ActiveModel::Name.new(self, nil, "Location")
       end
 
+      def self.permitted_attributes
+        PERMITTED_ATTRIBUTES
+      end
+
       def recordable_name
         display_name
       end
@@ -59,6 +102,7 @@ module RecordingStudio
       def normalize_location
         normalize_strings
         normalize_country_code
+        clear_icon_unless_choose
         clear_blank_coordinate(:latitude)
         clear_blank_coordinate(:longitude)
       end
