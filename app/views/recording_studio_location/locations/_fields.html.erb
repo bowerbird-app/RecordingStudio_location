@@ -13,24 +13,24 @@
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:name),
     value: location.name,
-    label: t("recording_studio.location.fields.name"),
-    placeholder: t("recording_studio.location.fields.name_placeholder"),
-    help_text: t("recording_studio.location.fields.name_help"),
+    label: recording_studio_location_t("fields.name"),
+    placeholder: recording_studio_location_t("fields.name_placeholder"),
+    help_text: recording_studio_location_t("fields.name_help"),
     error: location.errors[:name].first
   ) %>
 
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:address_line_1),
     value: location.address_line_1,
-    label: t("recording_studio.location.fields.address_line_1"),
-    placeholder: t("recording_studio.location.fields.address_line_1_placeholder"),
+    label: recording_studio_location_t("fields.address_line_1"),
+    placeholder: recording_studio_location_t("fields.address_line_1_placeholder"),
     error: location.errors[:address_line_1].first
   ) %>
 
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:address_line_2),
     value: location.address_line_2,
-    label: t("recording_studio.location.fields.address_line_2"),
+    label: recording_studio_location_t("fields.address_line_2"),
     error: location.errors[:address_line_2].first
   ) %>
 
@@ -38,34 +38,34 @@
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:locality),
       value: location.locality,
-      label: t("recording_studio.location.fields.locality"),
-      placeholder: t("recording_studio.location.fields.locality_placeholder"),
+      label: recording_studio_location_t("fields.locality"),
+      placeholder: recording_studio_location_t("fields.locality_placeholder"),
       error: location.errors[:locality].first
     ) %>
 
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:region),
       value: location.region,
-      label: t("recording_studio.location.fields.region"),
-      placeholder: t("recording_studio.location.fields.region_placeholder"),
+      label: recording_studio_location_t("fields.region"),
+      placeholder: recording_studio_location_t("fields.region_placeholder"),
       error: location.errors[:region].first
     ) %>
 
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:postal_code),
       value: location.postal_code,
-      label: t("recording_studio.location.fields.postal_code"),
-      placeholder: t("recording_studio.location.fields.postal_code_placeholder"),
+      label: recording_studio_location_t("fields.postal_code"),
+      placeholder: recording_studio_location_t("fields.postal_code_placeholder"),
       error: location.errors[:postal_code].first
     ) %>
   </div>
 
   <%= render FlatPack::Select::Component.new(
     name: form.field_name(:country_code),
-    options: [[t("recording_studio.location.fields.country_not_set"), ""]] + RecordingStudio::Location.country_options,
+    options: [[recording_studio_location_t("fields.country_not_set"), ""]] + RecordingStudio::Location.country_options,
     value: location.country_code,
-    label: t("recording_studio.location.fields.country"),
-    placeholder: t("recording_studio.location.fields.country_placeholder"),
+    label: recording_studio_location_t("fields.country"),
+    placeholder: recording_studio_location_t("fields.country_placeholder"),
     searchable: true,
     error: location.errors[:country_code].first
   ) %>
@@ -74,24 +74,24 @@
     <%= render FlatPack::NumberInput::Component.new(
       name: form.field_name(:latitude),
       value: location.latitude,
-      label: t("recording_studio.location.fields.latitude"),
-      placeholder: t("recording_studio.location.fields.latitude_placeholder"),
+      label: recording_studio_location_t("fields.latitude"),
+      placeholder: recording_studio_location_t("fields.latitude_placeholder"),
       min: -90,
       max: 90,
       step: 0.0000001,
-      help_text: t("recording_studio.location.fields.latitude_help"),
+      help_text: recording_studio_location_t("fields.latitude_help"),
       error: location.errors[:latitude].first
     ) %>
 
     <%= render FlatPack::NumberInput::Component.new(
       name: form.field_name(:longitude),
       value: location.longitude,
-      label: t("recording_studio.location.fields.longitude"),
-      placeholder: t("recording_studio.location.fields.longitude_placeholder"),
+      label: recording_studio_location_t("fields.longitude"),
+      placeholder: recording_studio_location_t("fields.longitude_placeholder"),
       min: -180,
       max: 180,
       step: 0.0000001,
-      help_text: t("recording_studio.location.fields.longitude_help"),
+      help_text: recording_studio_location_t("fields.longitude_help"),
       error: location.errors[:longitude].first
     ) %>
   </div>

@@ -24,7 +24,8 @@ RecordingStudioLocation.configure do |config|
 
   # User title, type, and icon. name stays the venue the search fills.
   # Labels are English defaults; hosts override with i18n under
-  # recording_studio.location.location_types.* (legacy: recording_studio_location.location_types.*).
+  # recording_studio.location.location_types.* (deprecated host override:
+  # recording_studio_location.location_types.*).
   # config.location_types = {
   #   office: { label: "Office", icon: "building-office" },
   #   home:   { label: "Home",   icon: "home" },

@@ -2,6 +2,7 @@
 
 require "recording_studio"
 require "recording_studio_location/version"
+require "recording_studio_location/copy"
 require "recording_studio_location/configuration"
 require "recording_studio_location/engine"
 require "recording_studio_location/geocoder"

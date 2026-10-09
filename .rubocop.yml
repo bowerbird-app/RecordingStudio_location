@@ -21,6 +21,7 @@ Metrics/ClassLength:
   Exclude:
     - 'test/**/*'
     - 'lib/generators/**/*'
+    - 'lib/recording_studio_location/engine.rb'
 
 Metrics/MethodLength:
   Exclude:

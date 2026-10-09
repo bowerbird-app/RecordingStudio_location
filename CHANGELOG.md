@@ -6,19 +6,27 @@
 
 - Nested English Rails I18n keys for gem interface copy under `recording_studio.location`
   in `config/locales/en.yml` (fields, search, map, location types, icons)
-- `test/locales_test.rb` covering nested key resolution and English-only locale files
+- `RecordingStudioLocation::Copy` (and view helper `recording_studio_location_t`) so
+  a host-defined deprecated `recording_studio_location.*` key wins, otherwise the
+  nested gem key is used
+- Locale and copy tests for nested English and host legacy overrides
 
 ### Changed
 
 - Gem views, identity type/icon labels, and map preview titles resolve through
-  `t("recording_studio.location.*")` (rendered English unchanged)
+  the copy helper (rendered English unchanged)
+- Removed unused `search.no_results` and `search.results_count` keys
+- Stopped shipping `config/locales/recording_studio_location.en.yml` (hosts may
+  still define that namespace themselves)
 
 ### Upgrade notes
 
-- No migration or host code change is required for English.
-- Legacy top-level keys in `config/locales/recording_studio_location.en.yml`
-  (`recording_studio_location.*`) still ship so existing host overrides keep
-  resolving. New overrides should use `recording_studio.location.*`.
+- No migration is required for English hosts that use the gem defaults.
+- Prefer overrides under `recording_studio.location.*` in the host's
+  `config/locales`.
+- Deprecated: host overrides under `recording_studio_location.*` still work via
+  the copy helper. The gem no longer ships English under that namespace, so a
+  host must define any legacy keys it still wants.
 - There is no dependency on `recording_studio_internationalization`.
 
 ## [0.4.0] - 2026-10-09

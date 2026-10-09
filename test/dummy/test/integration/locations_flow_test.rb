@@ -16,6 +16,35 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     @root = RecordingStudio.root_recording_for(@workspace)
   end
 
+  test "new location form renders gem english when the host has no legacy override" do
+    get new_location_path
+
+    assert_response :success
+    assert_includes response.body, "Title"
+    assert_includes response.body, "Clear location"
+    refute_includes response.body, "Place name"
+    refute_includes response.body, "Wipe place"
+  end
+
+  test "host legacy locale override renders in the form" do
+    I18n.backend.store_translations(
+      :en,
+      recording_studio_location: {
+        fields: { title: "Place name" },
+        search: { clear: "Wipe place" }
+      }
+    )
+
+    get new_location_path
+
+    assert_response :success
+    assert_includes response.body, "Place name"
+    assert_includes response.body, "Wipe place"
+    assert_includes response.body, "Search for a place or address"
+  ensure
+    I18n.reload!
+  end
+
   test "new location form renders the search helper and nested fields" do
     get new_location_path
 

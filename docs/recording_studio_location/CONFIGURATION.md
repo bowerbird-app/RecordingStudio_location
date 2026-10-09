@@ -53,7 +53,7 @@ A location can carry a user title, a host type, and an icon. `name` stays the ve
 
 | Setting | Default | Notes |
 | --- | --- | --- |
-| `location_types` | `office`, `home`, `venue`, `other` | Hash of `{ label:, icon: }`. Keys are stored on the row. Labels use i18n `recording_studio.location.location_types.*` (legacy `recording_studio_location.location_types.*` still ships). `label` is the fallback for custom keys. Default icons are real FlatPack names. |
+| `location_types` | `office`, `home`, `venue`, `other` | Hash of `{ label:, icon: }`. Keys are stored on the row. Labels use i18n `recording_studio.location.location_types.*` (deprecated host override: `recording_studio_location.location_types.*`). `label` is the fallback for custom keys. Default icons are real FlatPack names. |
 | `icon_mode` | `:type` | `:type` — icon from the type, no picker, stored `icon` stays blank. `:choose` — user picks from `allowed_icons` with the same RadioGroup; picking a type checks that type's icon radio. `:none` — no icon in the form or display. |
 | `allowed_icons` | `home building-office map-pin star briefcase` | FlatPack icon names. Used in `:choose` mode and as the inclusion list for stored icons. |
 | `default_icon` | `map-pin` | Last fallback for `resolved_icon`. |
@@ -146,19 +146,20 @@ include RecordingStudio::Capabilities::Location.to
 
 Gem views and helpers wrap static labels, placeholders, help text, search chrome,
 and map titles in `recording_studio.location.*` keys. English ships in
-`config/locales/en.yml`. Hosts override or add languages in their own
-`config/locales`. Legacy `recording_studio_location.*` keys in
-`config/locales/recording_studio_location.en.yml` still load for existing
-overrides. User and database content is not translated.
+`config/locales/en.yml` only. Lookups go through `RecordingStudioLocation::Copy`
+(and `recording_studio_location_t` in views): a host-defined deprecated
+`recording_studio_location.*` key wins when present; otherwise the nested gem
+key is used. The gem no longer ships a legacy locale file. User and database
+content is not translated.
 
 ## Files
 
 | Path | Role |
 | --- | --- |
 | `lib/recording_studio_location/configuration.rb` | Defaults |
+| `lib/recording_studio_location/copy.rb` | Legacy→nested I18n lookup |
 | `lib/recording_studio_location/geocoder.rb` | Registry, factory, credentials |
 | `lib/recording_studio_location/map.rb` | Map registry, factory, credentials |
 | `lib/recording_studio_location/engine.rb` | Loads YAML, `config.x`, then initializer |
 | `config/locales/en.yml` | Nested English interface copy |
-| `config/locales/recording_studio_location.en.yml` | Legacy top-level English keys |
 | `lib/generators/recording_studio_location/install/templates/` | Initializer and YAML templates |

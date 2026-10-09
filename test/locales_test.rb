@@ -5,7 +5,13 @@ require "yaml"
 
 class LocalesTest < ActiveSupport::TestCase
   setup do
+    @original_load_path = I18n.load_path.dup
     load_engine_locales!
+  end
+
+  teardown do
+    I18n.load_path = @original_load_path
+    I18n.backend.load_translations
   end
 
   FIELD_KEYS = {
@@ -40,7 +46,6 @@ class LocalesTest < ActiveSupport::TestCase
   SEARCH_KEYS = {
     "label" => "Location",
     "placeholder" => "Search for a place or address",
-    "no_results" => "No places found",
     "searching" => "Searching",
     "add_manually" => "Add address manually",
     "clear" => "Clear location",
@@ -71,9 +76,7 @@ class LocalesTest < ActiveSupport::TestCase
   test "engine ships only english locale files" do
     files = Dir[File.join(engine_locales_dir, "*")].map { |path| File.basename(path) }
 
-    assert_equal %w[en.yml recording_studio_location.en.yml], files.sort
-    refute_includes files, "fr.yml"
-    refute(files.any? { |name| name.end_with?(".yml") && !name.include?("en") })
+    assert_equal ["en.yml"], files.sort
   end
 
   test "rails i18n load path includes the nested english locale file" do
@@ -99,23 +102,16 @@ class LocalesTest < ActiveSupport::TestCase
            .fetch("location")
 
     assert_equal FIELD_KEYS, tree.fetch("fields").transform_keys(&:to_s)
-    assert_equal SEARCH_KEYS, tree.fetch("search").except("results_count").transform_keys(&:to_s)
+    assert_equal SEARCH_KEYS, tree.fetch("search").transform_keys(&:to_s)
     assert_equal MAP_KEYS, tree.fetch("map").except("title_with_coordinates").transform_keys(&:to_s)
     assert_equal LOCATION_TYPE_KEYS, tree.fetch("location_types").transform_keys(&:to_s)
     assert_equal ICON_KEYS, tree.fetch("icons").transform_keys(&:to_s)
   end
 
-  test "legacy top-level locale file remains for existing host overrides" do
+  test "gem does not ship a legacy top-level locale file" do
     legacy_path = File.join(engine_locales_dir, "recording_studio_location.en.yml")
-    tree = locale_tree(legacy_path, "en").fetch("recording_studio_location")
 
-    assert_equal "Title", tree.fetch("fields").fetch("title")
-    assert_equal "Location", tree.fetch("search").fetch("label")
-
-    I18n.with_locale(:en) do
-      assert_equal "Title", I18n.t("recording_studio_location.fields.title", raise: true)
-      assert_equal "Clear location", I18n.t("recording_studio_location.search.clear", raise: true)
-    end
+    refute File.exist?(legacy_path)
   end
 
   private
@@ -157,7 +153,5 @@ class LocalesTest < ActiveSupport::TestCase
         raise: true
       )
     )
-    assert_equal "1 place", I18n.t("recording_studio.location.search.results_count", count: 1, raise: true)
-    assert_equal "2 places", I18n.t("recording_studio.location.search.results_count", count: 2, raise: true)
   end
 end

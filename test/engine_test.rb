@@ -34,7 +34,7 @@ class EngineTest < Minitest::Test
     find_initializer("recording_studio_location.locales").block.call(app)
 
     assert(i18n.load_path.any? { |path| path.end_with?("config/locales/en.yml") })
-    assert(i18n.load_path.any? { |path| path.end_with?("config/locales/recording_studio_location.en.yml") })
+    refute(i18n.load_path.any? { |path| path.end_with?("recording_studio_location.en.yml") })
   end
 
   def test_load_config_merges_config_sources_and_runs_on_configuration_hook
