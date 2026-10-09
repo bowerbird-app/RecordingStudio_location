@@ -18,7 +18,6 @@ module RecordingStudio
     class Location < ActiveRecord::Base
       include Formatting
       include Identity
-      include IdentityValidations
       include RecordingStudio::Location::Geocoding
 
       self.table_name = "recording_studio_locations"
