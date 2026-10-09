@@ -324,7 +324,18 @@ RecordingStudioLocation.configure do |config|
 end
 ```
 
-Those identity values are the defaults. Type labels go through i18n (`recording_studio_location.location_types.*`); the config `label` is the fallback for custom keys.
+Those identity values are the defaults. Type labels go through i18n
+`recording_studio.location.location_types.*` (legacy
+`recording_studio_location.location_types.*` still ships). The config `label` is
+the fallback for custom keys.
+
+### Interface text
+
+Static labels, placeholders, help text, search chrome, and map titles in this
+gem's own views resolve through Rails I18n under `recording_studio.location` in
+`config/locales/en.yml`. English only ships with the gem. Hosts can override or
+add languages in their own `config/locales`. The older top-level
+`recording_studio_location.*` keys remain loaded for existing overrides.
 
 `icon_mode`:
 

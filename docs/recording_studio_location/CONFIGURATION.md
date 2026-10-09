@@ -53,7 +53,7 @@ A location can carry a user title, a host type, and an icon. `name` stays the ve
 
 | Setting | Default | Notes |
 | --- | --- | --- |
-| `location_types` | `office`, `home`, `venue`, `other` | Hash of `{ label:, icon: }`. Keys are stored on the row. Labels use i18n `recording_studio_location.location_types.*`; `label` is the fallback for custom keys. Default icons are real FlatPack names. |
+| `location_types` | `office`, `home`, `venue`, `other` | Hash of `{ label:, icon: }`. Keys are stored on the row. Labels use i18n `recording_studio.location.location_types.*` (legacy `recording_studio_location.location_types.*` still ships). `label` is the fallback for custom keys. Default icons are real FlatPack names. |
 | `icon_mode` | `:type` | `:type` — icon from the type, no picker, stored `icon` stays blank. `:choose` — user picks from `allowed_icons` with the same RadioGroup; picking a type checks that type's icon radio. `:none` — no icon in the form or display. |
 | `allowed_icons` | `home building-office map-pin star briefcase` | FlatPack icon names. Used in `:choose` mode and as the inclusion list for stored icons. |
 | `default_icon` | `map-pin` | Last fallback for `resolved_icon`. |
@@ -142,6 +142,15 @@ Installing the gem does not let every recordable contain a Location. Enable `:lo
 include RecordingStudio::Capabilities::Location.to
 ```
 
+## Interface text
+
+Gem views and helpers wrap static labels, placeholders, help text, search chrome,
+and map titles in `recording_studio.location.*` keys. English ships in
+`config/locales/en.yml`. Hosts override or add languages in their own
+`config/locales`. Legacy `recording_studio_location.*` keys in
+`config/locales/recording_studio_location.en.yml` still load for existing
+overrides. User and database content is not translated.
+
 ## Files
 
 | Path | Role |
@@ -150,4 +159,6 @@ include RecordingStudio::Capabilities::Location.to
 | `lib/recording_studio_location/geocoder.rb` | Registry, factory, credentials |
 | `lib/recording_studio_location/map.rb` | Map registry, factory, credentials |
 | `lib/recording_studio_location/engine.rb` | Loads YAML, `config.x`, then initializer |
+| `config/locales/en.yml` | Nested English interface copy |
+| `config/locales/recording_studio_location.en.yml` | Legacy top-level English keys |
 | `lib/generators/recording_studio_location/install/templates/` | Initializer and YAML templates |

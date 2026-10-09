@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.5.0] - 2026-10-09
+
+### Added
+
+- Nested English Rails I18n keys for gem interface copy under `recording_studio.location`
+  in `config/locales/en.yml` (fields, search, map, location types, icons)
+- `test/locales_test.rb` covering nested key resolution and English-only locale files
+
+### Changed
+
+- Gem views, identity type/icon labels, and map preview titles resolve through
+  `t("recording_studio.location.*")` (rendered English unchanged)
+
+### Upgrade notes
+
+- No migration or host code change is required for English.
+- Legacy top-level keys in `config/locales/recording_studio_location.en.yml`
+  (`recording_studio_location.*`) still ship so existing host overrides keep
+  resolving. New overrides should use `recording_studio.location.*`.
+- There is no dependency on `recording_studio_internationalization`.
+
 ## [0.4.0] - 2026-10-09
 
 ### Added
