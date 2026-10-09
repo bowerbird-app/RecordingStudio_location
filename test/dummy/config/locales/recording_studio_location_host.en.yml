@@ -1,0 +1,7 @@
+# Host nested override for the dummy app. Loaded by Rails from
+# config/locales automatically — do not append this path in tests.
+en:
+  recording_studio:
+    location:
+      fields:
+        address_line_2: "HOST second address line"
