@@ -33,14 +33,14 @@
      data-recording-studio-location--place-search-min-length-value="<%= RecordingStudioLocation::PlaceSearch::MIN_QUERY_LENGTH %>"
      data-recording-studio-location--place-search-debounce-value="300"
      data-recording-studio-location--place-search-list-id-value="<%= list_id %>"
-     data-recording-studio-location--place-search-searching-text-value="<%= t("recording_studio_location.search.searching") %>"
-     data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio_location.search.add_manually") %>"
+     data-recording-studio-location--place-search-searching-text-value="<%= t("recording_studio.location.search.searching") %>"
+     data-recording-studio-location--place-search-add-manually-text-value="<%= t("recording_studio.location.search.add_manually") %>"
      <% if map_preview %>
      data-recording-studio-location--place-search-map-url-template-value="<%= map_preview.url_template %>"
-     data-recording-studio-location--place-search-map-title-template-value="<%= t("recording_studio_location.map.title_with_coordinates") %>"
+     data-recording-studio-location--place-search-map-title-template-value="<%= t("recording_studio.location.map.title_with_coordinates") %>"
      <% end %>>
   <div class="relative z-40 w-full">
-    <label for="<%= input_id %>" class="mb-1.5 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio_location.search.label") %></label>
+    <label for="<%= input_id %>" class="mb-1.5 block text-sm font-medium text-[var(--surface-content-color)]"><%= t("recording_studio.location.search.label") %></label>
 
     <div class="relative w-full">
       <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--search-icon-color)]" aria-hidden="true">
@@ -49,7 +49,7 @@
       <input id="<%= input_id %>"
              type="text"
              value="<%= selected_label %>"
-             placeholder="<%= t("recording_studio_location.search.placeholder") %>"
+             placeholder="<%= t("recording_studio.location.search.placeholder") %>"
              autocomplete="off"
              role="combobox"
              aria-expanded="false"
@@ -80,7 +80,7 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div class="text-sm leading-6">
             <p class="font-medium" data-recording-studio-location--place-search-target="summaryTitle">
-              <%= location.name.presence || location.display_name.presence || t("recording_studio_location.search.summary_empty") %>
+              <%= location.name.presence || location.display_name.presence || t("recording_studio.location.search.summary_empty") %>
             </p>
             <p class="text-(--surface-muted-content-color)" data-recording-studio-location--place-search-target="summaryDetail">
               <%= location.full_address %>
@@ -91,7 +91,7 @@
             icon_only: true,
             style: :ghost,
             size: :sm,
-            text: t("recording_studio_location.search.clear"),
+            text: t("recording_studio.location.search.clear"),
             type: "button",
             class: "self-start shrink-0",
             data: {
@@ -107,7 +107,7 @@
   <div data-recording-studio-location--place-search-target="fields">
     <%= render FlatPack::Modal::Component.new(
       id: modal_id,
-      title: t("recording_studio_location.search.modal_title"),
+      title: t("recording_studio.location.search.modal_title"),
       size: :lg,
       close_on_escape: true,
       close_on_backdrop: true
@@ -117,7 +117,7 @@
       <% end %>
       <% modal.footer do %>
         <%= render FlatPack::Button::Component.new(
-          text: t("recording_studio_location.search.done"),
+          text: t("recording_studio.location.search.done"),
           style: :primary,
           type: "button",
           class: "self-start",

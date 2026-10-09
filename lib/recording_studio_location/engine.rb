@@ -53,6 +53,14 @@ module RecordingStudioLocation
       end
     end
 
+    # Rails engines already add config/locales to the I18n load path; keep an
+    # explicit append so hosts always see the gem English files even if load
+    # order differs.
+    initializer "recording_studio_location.locales", before: :load_config_initializers do |app|
+      locale_files = root.glob("config/locales/**/*.{rb,yml}")
+      app.config.i18n.load_path |= locale_files.map(&:to_s)
+    end
+
     # Run before_initialize hooks
     initializer "recording_studio_location.before_initialize", before: "recording_studio_location.load_config" do |_app|
       RecordingStudioLocation.configuration.hooks.run(:before_initialize, self)

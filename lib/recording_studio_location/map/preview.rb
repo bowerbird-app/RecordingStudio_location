@@ -18,12 +18,12 @@ module RecordingStudioLocation
       def self.title_for(pair)
         if pair
           I18n.t(
-            "recording_studio_location.map.title_with_coordinates",
+            "recording_studio.location.map.title_with_coordinates",
             latitude: Coordinates.format(pair[0]),
             longitude: Coordinates.format(pair[1])
           )
         else
-          I18n.t("recording_studio_location.map.title")
+          I18n.t("recording_studio.location.map.title")
         end
       end
     end

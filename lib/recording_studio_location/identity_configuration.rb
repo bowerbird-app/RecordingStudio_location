@@ -58,7 +58,7 @@ module RecordingStudioLocation
       fallback = location_type_config(key)&.fetch(:label, nil).presence || key.to_s.humanize
       return fallback unless defined?(I18n)
 
-      I18n.t("recording_studio_location.location_types.#{key}", default: fallback)
+      I18n.t("recording_studio.location.location_types.#{key}", default: fallback)
     end
 
     def icon_for_type(key)
@@ -101,7 +101,7 @@ module RecordingStudioLocation
       fallback = name.to_s.tr("-", " ").humanize
       return fallback unless defined?(I18n)
 
-      I18n.t("recording_studio_location.icons.#{name}", default: fallback)
+      I18n.t("recording_studio.location.icons.#{name}", default: fallback)
     end
 
     def type_icon_map
