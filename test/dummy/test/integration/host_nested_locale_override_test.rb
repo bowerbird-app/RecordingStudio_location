@@ -4,9 +4,10 @@ require "test_helper"
 require "devise/test/integration_helpers"
 
 # Proves a host nested `recording_studio.location.*` override in
-# config/locales wins over gem English on a real page, without touching
-# I18n.load_path (Rails engines already load gem locales; hosts win by
-# load order).
+# config/locales wins over gem English on a real page. Uses
+# search.summary_empty (only shown in the empty-place summary, which is
+# hidden on a blank new form) so the dummy UI and other rendered tests
+# keep default English for common labels. Does not touch I18n.load_path.
 class HostNestedLocaleOverrideTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
@@ -33,7 +34,7 @@ class HostNestedLocaleOverrideTest < ActionDispatch::IntegrationTest
     get new_location_path
 
     assert_response :success
-    assert_includes response.body, "HOST second address line"
-    refute_includes response.body, "Address line 2"
+    assert_includes response.body, "HOST empty place summary"
+    refute_includes response.body, "No place selected yet."
   end
 end
