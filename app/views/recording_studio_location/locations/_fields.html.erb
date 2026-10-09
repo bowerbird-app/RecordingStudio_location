@@ -4,24 +4,24 @@
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:name),
     value: location.name,
-    label: "Name",
-    placeholder: "Melbourne Convention Centre",
-    help_text: "Optional. Use a place name when you have one.",
+    label: t("recording_studio_location.fields.name"),
+    placeholder: t("recording_studio_location.fields.name_placeholder"),
+    help_text: t("recording_studio_location.fields.name_help"),
     error: location.errors[:name].first
   ) %>
 
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:address_line_1),
     value: location.address_line_1,
-    label: "Address line 1",
-    placeholder: "12 Smith Street",
+    label: t("recording_studio_location.fields.address_line_1"),
+    placeholder: t("recording_studio_location.fields.address_line_1_placeholder"),
     error: location.errors[:address_line_1].first
   ) %>
 
   <%= render FlatPack::TextInput::Component.new(
     name: form.field_name(:address_line_2),
     value: location.address_line_2,
-    label: "Address line 2",
+    label: t("recording_studio_location.fields.address_line_2"),
     error: location.errors[:address_line_2].first
   ) %>
 
@@ -29,34 +29,34 @@
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:locality),
       value: location.locality,
-      label: "Locality",
-      placeholder: "Fitzroy",
+      label: t("recording_studio_location.fields.locality"),
+      placeholder: t("recording_studio_location.fields.locality_placeholder"),
       error: location.errors[:locality].first
     ) %>
 
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:region),
       value: location.region,
-      label: "Region",
-      placeholder: "Victoria",
+      label: t("recording_studio_location.fields.region"),
+      placeholder: t("recording_studio_location.fields.region_placeholder"),
       error: location.errors[:region].first
     ) %>
 
     <%= render FlatPack::TextInput::Component.new(
       name: form.field_name(:postal_code),
       value: location.postal_code,
-      label: "Postal code",
-      placeholder: "3065",
+      label: t("recording_studio_location.fields.postal_code"),
+      placeholder: t("recording_studio_location.fields.postal_code_placeholder"),
       error: location.errors[:postal_code].first
     ) %>
   </div>
 
   <%= render FlatPack::Select::Component.new(
     name: form.field_name(:country_code),
-    options: [["Not set", ""]] + RecordingStudio::Location.country_options,
+    options: [[t("recording_studio_location.fields.country_not_set"), ""]] + RecordingStudio::Location.country_options,
     value: location.country_code,
-    label: "Country",
-    placeholder: "Select a country",
+    label: t("recording_studio_location.fields.country"),
+    placeholder: t("recording_studio_location.fields.country_placeholder"),
     searchable: true,
     error: location.errors[:country_code].first
   ) %>
@@ -65,24 +65,24 @@
     <%= render FlatPack::NumberInput::Component.new(
       name: form.field_name(:latitude),
       value: location.latitude,
-      label: "Latitude",
-      placeholder: "-37.798",
+      label: t("recording_studio_location.fields.latitude"),
+      placeholder: t("recording_studio_location.fields.latitude_placeholder"),
       min: -90,
       max: 90,
       step: 0.0000001,
-      help_text: "Optional.",
+      help_text: t("recording_studio_location.fields.latitude_help"),
       error: location.errors[:latitude].first
     ) %>
 
     <%= render FlatPack::NumberInput::Component.new(
       name: form.field_name(:longitude),
       value: location.longitude,
-      label: "Longitude",
-      placeholder: "144.978",
+      label: t("recording_studio_location.fields.longitude"),
+      placeholder: t("recording_studio_location.fields.longitude_placeholder"),
       min: -180,
       max: 180,
       step: 0.0000001,
-      help_text: "Optional. Leave both blank when you do not have coordinates.",
+      help_text: t("recording_studio_location.fields.longitude_help"),
       error: location.errors[:longitude].first
     ) %>
   </div>

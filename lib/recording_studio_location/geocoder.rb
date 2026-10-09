@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
 require "recording_studio_location/geocoder/result"
+require "recording_studio_location/geocoder/candidate"
+require "recording_studio_location/geocoder/attribution"
+require "recording_studio_location/geocoder/lookup_depth"
+require "recording_studio_location/geocoder/capabilities"
 require "recording_studio_location/geocoder/adapter"
 require "recording_studio_location/geocoder/query"
 require "recording_studio_location/geocoder/google"
 require "recording_studio_location/geocoder/fake"
 
 module RecordingStudioLocation
-  # Provider-agnostic geocoding. Hosts assign an adapter to
-  # +RecordingStudio::Location.geocoder+. Nothing runs until a location calls
-  # +geocode!+ or +reverse!+.
+  # Provider-agnostic place lookup. Hosts assign an adapter to
+  # +RecordingStudio::Location.geocoder+. Forward/reverse geocoding run only
+  # when a location calls +geocode!+ or +reverse!+. Search helpers call
+  # +#search+ and +#details+ through engine endpoints.
   module Geocoder
     class Error < StandardError; end
     class Missing < Error; end
@@ -18,22 +23,29 @@ module RecordingStudioLocation
     class RequestError < Error; end
     class UnknownProvider < Error; end
 
-    PROVIDERS = {
-      "google" => Google
-    }.freeze
-
     PROVIDER_ENV = "RECORDING_STUDIO_LOCATION_GEOCODER_PROVIDER"
     API_KEY_ENV = "RECORDING_STUDIO_LOCATION_GEOCODER_API_KEY"
 
+    @providers = { "google" => Google }
+
     class << self
-      def build(provider:, api_key:, **)
+      def register(name, klass)
+        providers[name.to_s.strip.downcase] = klass
+        klass
+      end
+
+      def providers
+        @providers ||= { "google" => Google }
+      end
+
+      def build(provider:, **)
         name = provider.to_s.strip.downcase
-        klass = PROVIDERS[name]
+        klass = providers[name]
         unless klass
           raise UnknownProvider, "Unknown geocoder provider #{provider.inspect}. Supported: #{supported_providers}"
         end
 
-        klass.new(api_key: api_key, **)
+        klass.new(**)
       end
 
       def from_rails_credentials(credentials = rails_credentials)
@@ -46,7 +58,11 @@ module RecordingStudioLocation
       end
 
       def supported_providers
-        PROVIDERS.keys.sort.join(", ")
+        providers.keys.sort.join(", ")
+      end
+
+      def searchable?(adapter = RecordingStudio::Location.geocoder)
+        Capabilities.searchable?(adapter)
       end
 
       private

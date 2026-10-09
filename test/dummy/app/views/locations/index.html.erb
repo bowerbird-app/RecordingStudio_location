@@ -10,7 +10,8 @@
   <%= render FlatPack::Button::Component.new(
     text: "Add a location",
     style: :primary,
-    href: new_location_path
+    href: new_location_path,
+    class: "self-start"
   ) %>
 
   <% if @location_recordings.any? %>

@@ -1,6 +1,7 @@
-<%# Coordinates are text only. This gem does not load a map or geocoding provider. %>
+<%# Map is opt-in via recording_studio_location_display(location, map: true). %>
 <% address = location.full_address %>
 <% coordinates = location.coordinates_label %>
+<% show_map = local_assigns.fetch(:show_map, false) %>
 
 <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
   <% card.header do %>
@@ -21,6 +22,10 @@
         <p class="text-(--surface-muted-content-color)">
           <%= coordinates %>
         </p>
+      <% end %>
+
+      <% if show_map %>
+        <%= recording_studio_location_map(latitude: location.latitude, longitude: location.longitude) %>
       <% end %>
     </div>
   <% end %>

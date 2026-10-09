@@ -7,7 +7,7 @@
     variant: :h1
   ) %>
 
-  <%= recording_studio_location_display(@location) %>
+  <%= recording_studio_location_display(@location, map: true) %>
 
   <p class="text-sm text-(--surface-muted-content-color)">
     This is recording <%= @recording.id %>, a child of
@@ -17,6 +17,7 @@
   <%= render FlatPack::Button::Component.new(
     text: "Edit location",
     style: :secondary,
-    href: edit_location_path(@recording)
+    href: edit_location_path(@recording),
+    class: "self-start"
   ) %>
 </div>

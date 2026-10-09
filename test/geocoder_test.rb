@@ -135,10 +135,39 @@ class GeocoderTest < Minitest::Test
 
     assert_raises(NotImplementedError) { adapter.geocode("Melbourne") }
     assert_raises(NotImplementedError) { adapter.reverse(-37.8, 144.9) }
+    assert_equal [], adapter.search("Melbourne")
+    assert_raises(NotImplementedError) { adapter.details("abc") }
+    refute adapter.capabilities[:search]
+    refute adapter.attribution.required?
+  end
+
+  def test_register_allows_a_custom_provider
+    klass = Class.new(RecordingStudioLocation::Geocoder::Adapter)
+    RecordingStudioLocation::Geocoder.register("custom", klass)
+
+    adapter = RecordingStudioLocation::Geocoder.build(provider: "custom")
+
+    assert_instance_of klass, adapter
+    assert_includes RecordingStudioLocation::Geocoder.supported_providers, "custom"
+  ensure
+    RecordingStudioLocation::Geocoder.providers.delete("custom")
+  end
+
+  def test_lookup_depth_normalizes_unknown_values
+    assert_equal :full, RecordingStudioLocation::Geocoder::LookupDepth.normalize("full")
+    assert_equal :address, RecordingStudioLocation::Geocoder::LookupDepth.normalize("ADDRESS")
+    assert_equal :full, RecordingStudioLocation::Geocoder::LookupDepth.normalize("nope")
+  end
+
+  def test_searchable_requires_capabilities_flag
+    refute RecordingStudioLocation::Geocoder.searchable?(nil)
+    refute RecordingStudioLocation::Geocoder.searchable?(RecordingStudioLocation::Geocoder::Adapter.new)
+    assert RecordingStudioLocation::Geocoder.searchable?(RecordingStudioLocation::Geocoder::Fake.new)
   end
 
   def test_result_wraps_hashes_and_exposes_coordinates
     result = RecordingStudioLocation::Geocoder::Result.wrap(
+      name: "Fitzroy Town Hall",
       latitude: -37.798,
       longitude: 144.978,
       locality: "Fitzroy"
@@ -146,6 +175,7 @@ class GeocoderTest < Minitest::Test
 
     assert_equal([-37.798, 144.978], result.coordinates)
     assert_equal "Fitzroy", result.locality
+    assert_equal "Fitzroy Town Hall", result.name
     assert_same result, RecordingStudioLocation::Geocoder::Result.wrap(result)
     assert_nil RecordingStudioLocation::Geocoder::Result.new.coordinates
   end

@@ -122,10 +122,11 @@ class LocationGeocodeTest < ActiveSupport::TestCase
     end
   end
 
-  test "dummy initializer leaves geocoder unset without credentials" do
+  test "dummy initializer uses a local Fake when credentials are missing" do
     RecordingStudio::Location.geocoder = @previous
 
-    assert_nil RecordingStudio::Location.geocoder
+    assert_instance_of RecordingStudioLocation::Geocoder::Fake, RecordingStudio::Location.geocoder
+    assert RecordingStudioLocation::Geocoder.searchable?
   end
 
   private

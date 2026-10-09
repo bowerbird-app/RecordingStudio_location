@@ -3,20 +3,28 @@
 module RecordingStudioLocation
   # Host configuration for Location.
   #
-  # `geocoder` is the optional adapter used by Location#geocode! and #reverse!.
-  # Leave it nil when the host has no provider key. Nothing runs on save.
+  # `geocoder` is the optional adapter used by Location#geocode!, #reverse!,
+  # and the search endpoints. `map` is a separate optional adapter for the
+  # pin preview under search fields. Leave either nil when the host has no
+  # provider. Saving a location never contacts a network service.
   class Configuration
-    attr_accessor :geocoder
+    attr_accessor :geocoder, :map, :authenticate, :lookup_depth
     attr_reader :hooks
 
     def initialize
       @geocoder = nil
+      @map = nil
+      @authenticate = nil
+      @lookup_depth = :full
       @hooks = RecordingStudio::Hooks.new
     end
 
     def to_h
       {
         geocoder: geocoder,
+        map: map,
+        authenticate: authenticate,
+        lookup_depth: lookup_depth,
         hooks_registered: hooks.instance_variable_get(:@registry).transform_values(&:size)
       }
     end

@@ -3,7 +3,7 @@
 <div class="flex w-full flex-col gap-6">
   <%= render FlatPack::PageTitle::Component.new(
     title: "Config",
-    subtitle: "Geocoding stays off until the host sets a provider and key.",
+    subtitle: "Search, geocoding, and the map pin stay off until the host assigns adapters.",
     variant: :h1
   ) %>
 
@@ -12,9 +12,12 @@
     code: <<~'CODE'
       RecordingStudioLocation.configure do |config|
         config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
+        config.map = RecordingStudioLocation::Map.from_rails_credentials
+        config.lookup_depth = :full # or :address
       end
 
       RecordingStudio::Location.geocoder
+      RecordingStudioLocation.configuration.map
     CODE
   ) %>
 </div>

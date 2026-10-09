@@ -9,6 +9,9 @@ class LocationProviderBoundaryTest < Minitest::Test
     "lib/recording_studio/capabilities/location.rb",
     "app/models/recording_studio/location/**/*.rb",
     "app/views/recording_studio_location/**/*.erb",
+    "app/helpers/recording_studio_location/**/*.rb",
+    "app/controllers/recording_studio_location/**/*.rb",
+    "app/javascript/recording_studio_location/**/*.js",
     "db/migrate/*recording_studio_locations*"
   ].freeze
 
