@@ -6,59 +6,9 @@ module RecordingStudioLocation
   class Engine < ::Rails::Engine
     isolate_namespace RecordingStudioLocation
 
-    class << self
-      def apply_model_extensions(target)
-        apply_extensions(target, extensions_for(:model, extension_keys_for(target)))
-      end
-
-      def apply_controller_extensions(target)
-        apply_extensions(target, extensions_for(:controller, extension_keys_for(target)))
-      end
-
-      private
-
-      def extensions_for(kind, names)
-        hooks = RecordingStudioLocation.configuration.hooks
-        Array(names).flat_map do |name|
-          if kind == :model
-            hooks.model_extensions_for(name)
-          else
-            hooks.controller_extensions_for(name)
-          end
-        end
-      end
-
-      def apply_extensions(target, extensions)
-        return unless target
-
-        applied = target.instance_variable_get(:@recording_studio_location_applied_extensions) || identity_hash
-
-        extensions.flatten.compact.each do |extension|
-          next if applied[extension]
-
-          target.class_eval(&extension)
-          applied[extension] = true
-        end
-
-        target.instance_variable_set(:@recording_studio_location_applied_extensions, applied)
-      end
-
-      def extension_keys_for(target)
-        names = [target.name, target.name&.demodulize].compact.uniq
-        names.map(&:to_sym)
-      end
-
-      def identity_hash
-        {}.compare_by_identity
-      end
-    end
-
-    # Rails engines already add config/locales to the I18n load path; keep an
-    # explicit append so hosts always see the gem English files even if load
-    # order differs.
+    # Explicit append so hosts always see gem English files regardless of load order.
     initializer "recording_studio_location.locales", before: :load_config_initializers do |app|
-      locale_files = root.glob("config/locales/**/*.{rb,yml}")
-      app.config.i18n.load_path |= locale_files.map(&:to_s)
+      app.config.i18n.load_path |= root.glob("config/locales/**/*.{rb,yml}").map(&:to_s)
     end
 
     # Run before_initialize hooks
@@ -148,3 +98,5 @@ module RecordingStudioLocation
     end
   end
 end
+
+require_relative "engine/extensions"

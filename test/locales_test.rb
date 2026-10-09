@@ -84,23 +84,12 @@ class LocalesTest < ActiveSupport::TestCase
 
   test "nested english interface keys resolve without missing translations" do
     I18n.with_locale(:en) do
-      FIELD_KEYS.each { |key, english| assert_translation("recording_studio.location.fields.#{key}", english) }
-      SEARCH_KEYS.each { |key, english| assert_translation("recording_studio.location.search.#{key}", english) }
-      MAP_KEYS.each { |key, english| assert_translation("recording_studio.location.map.#{key}", english) }
-      LOCATION_TYPE_KEYS.each { |key, english| assert_translation("recording_studio.location.location_types.#{key}", english) }
-      ICON_KEYS.each { |key, english| assert_translation("recording_studio.location.icons.#{key}", english) }
-
-      assert_equal(
-        "Map of -37.825500, 144.953100",
-        I18n.t(
-          "recording_studio.location.map.title_with_coordinates",
-          latitude: "-37.825500",
-          longitude: "144.953100",
-          raise: true
-        )
-      )
-      assert_equal "1 place", I18n.t("recording_studio.location.search.results_count", count: 1, raise: true)
-      assert_equal "2 places", I18n.t("recording_studio.location.search.results_count", count: 2, raise: true)
+      assert_section_translations("fields", FIELD_KEYS)
+      assert_section_translations("search", SEARCH_KEYS)
+      assert_section_translations("map", MAP_KEYS)
+      assert_section_translations("location_types", LOCATION_TYPE_KEYS)
+      assert_section_translations("icons", ICON_KEYS)
+      assert_interpolated_translations
     end
   end
 
@@ -150,5 +139,25 @@ class LocalesTest < ActiveSupport::TestCase
 
     assert_equal english, translation, "#{full_key} should resolve to #{english.inspect}"
     assert_equal english, I18n.t(full_key, raise: true)
+  end
+
+  def assert_section_translations(section, keys)
+    keys.each do |key, english|
+      assert_translation("recording_studio.location.#{section}.#{key}", english)
+    end
+  end
+
+  def assert_interpolated_translations
+    assert_equal(
+      "Map of -37.825500, 144.953100",
+      I18n.t(
+        "recording_studio.location.map.title_with_coordinates",
+        latitude: "-37.825500",
+        longitude: "144.953100",
+        raise: true
+      )
+    )
+    assert_equal "1 place", I18n.t("recording_studio.location.search.results_count", count: 1, raise: true)
+    assert_equal "2 places", I18n.t("recording_studio.location.search.results_count", count: 2, raise: true)
   end
 end

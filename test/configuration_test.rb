@@ -106,13 +106,19 @@ class ConfigurationTest < Minitest::Test
       icon_mode: "choose",
       allowed_icons: %w[home star],
       default_icon: "star",
-      location_types: { home: { label: "House", icon: "home" } }
+      location_types: {
+        home: { label: "House", icon: "home" },
+        studio: { label: "Studio", icon: "star" }
+      }
     )
 
     assert_equal :choose, @configuration.icon_mode
     assert_equal %w[home star], @configuration.allowed_icons
     assert_equal "star", @configuration.default_icon
-    assert_equal "House", @configuration.location_type_label(:home)
+    assert_equal "home", @configuration.icon_for_type(:home)
+    assert_equal "House", @configuration.location_types.fetch(:home).fetch(:label)
+    # Config label is the I18n fallback for custom type keys (no gem translation).
+    assert_equal "Studio", @configuration.location_type_label(:studio)
   end
 
   def test_radio_options_include_icons
