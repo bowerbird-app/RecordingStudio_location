@@ -87,6 +87,24 @@ class RecordingStudioLocationTest < Minitest::Test
       )
     )
     assert_includes invitation_migration, "create_table :recording_studio_access_invitations"
+    assert_includes schema, 'create_table "recording_studio_access_constraints"'
+    assert_includes schema, 'create_table "recording_studio_access_rules"'
+    assert_includes schema, "index_recording_studio_access_constraints_on_action"
+    assert_includes schema, "index_recording_studio_access_rules_on_action"
+    constraints_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261010000013_create_recording_studio_access_constraints.rb",
+        __dir__
+      )
+    )
+    rules_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261010000014_create_recording_studio_access_rules.rb",
+        __dir__
+      )
+    )
+    assert_includes constraints_migration, "create_table :recording_studio_access_constraints"
+    assert_includes rules_migration, "create_table :recording_studio_access_rules"
   end
 
   def test_template_does_not_ship_copied_core_hooks_or_base_service
