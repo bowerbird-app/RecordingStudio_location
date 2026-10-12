@@ -45,16 +45,18 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_verified_4x_github_tags
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.4.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.13.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.5.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.15.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.8.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
     refute_includes gemfile, "recording_studio/v3.0.0"
+    refute_includes gemfile, 'tag: "v4.4.0"'
     refute_includes gemfile, 'tag: "v4.3.0"'
     refute_includes gemfile, 'tag: "v4.2.2"'
     refute_includes gemfile, 'tag: "v4.2.1"'
     refute_includes gemfile, 'tag: "v4.2.0"'
+    refute_includes gemfile, 'tag: "v0.13.0"'
     refute_includes gemfile, 'tag: "v0.10.1"'
     refute_includes gemfile, 'tag: "v0.9.1"'
     refute_includes gemfile, 'tag: "v0.5.1"'
@@ -85,6 +87,24 @@ class RecordingStudioLocationTest < Minitest::Test
       )
     )
     assert_includes invitation_migration, "create_table :recording_studio_access_invitations"
+    assert_includes schema, 'create_table "recording_studio_access_constraints"'
+    assert_includes schema, 'create_table "recording_studio_access_rules"'
+    assert_includes schema, "index_recording_studio_access_constraints_on_action"
+    assert_includes schema, "index_recording_studio_access_rules_on_action"
+    constraints_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261010000013_create_recording_studio_access_constraints.rb",
+        __dir__
+      )
+    )
+    rules_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261010000014_create_recording_studio_access_rules.rb",
+        __dir__
+      )
+    )
+    assert_includes constraints_migration, "create_table :recording_studio_access_constraints"
+    assert_includes rules_migration, "create_table :recording_studio_access_rules"
   end
 
   def test_template_does_not_ship_copied_core_hooks_or_base_service
@@ -177,12 +197,14 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v4.4.0`"
+    assert_includes readme, "Recording Studio `v4.5.0`"
     assert_includes readme, "FlatPack `v0.1.213`"
-    assert_includes readme, "Accessible `v0.13.0`"
+    assert_includes readme, "Accessible `v0.15.0`"
     assert_includes readme, "Root Switchable `v0.8.0`"
     assert_includes readme, "Metrics `v0.2.0`"
+    refute_includes readme, "Recording Studio `v4.4.0`"
     refute_includes readme, "Recording Studio `v4.3.0`"
+    refute_includes readme, "Accessible `v0.13.0`"
     refute_includes readme, "dummy GitHub tag `v4.2.2`"
     refute_includes readme, "Recording Studio `v4.2.2`"
     refute_includes readme, "dummy GitHub tag `v4.2.1`"
