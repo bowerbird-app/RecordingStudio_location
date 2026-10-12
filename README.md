@@ -333,11 +333,13 @@ for custom keys (and when neither namespace has a translation).
 
 ### Interface text
 
-Static labels, placeholders, help text, search chrome, and map titles in this
-gem's own views resolve through Rails I18n under `recording_studio.location` in
-`config/locales/en.yml`. English only ships with the gem. Lookups prefer a
-host-defined deprecated `recording_studio_location.*` key when present, then the
-nested gem key. Hosts should migrate overrides to `recording_studio.location.*`.
+Static labels, placeholders, help text, search chrome, map titles, and
+validation messages in this gem resolve through Rails I18n under
+`recording_studio.location` in `config/locales/en.yml` (errors under
+`recording_studio.location.errors.*`). English only ships with the gem. Lookups
+prefer a host-defined deprecated `recording_studio_location.*` key when present,
+then the nested gem key. Hosts override by defining the same nested keys in
+their own `config/locales`.
 
 `icon_mode`:
 

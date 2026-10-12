@@ -58,6 +58,13 @@ class LocalesTest < ActiveSupport::TestCase
     "title" => "Map of this location"
   }.freeze
 
+  ERROR_KEYS = {
+    "location_type_not_in_list" => "is not in the list of types",
+    "icon_not_in_list" => "is not in the list of icons",
+    "country_code_iso" => "must be a two-letter ISO country code",
+    "must_be_a_number" => "must be a number"
+  }.freeze
+
   LOCATION_TYPE_KEYS = {
     "office" => "Office",
     "home" => "Home",
@@ -90,6 +97,7 @@ class LocalesTest < ActiveSupport::TestCase
       assert_section_translations("fields", FIELD_KEYS)
       assert_section_translations("search", SEARCH_KEYS)
       assert_section_translations("map", MAP_KEYS)
+      assert_section_translations("errors", ERROR_KEYS)
       assert_section_translations("location_types", LOCATION_TYPE_KEYS)
       assert_section_translations("icons", ICON_KEYS)
       assert_interpolated_translations
@@ -104,6 +112,7 @@ class LocalesTest < ActiveSupport::TestCase
     assert_equal FIELD_KEYS, tree.fetch("fields").transform_keys(&:to_s)
     assert_equal SEARCH_KEYS, tree.fetch("search").transform_keys(&:to_s)
     assert_equal MAP_KEYS, tree.fetch("map").except("title_with_coordinates").transform_keys(&:to_s)
+    assert_equal ERROR_KEYS, tree.fetch("errors").transform_keys(&:to_s)
     assert_equal LOCATION_TYPE_KEYS, tree.fetch("location_types").transform_keys(&:to_s)
     assert_equal ICON_KEYS, tree.fetch("icons").transform_keys(&:to_s)
   end
@@ -112,6 +121,16 @@ class LocalesTest < ActiveSupport::TestCase
     legacy_path = File.join(engine_locales_dir, "recording_studio_location.en.yml")
 
     refute File.exist?(legacy_path)
+  end
+
+  test "lib ruby files do not mention i18n load_path" do
+    lib_root = File.expand_path("../lib", __dir__)
+    Dir[File.join(lib_root, "**", "*.rb")].each do |path|
+      source = File.read(path)
+
+      refute_includes source, "i18n.load_path", "#{path} must not mention i18n.load_path"
+      refute_includes source, "I18n.load_path", "#{path} must not mention I18n.load_path"
+    end
   end
 
   private

@@ -1,5 +1,44 @@
 # Changelog
 
+## [Unreleased]
+
+## [0.6.0] - 2026-10-12
+
+### Added
+
+- English Rails I18n keys for validation messages under `recording_studio.location.errors`
+  (`location_type_not_in_list`, `icon_not_in_list`, `country_code_iso`, `must_be_a_number`)
+- Host English override coverage: test-only fixture
+  `test/dummy/test/locales/location_host_override.en.yml` plus render-level and
+  `errors.details` asserts (English, French, and host override)
+- Locale regression: every `lib/**/*.rb` file must not mention `i18n.load_path` /
+  `I18n.load_path`
+- Legacy-first `Copy.t` coverage for type labels, icon labels, and map titles
+  (host `recording_studio_location.*` wins; nested gem English otherwise)
+
+### Changed
+
+- Identity and Location validation messages resolve through `Copy.t` with English
+  `default:`. Inclusion and format validations keep main's symbol error types
+  (`:inclusion`, `:invalid`) via `message:`. The coordinate "must be a number"
+  check keeps a String error type and passes the translated string as the type
+  (ActiveModel 8.1 ignores `message:` for Strings). In non-English locales,
+  `errors.details` carries the translated string for that former String type.
+- Public model return values stay main's literal English (`display_name` fallback
+  `"Location"`, recordable declaration labels, config type labels as fallbacks).
+  API JSON error tokens (`not_found`, `unavailable`) stay raw.
+
+### Upgrade notes
+
+- Bump to `0.6.0`. No migration.
+- English hosts need no change. Copy new `recording_studio.location.errors.*` keys
+  into host locale files when translating.
+- Hosts override by defining the same nested keys in their own `config/locales`.
+  Deprecated `recording_studio_location.*` host keys still win via `Copy`.
+- When a former String-typed validation error is translated, `errors.details`
+  carries the translated string in non-English locales (English remains
+  byte-identical to main).
+
 ## [0.5.1] - 2026-10-09
 
 ### Fixed
@@ -144,3 +183,6 @@
 - Dummy credentials use the shared Recording Studio development master key.
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
+
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.5.1...v0.6.0

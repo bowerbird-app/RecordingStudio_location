@@ -145,12 +145,14 @@ include RecordingStudio::Capabilities::Location.to
 ## Interface text
 
 Gem views and helpers wrap static labels, placeholders, help text, search chrome,
-and map titles in `recording_studio.location.*` keys. English ships in
-`config/locales/en.yml` only. Lookups go through `RecordingStudioLocation::Copy`
-(and `recording_studio_location_t` in views): a host-defined deprecated
-`recording_studio_location.*` key wins when present; otherwise the nested gem
-key is used. The gem no longer ships a legacy locale file. User and database
-content is not translated.
+and map titles in `recording_studio.location.*` keys. Validation messages live
+under `recording_studio.location.errors.*` and resolve at validation time with an
+English `default:`. English ships in `config/locales/en.yml` only. Lookups go
+through `RecordingStudioLocation::Copy` (and `recording_studio_location_t` in
+views): a host-defined deprecated `recording_studio_location.*` key wins when
+present; otherwise the nested gem key is used. The gem no longer ships a legacy
+locale file. User and database content is not translated. Hosts override by
+defining the same nested keys in their own `config/locales`.
 
 ## Files
 

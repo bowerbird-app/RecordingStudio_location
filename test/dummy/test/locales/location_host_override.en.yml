@@ -1,0 +1,17 @@
+# Test-only host override fixture (not under config/locales). Loaded inside
+# specific tests via I18n.backend.load_translations — do not append to
+# I18n.load_path at boot.
+en:
+  recording_studio:
+    location:
+      errors:
+        location_type_not_in_list: "HOST is not in the list of types"
+        icon_not_in_list: "HOST is not in the list of icons"
+        country_code_iso: "HOST must be a two-letter ISO country code"
+        must_be_a_number: "HOST must be a number"
+      map:
+        title: "HOST Map of this location"
+      location_types:
+        office: "HOST Office"
+      icons:
+        home: "HOST Home"
