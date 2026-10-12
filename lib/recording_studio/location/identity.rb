@@ -14,23 +14,13 @@ module RecordingStudio
           validates :location_type,
                     inclusion: {
                       in: ->(_) { RecordingStudioLocation.configuration.location_type_keys },
-                      message: ->(*) {
-                        RecordingStudioLocation::Copy.t(
-                          "errors.location_type_not_in_list",
-                          default: "is not in the list of types"
-                        )
-                      }
+                      message: ->(*) { RecordingStudioLocation::Copy.location_type_not_in_list }
                     },
                     allow_blank: true
           validates :icon,
                     inclusion: {
                       in: ->(_) { RecordingStudioLocation.configuration.allowed_icons },
-                      message: ->(*) {
-                        RecordingStudioLocation::Copy.t(
-                          "errors.icon_not_in_list",
-                          default: "is not in the list of icons"
-                        )
-                      }
+                      message: ->(*) { RecordingStudioLocation::Copy.icon_not_in_list }
                     },
                     allow_blank: true
         end
