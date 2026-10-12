@@ -51,3 +51,8 @@ en:
       map:
         title: "Map of this location"
         title_with_coordinates: "Map of %{latitude}, %{longitude}"
+      errors:
+        location_type_not_in_list: "is not in the list of types"
+        icon_not_in_list: "is not in the list of icons"
+        country_code_iso: "must be a two-letter ISO country code"
+        must_be_a_number: "must be a number"

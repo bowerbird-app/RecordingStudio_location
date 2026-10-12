@@ -59,7 +59,7 @@ module RecordingStudio
       validates :country_code,
                 format: {
                   with: /\A[A-Z]{2}\z/,
-                  message: "must be a two-letter ISO country code"
+                  message: ->(*) { RecordingStudioLocation::Copy.country_code_iso }
                 },
                 allow_blank: true
       validates :latitude,
@@ -125,7 +125,8 @@ module RecordingStudio
         return if raw.is_a?(String) && raw.strip.empty?
         return if decimal?(raw)
 
-        errors.add(attribute, "must be a number")
+        # ActiveModel 8.1 ignores message: for String types; pass translated string.
+        errors.add(attribute, RecordingStudioLocation::Copy.must_be_a_number)
       end
 
       def decimal?(value)
