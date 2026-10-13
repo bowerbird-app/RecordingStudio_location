@@ -71,9 +71,8 @@ class LocationsController < ApplicationController
     return RecordingStudio::Recording.none if root.nil?
 
     root.child_recordings.where(
-      recordable_type: RecordingStudio::Location::LOCATION_TYPE,
-      trashed_at: nil
-    ).order(:created_at)
+      recordable_type: RecordingStudio::Location::LOCATION_TYPE
+    ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).order(:created_at)
   end
 
   def find_location_recording

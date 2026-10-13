@@ -6,9 +6,8 @@ class HomeController < ApplicationController
     @root_recording = workspace && RecordingStudio.root_recording_for(workspace)
     @location_recording = if @root_recording
       @root_recording.child_recordings.where(
-        recordable_type: RecordingStudio::Location::LOCATION_TYPE,
-        trashed_at: nil
-      ).order(:created_at).first
+        recordable_type: RecordingStudio::Location::LOCATION_TYPE
+      ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).order(:created_at).first
     end
   end
 end
