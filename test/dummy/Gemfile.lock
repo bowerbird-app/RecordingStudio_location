@@ -75,7 +75,7 @@ PATH
     recording_studio_location (0.7.0)
       flat_pack (>= 0.1.212)
       rails (~> 8.1.0)
-      recording_studio (>= 4.7.0)
+      recording_studio (~> 4.7)
 
 GEM
   remote: https://rubygems.org/

@@ -2,10 +2,10 @@
 
 module RecordingStudioLocation
   # Interface copy lookup. Prefer a host-defined legacy
-  # `recording_studio_location.*` key, then the nested
-  # `recording_studio.location.*` key via `RecordingStudio.t` so missing
-  # active-locale values fall back to loaded English, then caller
-  # `default:`, then the registered gem-shipped English table.
+  # `recording_studio_location.*` key via plain `I18n.t` (main's default:
+  # chain), then the nested `recording_studio.location.*` gem key via
+  # `RecordingStudio.t` so missing active-locale values fall back to loaded
+  # English, then caller `default:`, then the registered gem-shipped table.
   module Copy
     module_function
 
@@ -14,15 +14,18 @@ module RecordingStudioLocation
     # string defaults) pass through.
     def t(key, **options)
       relative = relative_key(key)
-      legacy_key = "recording_studio_location.#{relative}"
-      nested_key = "recording_studio.location.#{relative}"
+      defaults = Array(options.delete(:default))
+      legacy_key = :"recording_studio_location.#{relative}"
+      nested_key = :"recording_studio.location.#{relative}"
       locale = options[:locale] || I18n.locale
 
-      if I18n.exists?(legacy_key, locale)
-        return RecordingStudio.t(legacy_key, **options)
-      end
+      # Host / other-namespace keys stay on I18n.t with main's default: chain.
+      return I18n.t(legacy_key, **options, default: [nested_key, *defaults]) if I18n.exists?(legacy_key, locale)
 
-      RecordingStudio.t(nested_key, **options)
+      # Only this gem's recording_studio.location.* keys use RecordingStudio.t.
+      return RecordingStudio.t(nested_key, **options) if defaults.empty?
+
+      RecordingStudio.t(nested_key, **options, default: defaults)
     end
 
     def relative_key(key)

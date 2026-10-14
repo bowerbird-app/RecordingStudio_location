@@ -32,7 +32,7 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", ">= 4.7.0"
+gem "recording_studio", "~> 4.7"
 gem "recording_studio_location"
 gem "flat_pack"
 ```
@@ -187,13 +187,15 @@ The card shows the resolved icon and title (or venue name when title is blank), 
 ```
 
 The engine includes these helpers on Action Controller. Interface copy lives under
-`recording_studio.location.*` in the gem's `config/locales/en.yml`. Lookups go
-through `RecordingStudio.t` (via `RecordingStudioLocation::Copy` /
+`recording_studio.location.*` in the gem's `config/locales/en.yml`. Nested gem
+keys go through `RecordingStudio.t` (via `RecordingStudioLocation::Copy` /
 `recording_studio_location_t`) so a missing active-locale value falls back to
 loaded English (host overrides included), then the caller's `default:`, then the
 gem-shipped English table registered at boot. Hosts may still override with the
 deprecated top-level `recording_studio_location.*` keys; a host legacy key wins
-when present.
+when present and resolves through plain `I18n.t` (main's `default:` chain), not
+`RecordingStudio.t`. A missing `_html` key with an interpolating or Array caller
+`default:` is stricter than view `t` (escaped, html_safe).
 
 ## Maps, geocoding, and search
 

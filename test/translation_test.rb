@@ -32,6 +32,7 @@ class TranslationTest < Minitest::Test
   def teardown
     I18n.locale = I18n.default_locale
     I18n.available_locales = @previous_locales if @previous_locales
+    clear_legacy_locale_translations!(:en)
     reset_english_backend!
     clear_locale_translations!(:de)
     clear_locale_translations!(:fr)
@@ -46,6 +47,20 @@ class TranslationTest < Minitest::Test
         assert_equal english, RecordingStudioLocation::Copy.t(relative)
       end
     end
+  end
+
+  def test_location_en_yml_path_is_registered_with_recording_studio_translation
+    # Must fail on its own when registration is missing: do not call the engine
+    # initializer block here — path must already be registered (test_helper /
+    # engine boot).
+    expected = File.expand_path(LOCATION_EN_YML)
+    paths = RecordingStudio::Translation.send(:registered_shipped_english_paths)
+
+    assert_includes paths, expected
+    assert_equal "Title",
+                 RecordingStudio::Translation.shipped_english.fetch(
+                   "recording_studio.location.fields.title"
+                 )
   end
 
   def test_shipped_english_table_includes_registered_location_en_yml
@@ -161,7 +176,7 @@ class TranslationTest < Minitest::Test
     missing = "recording_studio.location.fields.missing_key_for_parity"
 
     # I18n template tokens use %{name}; RuboCop prefers %<name>s for Kernel#sprintf.
-    # rubocop:disable Style/FormatStringToken
+    # rubocop:disable-next Style/FormatStringToken
     I18n.backend.store_translations(:en, {
                                       recording_studio: {
                                         location: {
@@ -176,14 +191,13 @@ class TranslationTest < Minitest::Test
                                         }
                                       }
                                     })
-    # rubocop:enable Style/FormatStringToken
 
     I18n.with_locale(:en) do
       assert_equal I18n.t(key), RecordingStudio.t(key)
       assert_equal "Title", RecordingStudio.t(key, default: "Ignored when present")
     end
 
-    # rubocop:disable Metrics/BlockLength -- gem-key parity matrix against I18n.t
+    # rubocop:disable-next Metrics/BlockLength -- gem-key parity matrix against I18n.t
     I18n.with_locale(:de) do
       assert_equal "Title", RecordingStudio.t(key),
                    "missing active locale uses loaded English"
@@ -253,7 +267,6 @@ class TranslationTest < Minitest::Test
 
       assert_equal "Title", RecordingStudio.t(key, locale: :en)
     end
-    # rubocop:enable Metrics/BlockLength
   end
 
   def test_fallback_order_prefers_loaded_english_then_caller_default_over_shipped_table
@@ -282,7 +295,7 @@ class TranslationTest < Minitest::Test
 
   def test_html_gem_keys_escape_unsafe_interpolation_like_view_t
     # I18n template tokens use %{name}; RuboCop prefers %<name>s for Kernel#sprintf.
-    # rubocop:disable Style/FormatStringToken
+    # rubocop:disable-next Style/FormatStringToken
     I18n.backend.store_translations(:en, {
                                       recording_studio: {
                                         location: {
@@ -297,10 +310,9 @@ class TranslationTest < Minitest::Test
                                         }
                                       }
                                     })
-    # rubocop:enable Style/FormatStringToken
     view = ActionController::Base.helpers
 
-    # rubocop:disable Metrics/BlockLength -- html_safe / escaping parity vs view t
+    # rubocop:disable-next Metrics/BlockLength -- html_safe / escaping parity vs view t
     I18n.with_locale(:en) do
       value = RecordingStudio.t("recording_studio.location.probe.hi_html", name: "<script>")
       assert_equal "<b>Hi &lt;script&gt;</b>", value
@@ -346,7 +358,6 @@ class TranslationTest < Minitest::Test
       assert_equal "<b>Hi &lt;script&gt;alert(1)&lt;/script&gt;</b>", xss
       assert_predicate xss, :html_safe?
     end
-    # rubocop:enable Metrics/BlockLength
   end
 
   def test_shipped_english_table_is_present_after_boot_registration
@@ -407,18 +418,53 @@ class TranslationTest < Minitest::Test
     assert_equal before, i18n_config_snapshot
   end
 
-  def test_copy_t_uses_recording_studio_t_for_nested_keys
+  def test_copy_t_uses_recording_studio_t_only_for_nested_gem_keys
     source = File.read(File.expand_path("../lib/recording_studio_location/copy.rb", __dir__))
     assert_includes source, "RecordingStudio.t"
-    refute_match(/\bI18n\.t\b/, source)
+    assert_includes source, "I18n.t"
+    assert_match(/I18n\.exists\?\(legacy_key/, source)
+    assert_match(/I18n\.t\(legacy_key/, source)
+  end
+
+  def test_legacy_host_keys_resolve_through_i18n_t_not_recording_studio_t_fallback
+    I18n.backend.store_translations(
+      :en,
+      recording_studio_location: { fields: { title: "Place name" } }
+    )
+    delete_loaded_translation!(:en, "recording_studio.location.fields.title")
+
+    I18n.with_locale(:en) do
+      assert_equal "Place name", RecordingStudioLocation::Copy.t("fields.title")
+      # Nested gem key still falls back via RecordingStudio.t / shipped table.
+      assert_equal "Clear location", RecordingStudioLocation::Copy.t("search.clear")
+    end
+  ensure
+    clear_legacy_locale_translations!(:en)
+    I18n.backend.store_translations(:en, gem_english_tree)
   end
 
   private
 
   def ensure_location_english_registered!
-    RecordingStudio::Translation.register_shipped_english(LOCATION_EN_YML)
+    # Never call the engine initializer block or register here — registration
+    # must already exist (test_helper for the gem suite, engine boot for dummy).
+    expected = File.expand_path(LOCATION_EN_YML)
+    paths = RecordingStudio::Translation.send(:registered_shipped_english_paths)
+    raise "location en.yml is not registered; test_helper/engine must register it" unless paths.include?(expected)
+
     RecordingStudio::Translation.reset_shipped_english!
     RecordingStudio::Translation.shipped_english
+  end
+
+  def clear_legacy_locale_translations!(locale)
+    I18n.backend.send(:init_translations) unless I18n.backend.initialized?
+    translations = I18n.backend.send(:translations)
+    locale_key = locale.to_sym
+    node = translations[locale_key]
+    return unless node.is_a?(Hash)
+
+    translations[locale_key] = node.dup if node.frozen?
+    translations[locale_key].delete(:recording_studio_location) if translations[locale_key].is_a?(Hash)
   end
 
   def assert_parity(key, **options)
@@ -483,6 +529,7 @@ class TranslationTest < Minitest::Test
     mutate_loaded_translation!(locale, full_key) { |node, leaf| node[leaf] = value }
   end
 
+  # rubocop:disable-next Metrics/CyclomaticComplexity -- walks a frozen I18n tree safely
   def mutate_loaded_translation!(locale, full_key)
     I18n.exists?(full_key, locale) # ensure translations are loaded / initialized
     parts = full_key.split(".").map(&:to_sym)

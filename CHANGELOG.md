@@ -7,10 +7,10 @@
 ### Added
 
 - English fallback for shipped `recording_studio.location.*` keys when the active
-  locale has no translation: lookups go through `RecordingStudio.t` so missing
-  keys resolve the loaded `:en` value (host English overrides included), then the
-  caller's `default:`, then the gem-shipped English table registered at boot via
-  `RecordingStudio::Translation.register_shipped_english`
+  locale has no translation: nested gem keys go through `RecordingStudio.t` so
+  missing keys resolve the loaded `:en` value (host English overrides included),
+  then the caller's `default:`, then the gem-shipped English table registered at
+  boot via `RecordingStudio::Translation.register_shipped_english`
 - Behavioral coverage for fallback order, escaping parity vs view `t`, boot-loaded
   host override on a real page, deleted-key renders, drift guard against
   hand-copied English `default:`s, and multi-seed suite stability
@@ -21,18 +21,21 @@
   gem keys through `RecordingStudio.t` (legacy `recording_studio_location.*` host
   keys still win when present). Hand-copied English `default:`s that matched
   `en.yml` were removed from validation helpers.
-- Requires RecordingStudio `>= 4.7.0` (dummy GitHub tag `v4.7.0`)
+- Requires RecordingStudio `~> 4.7` (dummy GitHub tag `v4.7.0`)
+- Legacy `recording_studio_location.*` host keys stay on plain `I18n.t` with
+  main's `default:` chain; only nested `recording_studio.location.*` gem keys
+  go through `RecordingStudio.t`
 
 ### Upgrade notes
 
-- Bump to `0.7.0` and RecordingStudio `>= 4.7.0`. No migration.
+- Bump to `0.7.0` and RecordingStudio `~> 4.7`. No migration.
 - Fallback comes from the loaded English, host overrides included.
-- Missing `_html` key with a non-interpolating caller `default:` stays unsafe
-  like view `t`; interpolating caller `default:` on a missing `_html` key is
-  stricter (args escaped, result html_safe).
+- Missing `_html` key with a non-interpolating String caller `default:` stays
+  unsafe like view `t`; interpolating or Array caller `default:` on a missing
+  `_html` key is stricter than main/view `t` (args escaped, result html_safe).
 - English hosts need no change. Hosts still override by defining the same nested
   keys in their own `config/locales`. Deprecated `recording_studio_location.*`
-  host keys still win via `Copy`.
+  host keys still win via `Copy` / `I18n.t`.
 
 ## [0.6.0] - 2026-10-12
 

@@ -2,7 +2,6 @@
 
 require "test_helper"
 require "yaml"
-require "set"
 
 # Ensures production call sites for gem keys do not hand-copy English from
 # en.yml as `default:`. English fallback comes from RecordingStudio.t / loaded
@@ -187,6 +186,7 @@ class EnglishDefaultDriftGuardTest < Minitest::Test
     end
   end
 
+  # rubocop:disable-next Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def read_ruby_expression(source, start)
     i = start
     i += 1 while i < source.length && source[i].match?(/\s/)
@@ -250,9 +250,8 @@ class EnglishDefaultDriftGuardTest < Minitest::Test
   end
 
   def eval_string_literal(literal)
-    # rubocop:disable Security/Eval
+    # rubocop:disable-next Security/Eval
     eval(literal)
-    # rubocop:enable Security/Eval
   end
 
   def extract_array_string_literals(array_src)

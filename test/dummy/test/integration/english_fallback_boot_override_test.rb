@@ -41,6 +41,18 @@ class EnglishFallbackBootOverrideTest < ActionDispatch::IntegrationTest
     assert_equal HOST, RecordingStudioLocation::Copy.t("map.title_with_coordinates")
   end
 
+  test "engine boot registered location en.yml without this test calling the initializer" do
+    expected = File.expand_path(RecordingStudioLocation::Engine.root.join("config/locales/en.yml"))
+    paths = RecordingStudio::Translation.send(:registered_shipped_english_paths)
+
+    assert_includes paths, expected,
+                    "removing recording_studio_location.register_shipped_english must fail this test"
+    assert_equal "Title",
+                 RecordingStudio::Translation.shipped_english.fetch(
+                   "recording_studio.location.fields.title"
+                 )
+  end
+
   private
 
   def assert_boot_loaded_override_preconditions!

@@ -14,7 +14,7 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_gemspec_pins_recording_studio_4_7
     gemspec = File.read(File.expand_path("../recording_studio_location.gemspec", __dir__))
 
-    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 4.7.0"'
+    assert_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4.7"'
     assert_includes gemspec, 'spec.add_dependency "flat_pack", ">= 0.1.212"'
   end
 

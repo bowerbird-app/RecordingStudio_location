@@ -153,11 +153,11 @@ under `recording_studio.location.errors.*` and resolve at validation time throug
 keys fall back to loaded English (host overrides included), then the caller's
 `default:`, then the gem-shipped table. Lookups go through
 `RecordingStudioLocation::Copy` (and `recording_studio_location_t` in views): a
-host-defined deprecated `recording_studio_location.*` key wins when present;
-otherwise the nested gem key is used via `RecordingStudio.t`. The gem no longer
-ships a legacy locale file. User and database content is not translated. Hosts
-override by defining the same nested keys in their own `config/locales`.
-Requires RecordingStudio `>= 4.7.0`.
+host-defined deprecated `recording_studio_location.*` key wins via plain
+`I18n.t` with main's `default:` chain; otherwise the nested gem key is used via
+`RecordingStudio.t`. The gem no longer ships a legacy locale file. User and
+database content is not translated. Hosts override by defining the same nested
+keys in their own `config/locales`. Requires RecordingStudio `~> 4.7`.
 
 ## Files
 
