@@ -4,7 +4,16 @@ require "test_helper"
 
 class ConfigurationTest < Minitest::Test
   def setup
+    @original_load_path = I18n.load_path.dup
+    locale_path = File.expand_path("../config/locales/en.yml", __dir__)
+    I18n.load_path |= [locale_path]
+    I18n.backend.load_translations
     @configuration = RecordingStudioLocation::Configuration.new
+  end
+
+  def teardown
+    I18n.load_path = @original_load_path
+    I18n.backend.load_translations
   end
 
   def test_merge_updates_geocoder
@@ -112,7 +121,9 @@ class ConfigurationTest < Minitest::Test
     assert_equal :choose, @configuration.icon_mode
     assert_equal %w[home star], @configuration.allowed_icons
     assert_equal "star", @configuration.default_icon
-    assert_equal "House", @configuration.location_type_label(:home)
+    # Known keys resolve through RecordingStudio.t (en.yml "Home"), not the
+    # config label. Config labels remain the fallback for custom keys only.
+    assert_equal "Home", @configuration.location_type_label(:home)
   end
 
   def test_radio_options_include_icons

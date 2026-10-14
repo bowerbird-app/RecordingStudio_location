@@ -6,13 +6,13 @@ Add Location to a Recording Studio host. The public product notes live in the [R
 
 - Rails 8.1+
 - PostgreSQL (UUID primary keys)
-- `recording_studio ~> 4.2`
+- `recording_studio >= 4.7.0`
 - FlatPack for the form and display partials
 
 ## Add the gem
 
 ```ruby
-gem "recording_studio", "~> 4.2"
+gem "recording_studio", ">= 4.7.0"
 gem "recording_studio_location"
 gem "flat_pack"
 ```

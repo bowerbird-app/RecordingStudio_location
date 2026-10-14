@@ -3,7 +3,9 @@
 module RecordingStudioLocation
   # Interface copy lookup. Prefer a host-defined legacy
   # `recording_studio_location.*` key, then the nested
-  # `recording_studio.location.*` English shipped by this gem.
+  # `recording_studio.location.*` key via `RecordingStudio.t` so missing
+  # active-locale values fall back to loaded English, then caller
+  # `default:`, then the registered gem-shipped English table.
   module Copy
     module_function
 
@@ -12,13 +14,15 @@ module RecordingStudioLocation
     # string defaults) pass through.
     def t(key, **options)
       relative = relative_key(key)
-      defaults = Array(options.delete(:default))
+      legacy_key = "recording_studio_location.#{relative}"
+      nested_key = "recording_studio.location.#{relative}"
+      locale = options[:locale] || I18n.locale
 
-      I18n.t(
-        :"recording_studio_location.#{relative}",
-        **options,
-        default: [:"recording_studio.location.#{relative}", *defaults]
-      )
+      if I18n.exists?(legacy_key, locale)
+        return RecordingStudio.t(legacy_key, **options)
+      end
+
+      RecordingStudio.t(nested_key, **options)
     end
 
     def relative_key(key)
@@ -28,19 +32,19 @@ module RecordingStudioLocation
     end
 
     def location_type_not_in_list
-      t("errors.location_type_not_in_list", default: "is not in the list of types")
+      t("errors.location_type_not_in_list")
     end
 
     def icon_not_in_list
-      t("errors.icon_not_in_list", default: "is not in the list of icons")
+      t("errors.icon_not_in_list")
     end
 
     def country_code_iso
-      t("errors.country_code_iso", default: "must be a two-letter ISO country code")
+      t("errors.country_code_iso")
     end
 
     def must_be_a_number
-      t("errors.must_be_a_number", default: "must be a number")
+      t("errors.must_be_a_number")
     end
   end
 end

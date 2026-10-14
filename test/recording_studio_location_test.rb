@@ -4,17 +4,17 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.6.0", ::RecordingStudioLocation::VERSION
+    assert_equal "0.7.0", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
     assert_kind_of Class, ::RecordingStudioLocation::Engine
   end
 
-  def test_gemspec_pins_recording_studio_4_2
+  def test_gemspec_pins_recording_studio_4_7
     gemspec = File.read(File.expand_path("../recording_studio_location.gemspec", __dir__))
 
-    assert_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4.2"'
+    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 4.7.0"'
     assert_includes gemspec, 'spec.add_dependency "flat_pack", ">= 0.1.212"'
   end
 
@@ -45,7 +45,7 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_verified_4x_github_tags
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.6.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.7.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.17.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"'
@@ -53,6 +53,7 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
     refute_includes gemfile, "recording_studio/v3.0.0"
+    refute_includes gemfile, 'tag: "v4.6.0"'
     refute_includes gemfile, 'tag: "v4.5.0"'
     refute_includes gemfile, 'tag: "v4.4.0"'
     refute_includes gemfile, 'tag: "v4.3.0"'
@@ -201,13 +202,14 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v4.6.0`"
+    assert_includes readme, "Recording Studio `v4.7.0`"
     assert_includes readme, "FlatPack `v0.1.213`"
     assert_includes readme, "Accessible `v0.17.0`"
     assert_includes readme, "Root Switchable `v0.9.0`"
     assert_includes readme, "Metrics `v0.2.0`"
     assert_includes readme, "Trashable `v0.10.0`"
     assert_includes readme, "Cache `v0.5.0`"
+    refute_includes readme, "Recording Studio `v4.6.0`"
     refute_includes readme, "Recording Studio `v4.5.0`"
     refute_includes readme, "Recording Studio `v4.4.0`"
     refute_includes readme, "Recording Studio `v4.3.0`"
