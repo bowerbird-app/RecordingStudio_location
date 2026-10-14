@@ -3,11 +3,10 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 find_or_record_child = lambda do |recordable, root_recording, parent_recording|
-  RecordingStudio::Recording.find_by(
+  RecordingStudio::Recording.where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).find_by(
     root_recording: root_recording,
     parent_recording: parent_recording,
-    recordable: recordable,
-    trashed_at: nil
+    recordable: recordable
   ) || RecordingStudio.record!(
     action: "created",
     recordable: recordable,
@@ -43,9 +42,10 @@ begin
   find_or_record_child.call(page, root_recording, folder_recording)
 
   convention_centre = root_recording.child_recordings.where(
-    recordable_type: RecordingStudio::Location::LOCATION_TYPE,
-    trashed_at: nil
-  ).detect { |recording| recording.recordable.name == "Melbourne Convention Centre" }
+    recordable_type: RecordingStudio::Location::LOCATION_TYPE
+  ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).detect do |recording|
+    recording.recordable.name == "Melbourne Convention Centre"
+  end
 
   unless convention_centre
     root_recording.record(RecordingStudio::Location::Location) do |location|
