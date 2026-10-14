@@ -37,7 +37,7 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
       get new_location_path
 
       assert_response :success
-      assert_location_english_chrome!(@response.body)
+      assert_location_english_chrome!
     end
   end
 
@@ -46,8 +46,8 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
       get new_location_path
 
       assert_response :success
-      assert_location_english_chrome!(@response.body)
-      assert_includes @response.body, "Search for a place or address"
+      assert_location_english_chrome!
+      assert_select "input[placeholder=?]", "Search for a place or address"
     end
   end
 
@@ -70,7 +70,7 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
           get new_location_path
 
           assert_response :success
-          assert_location_english_chrome!(@response.body)
+          assert_location_english_chrome!
         end
       end
     end
@@ -114,13 +114,13 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
 
   private
 
-  def assert_location_english_chrome!(body)
+  def assert_location_english_chrome!
     assert_select "h1", text: "New location"
-    assert_includes body, "Title"
-    assert_includes body, "Clear location"
+    assert_select "label", text: "Title"
+    assert_select "[aria-label=?]", "Clear location"
     # FlatPack chrome may still say "Translation missing" under :de; ignore those.
-    refute_match(/translation missing: [a-z]+\.recording_studio\.location/i, body)
-    refute_includes body, "Translation missing: #{I18n.locale}.recording_studio.location"
+    refute_match(/translation missing: [a-z]+\.recording_studio\.location/i, @response.body)
+    refute_includes @response.body, "Translation missing: #{I18n.locale}.recording_studio.location"
   end
 
   def i18n_config_snapshot

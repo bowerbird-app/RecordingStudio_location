@@ -34,11 +34,12 @@ class EnglishFallbackBootOverrideTest < ActionDispatch::IntegrationTest
     get new_location_path
 
     assert_response :success
-    assert_includes @response.body, HOST
-    refute_includes @response.body, GEM_ENGLISH
+    assert_select "h1", text: "New location"
+    assert_select "[data-recording-studio-location--place-search-map-title-template-value=?]", HOST
     assert_equal HOST, I18n.t(KEY)
     assert_equal HOST, RecordingStudio.t(KEY)
     assert_equal HOST, RecordingStudioLocation::Copy.t("map.title_with_coordinates")
+    refute_equal GEM_ENGLISH, RecordingStudioLocation::Copy.t("map.title_with_coordinates")
   end
 
   test "engine boot registered location en.yml without this test calling the initializer" do

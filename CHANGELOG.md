@@ -222,5 +222,5 @@
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
 [Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...HEAD
-[0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.0...v0.7.0
+[0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.1...v0.7.0
 [0.6.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.5.1...v0.6.0
