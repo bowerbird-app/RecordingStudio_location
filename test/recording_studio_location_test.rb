@@ -46,7 +46,7 @@ class RecordingStudioLocationTest < Minitest::Test
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.6.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.17.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.10.0"'
@@ -59,6 +59,7 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes gemfile, 'tag: "v4.2.2"'
     refute_includes gemfile, 'tag: "v4.2.1"'
     refute_includes gemfile, 'tag: "v4.2.0"'
+    refute_includes gemfile, 'tag: "v0.17.0"'
     refute_includes gemfile, 'tag: "v0.15.0"'
     refute_includes gemfile, 'tag: "v0.13.0"'
     refute_includes gemfile, 'tag: "v0.10.1"'
@@ -203,7 +204,7 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_includes readme, "RecordingStudio::Location::Location"
     assert_includes readme, "Recording Studio `v4.6.0`"
     assert_includes readme, "FlatPack `v0.1.213`"
-    assert_includes readme, "Accessible `v0.17.0`"
+    assert_includes readme, "Accessible `v0.18.0`"
     assert_includes readme, "Root Switchable `v0.9.0`"
     assert_includes readme, "Metrics `v0.2.0`"
     assert_includes readme, "Trashable `v0.10.0`"
@@ -211,6 +212,7 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes readme, "Recording Studio `v4.5.0`"
     refute_includes readme, "Recording Studio `v4.4.0`"
     refute_includes readme, "Recording Studio `v4.3.0`"
+    refute_includes readme, "Accessible `v0.17.0`"
     refute_includes readme, "Accessible `v0.15.0`"
     refute_includes readme, "Accessible `v0.13.0`"
     refute_includes readme, "Root Switchable `v0.8.0`"
