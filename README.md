@@ -195,7 +195,9 @@ gem-shipped English table registered at boot. Hosts may still override with the
 deprecated top-level `recording_studio_location.*` keys; a host legacy key wins
 when present and resolves through plain `I18n.t` (main's `default:` chain), not
 `RecordingStudio.t`. A missing `_html` key with an interpolating or Array caller
-`default:` is stricter than view `t` (escaped, html_safe).
+`default:` is stricter than view `t` (escaped, html_safe). A plain default with
+no interpolation is returned as a plain (non-html_safe) String, so views will
+escape it.
 
 ## Maps, geocoding, and search
 
@@ -402,7 +404,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.7.0`, Accessible `v0.17.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.10.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.7.0`.
+The dummy app pins Recording Studio `v4.7.0`, Accessible `v0.18.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.10.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.7.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

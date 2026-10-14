@@ -115,6 +115,7 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
   private
 
   def assert_location_english_chrome!(body)
+    assert_select "h1", text: "New location"
     assert_includes body, "Title"
     assert_includes body, "Clear location"
     # FlatPack chrome may still say "Translation missing" under :de; ignore those.

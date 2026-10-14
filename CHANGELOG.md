@@ -33,6 +33,8 @@
 - Missing `_html` key with a non-interpolating String caller `default:` stays
   unsafe like view `t`; interpolating or Array caller `default:` on a missing
   `_html` key is stricter than main/view `t` (args escaped, result html_safe).
+  A plain default with no interpolation is returned as a plain (non-html_safe)
+  String, so views will escape it.
 - English hosts need no change. Hosts still override by defining the same nested
   keys in their own `config/locales`. Deprecated `recording_studio_location.*`
   host keys still win via `Copy` / `I18n.t`.
@@ -220,5 +222,5 @@
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
 [Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...HEAD
-[0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.1...v0.7.0
+[0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.5.1...v0.6.0
