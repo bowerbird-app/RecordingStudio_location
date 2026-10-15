@@ -146,22 +146,29 @@ include RecordingStudio::Capabilities::Location.to
 
 Gem views and helpers wrap static labels, placeholders, help text, search chrome,
 and map titles in `recording_studio.location.*` keys. Validation messages live
-under `recording_studio.location.errors.*` and resolve at validation time with an
-English `default:`. English ships in `config/locales/en.yml` only. Lookups go
-through `RecordingStudioLocation::Copy` (and `recording_studio_location_t` in
-views): a host-defined deprecated `recording_studio_location.*` key wins when
-present; otherwise the nested gem key is used. The gem no longer ships a legacy
-locale file. User and database content is not translated. Hosts override by
-defining the same nested keys in their own `config/locales`.
+under `recording_studio.location.errors.*` and resolve at validation time through
+`RecordingStudio.t` (no hand-copied English `default:`). English ships in
+`config/locales/en.yml` only. The engine registers that file at boot with
+`RecordingStudio::Translation.register_shipped_english` so missing active-locale
+keys fall back to loaded English (host overrides included), then the caller's
+`default:`, then the gem-shipped table. Lookups go through
+`RecordingStudioLocation::Copy` (and `recording_studio_location_t` in views): a
+host-defined deprecated `recording_studio_location.*` key wins via plain
+`I18n.t` with main's `default:` chain; otherwise the nested gem key is used via
+`RecordingStudio.t`. The gem no longer ships a legacy locale file. User and
+database content is not translated. Hosts override by defining the same nested
+keys in their own `config/locales`. Requires RecordingStudio `~> 4.7`. A plain
+caller `default:` with no interpolation is returned as a plain (non-html_safe)
+String, so views will escape it.
 
 ## Files
 
 | Path | Role |
 | --- | --- |
 | `lib/recording_studio_location/configuration.rb` | Defaults |
-| `lib/recording_studio_location/copy.rb` | Legacy→nested I18n lookup |
+| `lib/recording_studio_location/copy.rb` | Legacy→nested lookup via `RecordingStudio.t` |
 | `lib/recording_studio_location/geocoder.rb` | Registry, factory, credentials |
 | `lib/recording_studio_location/map.rb` | Map registry, factory, credentials |
-| `lib/recording_studio_location/engine.rb` | Loads YAML, `config.x`, then initializer |
+| `lib/recording_studio_location/engine.rb` | Registers shipped English, loads YAML / `config.x` |
 | `config/locales/en.yml` | Nested English interface copy |
 | `lib/generators/recording_studio_location/install/templates/` | Initializer and YAML templates |

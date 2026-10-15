@@ -32,7 +32,7 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", "~> 4.2"
+gem "recording_studio", "~> 4.7"
 gem "recording_studio_location"
 gem "flat_pack"
 ```
@@ -187,9 +187,17 @@ The card shows the resolved icon and title (or venue name when title is blank), 
 ```
 
 The engine includes these helpers on Action Controller. Interface copy lives under
-`recording_studio.location.*` in the gem's `config/locales/en.yml`. Hosts may still
-override with the deprecated top-level `recording_studio_location.*` keys; a host
-legacy key wins when present.
+`recording_studio.location.*` in the gem's `config/locales/en.yml`. Nested gem
+keys go through `RecordingStudio.t` (via `RecordingStudioLocation::Copy` /
+`recording_studio_location_t`) so a missing active-locale value falls back to
+loaded English (host overrides included), then the caller's `default:`, then the
+gem-shipped English table registered at boot. Hosts may still override with the
+deprecated top-level `recording_studio_location.*` keys; a host legacy key wins
+when present and resolves through plain `I18n.t` (main's `default:` chain), not
+`RecordingStudio.t`. A missing `_html` key with an interpolating or Array caller
+`default:` is stricter than view `t` (escaped, html_safe). A plain default with
+no interpolation is returned as a plain (non-html_safe) String, so views will
+escape it.
 
 ## Maps, geocoding, and search
 
@@ -334,12 +342,13 @@ for custom keys (and when neither namespace has a translation).
 ### Interface text
 
 Static labels, placeholders, help text, search chrome, map titles, and
-validation messages in this gem resolve through Rails I18n under
+validation messages in this gem resolve through `RecordingStudio.t` under
 `recording_studio.location` in `config/locales/en.yml` (errors under
 `recording_studio.location.errors.*`). English only ships with the gem. Lookups
 prefer a host-defined deprecated `recording_studio_location.*` key when present,
-then the nested gem key. Hosts override by defining the same nested keys in
-their own `config/locales`.
+then the nested gem key with English fallback (loaded `:en`, then caller
+`default:`, then the registered shipped table). Hosts override by defining the
+same nested keys in their own `config/locales`.
 
 `icon_mode`:
 
@@ -395,7 +404,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.6.0`, Accessible `v0.18.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.10.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.4.0`.
+The dummy app pins Recording Studio `v4.7.0`, Accessible `v0.18.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.10.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.7.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

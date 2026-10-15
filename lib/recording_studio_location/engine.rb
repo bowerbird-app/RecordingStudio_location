@@ -53,6 +53,15 @@ module RecordingStudioLocation
       end
     end
 
+    # Contribute this gem's English to RecordingStudio.t's final shipped table.
+    # Boot-time only; must run before RecordingStudio loads the merged table.
+    initializer "recording_studio_location.register_shipped_english",
+                before: "recording_studio.load_shipped_english" do
+      RecordingStudio::Translation.register_shipped_english(
+        root.join("config/locales/en.yml")
+      )
+    end
+
     # Run before_initialize hooks
     initializer "recording_studio_location.before_initialize", before: "recording_studio_location.load_config" do |_app|
       RecordingStudioLocation.configuration.hooks.run(:before_initialize, self)
