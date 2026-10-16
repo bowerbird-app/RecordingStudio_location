@@ -9,7 +9,7 @@ gem "recording_studio_accessible", github: "bowerbird-app/RecordingStudio_access
 # Root Switchable 0.7+ requires Metrics (GitHub-only; pin for Bundler resolution)
 gem "recording_studio_metrics", github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"
 # Accessible 0.17+ requires Trashable query-only (GitHub-only; pin for Bundler resolution)
-gem "recording_studio_trashable", github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.10.0", require: false
+gem "recording_studio_trashable", github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.11.0", require: false
 # Root Switchable 0.9+ requires Cache (GitHub-only; pin for Bundler resolution)
 gem "recording_studio_cache", github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"
 
