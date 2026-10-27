@@ -116,7 +116,15 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Office HQ"
     assert_includes response.body, "Melbourne Convention Centre"
-    assert_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
+    assert_includes response.body, "South Wharf, Australia"
+    assert_select "a[href='#{edit_location_path(recording)}']", text: "Edit location"
+    refute_includes response.body, "Sign out"
+    refute_includes response.body, "recording_studio_root_switchable"
+    refute_includes response.body, "This is recording"
+    refute_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
+    assert_select "h3", count: 0
+    assert_select ".fp-card", text: /South Wharf, Australia/
+    refute_includes css_select(".fp-card").first.to_html, "Melbourne Convention Centre"
   end
 
   test "choose mode create stores the picked icon" do
@@ -139,7 +147,7 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_equal "star", location.icon
     assert_equal "star", location.resolved_icon
     follow_redirect!
-    assert_includes response.body, 'data-flat-pack--icon-name-value="star"'
+    refute_includes response.body, 'data-flat-pack--icon-name-value="star"'
   ensure
     RecordingStudioLocation.configuration.icon_mode = :type
   end

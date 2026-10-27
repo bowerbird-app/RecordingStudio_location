@@ -1,5 +1,5 @@
 module ApplicationHelper
-  def dummy_page_nav(title:, subtitle: nil, back_url: nil, back_label: "Home")
+  def dummy_page_nav(title:, subtitle: nil, back_url: nil, back_label: "Home", edit_url: nil)
     content_for(:title, title)
     content_for(:subtitle, subtitle) if subtitle.present?
 
@@ -9,6 +9,11 @@ module ApplicationHelper
       page_nav[:back_tooltip] = back_label
     end
     flat_pack_page_nav(**page_nav)
+
+    if edit_url.present?
+      register_page_nav("Edit location", edit_url, role: :primary)
+      return
+    end
 
     recording_studio_page_nav_right do
       concat recording_studio_root_switch_dropdown(style: :ghost, size: :md)

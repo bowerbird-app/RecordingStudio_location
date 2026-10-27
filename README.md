@@ -180,7 +180,7 @@ Read-only display:
 <%= recording_studio_location_display(location) %>
 ```
 
-The card shows the resolved icon and title (or venue name when title is blank), then the venue name and address beneath when they add detail, and coordinates only when both values exist. Missing title, type, or icon is fine. Pass `map: true` to embed a pin preview when a map adapter is configured and both coordinates are present:
+The card shows the address and coordinates when they add detail beyond the page title and venue name. Pass `map: true` to render the pin preview outside the card when a map adapter is configured and both coordinates are present:
 
 ```erb
 <%= recording_studio_location_display(location, map: true) %>
