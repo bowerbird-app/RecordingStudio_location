@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-27
+
+### Changed
+
+- A selected place hides search and shows the summary. Address fields stay collapsed until Edit address or Add address manually, or until the record has errors. Picking a place fills the hidden inputs and does not open them. Clear location returns to search.
+
+### Upgrade notes
+
+- Hosts who copied the old partial should hide search when a place is selected and keep the address inputs in the DOM when collapsed. No migration. Rebuild Tailwind so `hidden` stays in the scan.
+
 ## [0.8.0] - 2026-10-27
 
 ### Changed
@@ -244,7 +254,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.1...v0.7.0
 [0.6.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.5.1...v0.6.0

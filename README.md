@@ -162,7 +162,7 @@ Two edit helpers. Both put Title and Type above the venue search or address fiel
 
 The partial is `recording_studio_location/locations/fields`. It uses FlatPack TextInput, RadioGroup, Select, NumberInput, and Button. Type and (in `:choose` mode) icon are RadioGroup `variant: :inline` — real radios drawn as icon + label buttons. Coordinates sit last and are marked optional.
 
-Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address, picks a result, and the structured fields fill in and show under the search. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually. The same action is a button under the search while the address fields are hidden. Either one shows those fields and focuses the first input. Title, type, and icon stay above the search. The address fields are inline, so this helper works on a full page and inside a host modal. A saved or picked place shows a summary with a Clear location control (X). That control empties the venue and address fields, including coordinates, hides the summary, the address fields, and the map, and focuses search so the user can pick again. It does not clear title, type, or icon. Hosts choose which helper to render.
+Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address and picks a result. After a pick, search hides and the summary shows. Address fields stay collapsed. Edit address opens them. Add address manually still opens them from the empty state. Clear brings search back. The nine inputs remain in the form when collapsed. When a search returns no results, the dropdown offers Add address manually. The same action is a button under the search in the empty state. Either one opens the address fields and focuses the first input. Title, type, and icon stay above the search. The address fields are inline, so this helper works on a full page and inside a host modal. A saved or picked place shows a summary with Clear location and Edit address. Clear empties the venue and address fields, including coordinates, and does not clear title, type, or icon. Hosts choose which helper to render.
 
 ```erb
 <%= recording_studio_location_search_fields(form) %>
@@ -404,7 +404,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v6.1.0`, Accessible `v0.18.0`, Root Switchable `v0.11.0`, Metrics `v0.6.1`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `0.1.319`. Location is `0.8.0`.
+The dummy app pins Recording Studio `v6.1.0`, Accessible `v0.18.0`, Root Switchable `v0.11.0`, Metrics `v0.6.1`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `0.1.319`. Location is `0.8.1`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

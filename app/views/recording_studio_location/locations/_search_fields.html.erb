@@ -2,7 +2,8 @@
 <% show_title = local_assigns.fetch(:show_title, true) %>
 <% show_location_type = local_assigns.fetch(:show_location_type, true) %>
 <% show_icon = local_assigns.fetch(:show_icon, true) %>
-<% filled = recording_studio_location_filled?(location) || location.errors.any? %>
+<% place_selected = recording_studio_location_filled?(location) %>
+<% fields_open = location.errors.any? %>
 <% selected_label = recording_studio_location_filled?(location) ? (location.name.presence || location.display_name) : "" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
 <% input_id = "#{list_id}-input" %>
@@ -38,7 +39,8 @@
      data-recording-studio-location--place-search-map-url-template-value="<%= map_preview.url_template %>"
      data-recording-studio-location--place-search-map-title-template-value="<%= recording_studio_location_t("map.title_with_coordinates") %>"
      <% end %>>
-  <div class="relative z-40 w-full">
+  <div class="relative z-40 w-full<%= place_selected ? ' hidden' : '' %>"
+       data-recording-studio-location--place-search-target="searchBox">
     <label for="<%= input_id %>" class="mb-1.5 block text-sm font-medium text-[var(--surface-content-color)]"><%= recording_studio_location_t("search.label") %></label>
 
     <div class="relative w-full">
@@ -72,7 +74,7 @@
   <p class="hidden mt-1 text-xs text-[var(--surface-muted-content-color)]"
      data-recording-studio-location--place-search-target="attribution"></p>
 
-  <div class="<%= filled ? '' : 'hidden' %>"
+  <div class="<%= place_selected ? '' : 'hidden' %>"
        data-recording-studio-location--place-search-target="summary">
     <%= render FlatPack::Card::Component.new(background: :none, border: :default, shadow: :none) do |card| %>
       <% card.body do %>
@@ -85,25 +87,39 @@
               <%= location.full_address %>
             </p>
           </div>
-          <%= render FlatPack::Button::Component.new(
-            icon: "x-mark",
-            icon_only: true,
-            style: :ghost,
-            size: :sm,
-            text: recording_studio_location_t("search.clear"),
-            type: "button",
-            class: "self-start shrink-0",
-            data: {
-              action: "click->recording-studio-location--place-search#clear",
-              "recording-studio-location--place-search-target": "clearButton"
-            }
-          ) %>
+          <div class="flex shrink-0 items-start gap-2">
+            <div class="<%= fields_open ? 'hidden' : '' %>"
+                 data-recording-studio-location--place-search-target="editAddress">
+              <%= render FlatPack::Button::Component.new(
+                text: recording_studio_location_t("search.edit_address"),
+                style: :secondary,
+                size: :sm,
+                type: "button",
+                data: {
+                  action: "click->recording-studio-location--place-search#openManual"
+                }
+              ) %>
+            </div>
+            <%= render FlatPack::Button::Component.new(
+              icon: "x-mark",
+              icon_only: true,
+              style: :ghost,
+              size: :sm,
+              text: recording_studio_location_t("search.clear"),
+              type: "button",
+              class: "self-start shrink-0",
+              data: {
+                action: "click->recording-studio-location--place-search#clear",
+                "recording-studio-location--place-search-target": "clearButton"
+              }
+            ) %>
+          </div>
         </div>
       <% end %>
     <% end %>
   </div>
 
-  <div class="<%= filled ? 'hidden' : '' %>"
+  <div class="<%= (place_selected || fields_open) ? 'hidden' : '' %>"
        data-recording-studio-location--place-search-target="manual">
     <%= render FlatPack::Button::Component.new(
       text: recording_studio_location_t("search.add_manually"),
@@ -113,7 +129,7 @@
     ) %>
   </div>
 
-  <div class="<%= filled ? '' : 'hidden' %>" data-recording-studio-location--place-search-target="fields">
+  <div class="<%= fields_open ? '' : 'hidden' %>" data-recording-studio-location--place-search-target="fields">
     <%= recording_studio_location_fields(form, title: false, location_type: false, icon: false) %>
   </div>
 </div>

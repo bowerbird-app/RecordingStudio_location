@@ -8,7 +8,7 @@
 - Optional address fields, ISO `country_code`, and nullable latitude/longitude
 - Helpers: `display_name`, `full_address`, `coordinates`, `resolved_icon`
 - Optional `title`, `location_type`, and `icon`
-- FlatPack form fields, search helper, and a read-only display partial
+- FlatPack form fields, a progressive search helper (summary when a place is selected, address fields on demand), and a read-only display partial
 - Optional geocoder/search adapter (Google built-in, Fake for tests), `geocode!` / `reverse!`, plus `#search` / `#details`
 - Gemspec: `add_dependency "recording_studio", ">= 6.1.0"` and `flat_pack >= 0.1.315`
 - Dummy GitHub pins: Recording Studio `v6.1.0`, Accessible `v0.18.0`, Root Switchable `v0.11.0`, Metrics `v0.6.1`, FlatPack `0.1.319`

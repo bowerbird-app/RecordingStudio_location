@@ -49,6 +49,7 @@ class LocalesTest < ActiveSupport::TestCase
     "searching" => "Searching",
     "add_manually" => "Add address manually",
     "clear" => "Clear location",
+    "edit_address" => "Edit address",
     "summary_empty" => "No place selected yet."
   }.freeze
 
