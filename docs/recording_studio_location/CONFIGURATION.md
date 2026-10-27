@@ -64,6 +64,17 @@ Form helpers accept `title:`, `location_type:`, and `icon:` (all default true) t
 
 Use `RecordingStudio::Location.permitted_attributes` and `location.api_payload` on host forms, APIs, and MCP serializers.
 
+### layout
+
+`config.layout` chooses the HTML shell for this engine. It starts as `nil`. `nil` uses `RecordingStudio.configuration.layout`, then `recording_studio/default_layout`. `false` renders with no layout. A String is a layout name. A callable is invoked as `call(controller:)` and must return a String, `nil`, or `false`.
+
+```ruby
+config.layout = "application"
+config.layout = ->(controller:) { controller.devise_controller? ? "application" : nil }
+```
+
+Engine controllers call `recording_studio_layout { RecordingStudioLocation.configuration.layout }`. Do not hard-code `layout "recording_studio/default_layout"`.
+
 ### authenticate
 
 Search endpoints require a logged-in user. Set `config.authenticate` to a proc if the host is not Devise. Default is `authenticate_user!` when that method exists, otherwise `401`.
@@ -157,7 +168,7 @@ host-defined deprecated `recording_studio_location.*` key wins via plain
 `I18n.t` with main's `default:` chain; otherwise the nested gem key is used via
 `RecordingStudio.t`. The gem no longer ships a legacy locale file. User and
 database content is not translated. Hosts override by defining the same nested
-keys in their own `config/locales`. Requires RecordingStudio `~> 4.7`. A plain
+keys in their own `config/locales`. Requires RecordingStudio `>= 6.1.0`. A plain
 caller `default:` with no interpolation is returned as a plain (non-html_safe)
 String, so views will escape it.
 

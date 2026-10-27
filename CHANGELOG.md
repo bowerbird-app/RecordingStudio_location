@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-27
+
+### Changed
+
+- Requires Recording Studio `>= 6.1.0` (dummy tag `v6.1.0`) and FlatPack `>= 0.1.315` (dummy ref `1fcbafe94f8eb118f0a22182f63f5110fcc97a56`, version `0.1.319`).
+- `RecordingStudioLocation::Configuration#layout` defaults to nil. The setter accepts a value through `RecordingStudio::Layout.accept`. Engine controllers call `recording_studio_layout` and let a nil setting fall through to the host layout, then `recording_studio/default_layout`.
+- Dummy pages set `content_for :title` and `:subtitle`. The default layout renders the only page `<h1>`. Back and close use `flat_pack_page_nav`. Sign out is a `register_page_nav` entry.
+- Cards use `background`, `border`, and `shadow` instead of `style`.
+
+### Upgrade notes
+
+- Bump to `0.8.0` with Recording Studio `>= 6.1.0` and FlatPack `>= 0.1.315`. No database migration.
+- Remove `RecordingStudio::UsesDefaultLayout`, `recording_studio_page_nav`, and `layout "recording_studio/default_layout"`. Call `recording_studio_layout` and set `content_for :title`.
+- Sibling gems that still declare `recording_studio < 5` need their requirement relaxed before Bundler resolves `6.1.0`. The dummy app does this in `test/support/widen_recording_studio_requirement.rb`.
+- Dummy Root Switchable moves to `v0.11.0` and Metrics to `v0.6.1`. `v0.9.0` still calls removed Flatpack page-nav arguments. `v0.11.0` needs Metrics `>= 0.3.0`.
+
 ## [0.7.0] - 2026-10-14
 
 ### Added
@@ -221,6 +237,7 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.1...v0.7.0
 [0.6.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.5.1...v0.6.0

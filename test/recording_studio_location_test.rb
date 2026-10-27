@@ -4,18 +4,19 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.7.0", ::RecordingStudioLocation::VERSION
+    assert_equal "0.8.0", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
     assert_kind_of Class, ::RecordingStudioLocation::Engine
   end
 
-  def test_gemspec_pins_recording_studio_4_7
+  def test_gemspec_allows_recording_studio_6_1
     gemspec = File.read(File.expand_path("../recording_studio_location.gemspec", __dir__))
 
-    assert_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4.7"'
-    assert_includes gemspec, 'spec.add_dependency "flat_pack", ">= 0.1.212"'
+    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 6.1.0"'
+    assert_includes gemspec, 'spec.add_dependency "flat_pack", ">= 0.1.315"'
+    refute_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4'
   end
 
   def test_gemspec_excludes_cursor_config
@@ -42,16 +43,20 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_includes install_script, "fetch-skills.sh"
   end
 
-  def test_dummy_gemfile_pins_verified_4x_github_tags
+  def test_dummy_gemfile_pins_recording_studio_6_1
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v4.7.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.1.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.9.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.2.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.11.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.6.1"'
+    refute_includes gemfile, 'tag: "v0.9.0"'
+    refute_includes gemfile, 'tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.11.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.213"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"'
+    refute_includes gemfile, 'tag: "v4.7.0"'
+    refute_includes gemfile, 'tag: "v0.1.213"'
     refute_includes gemfile, "recording_studio/v3.0.0"
     refute_includes gemfile, 'tag: "v4.6.0"'
     refute_includes gemfile, 'tag: "v4.5.0"'
@@ -136,9 +141,10 @@ class RecordingStudioLocationTest < Minitest::Test
     application_controller_path = File.expand_path("dummy/app/controllers/application_controller.rb", __dir__)
     controller_source = File.read(application_controller_path)
 
-    assert_includes controller_source, "include RecordingStudio::UsesDefaultLayout"
-    assert_includes controller_source, '"recording_studio/default_layout"'
+    assert_includes controller_source, "recording_studio_layout"
     assert_includes controller_source, "devise_controller? ? \"application\""
+    refute_includes controller_source, "UsesDefaultLayout"
+    refute_includes controller_source, '"recording_studio/default_layout"'
     refute_includes controller_source, "flat_pack_sidebar"
     refute File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack_sidebar.html.erb", __dir__))
     refute File.exist?(File.expand_path("dummy/app/views/layouts/flat_pack/_sidebar.html.erb", __dir__))
@@ -204,11 +210,15 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v4.7.0`"
-    assert_includes readme, "FlatPack `v0.1.213`"
+    assert_includes readme, "Recording Studio `v6.1.0`"
+    assert_includes readme, "FlatPack `0.1.319`"
+    refute_includes readme, "Recording Studio `v4.7.0`"
+    refute_includes readme, "FlatPack `v0.1.213`"
     assert_includes readme, "Accessible `v0.18.0`"
-    assert_includes readme, "Root Switchable `v0.9.0`"
-    assert_includes readme, "Metrics `v0.2.0`"
+    assert_includes readme, "Root Switchable `v0.11.0`"
+    assert_includes readme, "Metrics `v0.6.1`"
+    refute_includes readme, "Root Switchable `v0.9.0`"
+    refute_includes readme, "Metrics `v0.2.0`"
     assert_includes readme, "Trashable `v0.11.0`"
     assert_includes readme, "Cache `v0.5.0`"
     refute_includes readme, "Recording Studio `v4.6.0`"
@@ -258,7 +268,8 @@ class RecordingStudioLocationTest < Minitest::Test
       view_source = File.read(view_path)
 
       assert_includes view_source, "dummy_page_nav"
-      assert_includes view_source, "FlatPack::PageTitle::Component"
+      assert_includes view_source, "subtitle:"
+      refute_includes view_source, "FlatPack::PageTitle::Component"
       refute_includes view_source, "FlatPack::Card::Component"
       refute_includes view_source, "FlatPack::Breadcrumb::Component"
     end

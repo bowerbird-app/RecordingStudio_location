@@ -17,12 +17,13 @@ module RecordingStudioLocation
     include IdentityConfiguration
 
     attr_accessor :geocoder, :map, :authenticate, :lookup_depth
-    attr_reader :hooks, :location_types, :icon_mode, :allowed_icons, :default_icon
+    attr_reader :hooks, :layout, :location_types, :icon_mode, :allowed_icons, :default_icon
 
     def initialize
       @geocoder = nil
       @map = nil
       @authenticate = nil
+      @layout = nil
       @lookup_depth = :full
       @hooks = RecordingStudio::Hooks.new
       @location_types = DEFAULT_LOCATION_TYPES.dup
@@ -36,6 +37,7 @@ module RecordingStudioLocation
         geocoder: geocoder,
         map: map,
         authenticate: authenticate,
+        layout: layout,
         lookup_depth: lookup_depth,
         hooks_registered: hooks.instance_variable_get(:@registry).transform_values(&:size)
       )
@@ -48,6 +50,10 @@ module RecordingStudioLocation
         setter = "#{key}="
         public_send(setter, value) if respond_to?(setter)
       end
+    end
+
+    def layout=(value)
+      @layout = RecordingStudio::Layout.accept(value)
     end
 
     private

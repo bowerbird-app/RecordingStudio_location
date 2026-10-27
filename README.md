@@ -32,9 +32,9 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", "~> 4.7"
+gem "recording_studio", ">= 6.1.0"
 gem "recording_studio_location"
-gem "flat_pack"
+gem "flat_pack", ">= 0.1.315"
 ```
 
 ```bash
@@ -404,7 +404,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.7.0`, Accessible `v0.18.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.7.0`.
+The dummy app pins Recording Studio `v6.1.0`, Accessible `v0.18.0`, Root Switchable `v0.11.0`, Metrics `v0.6.1`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `0.1.319`. Location is `0.8.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

@@ -1,12 +1,11 @@
-<% dummy_page_nav(title: "Locations", back_url: root_path, back_label: "Home") %>
+<% dummy_page_nav(
+  title: "Locations",
+  subtitle: "Each place is its own recording under Studio Workspace.",
+  back_url: root_path,
+  back_label: "Home"
+) %>
 
 <div class="flex w-full flex-col gap-6">
-  <%= render FlatPack::PageTitle::Component.new(
-    title: "Locations",
-    subtitle: "Each place is its own recording under Studio Workspace.",
-    variant: :h1
-  ) %>
-
   <%= render FlatPack::Button::Component.new(
     text: "Add a location",
     style: :primary,

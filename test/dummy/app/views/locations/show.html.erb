@@ -1,12 +1,11 @@
-<% dummy_page_nav(title: @location.display_name, back_url: locations_path, back_label: "Locations") %>
+<% dummy_page_nav(
+  title: @location.display_name,
+  subtitle: "Recording under #{@recording.parent_recording.recordable_type}.",
+  back_url: locations_path,
+  back_label: "Locations"
+) %>
 
 <div class="flex w-full max-w-3xl flex-col gap-6">
-  <%= render FlatPack::PageTitle::Component.new(
-    title: @location.display_name,
-    subtitle: "Recording under #{@recording.parent_recording.recordable_type}.",
-    variant: :h1
-  ) %>
-
   <%= recording_studio_location_display(@location, map: true) %>
 
   <p class="text-sm text-(--surface-muted-content-color)">

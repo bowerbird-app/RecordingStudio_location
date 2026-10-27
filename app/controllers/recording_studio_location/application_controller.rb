@@ -5,6 +5,7 @@ module RecordingStudioLocation
     include Authentication
 
     protect_from_forgery with: :exception
-    layout "application"
+
+    recording_studio_layout { RecordingStudioLocation.configuration.layout }
   end
 end
