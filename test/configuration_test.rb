@@ -51,6 +51,7 @@ class ConfigurationTest < Minitest::Test
     assert_nil configuration.geocoder
     assert_nil configuration.map
     assert_nil configuration.authenticate
+    assert_nil configuration.layout
     assert_equal :full, configuration.lookup_depth
     assert_equal :type, configuration.icon_mode
     assert_equal %w[home building-office map-pin star briefcase], configuration.allowed_icons
@@ -144,6 +145,28 @@ class ConfigurationTest < Minitest::Test
     map = @configuration.type_icon_map
     assert_equal "building-office", map.fetch("office")
     assert_equal "home", map.fetch("home")
+  end
+
+  def test_layout_accepts_nil_false_and_a_layout_name
+    assert_nil @configuration.layout
+
+    @configuration.layout = "application"
+    assert_equal "application", @configuration.layout
+
+    @configuration.layout = false
+    assert_equal false, @configuration.layout
+
+    @configuration.layout = nil
+    assert_nil @configuration.layout
+    assert_nil @configuration.to_h.fetch(:layout)
+  end
+
+  def test_layout_rejects_a_positional_callable
+    error = assert_raises(ArgumentError) do
+      @configuration.layout = ->(controller) { controller && "application" }
+    end
+
+    assert_match(/controller:/, error.message)
   end
 
   def test_blank_default_icon_falls_back

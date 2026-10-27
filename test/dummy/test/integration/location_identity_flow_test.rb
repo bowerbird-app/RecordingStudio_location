@@ -43,7 +43,11 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "recording-studio-location--identity"
     refute_includes response.body, 'name="location[icon]"'
     refute_includes response.body, "chip-group-gap"
-    assert_includes response.body, "Enter address"
+    fields = css_select("[data-recording-studio-location--place-search-target='fields']").first
+    assert fields
+    assert_includes fields["class"].to_s.split, "hidden"
+    refute_includes fields.to_html, "location[title]"
+    assert_includes response.body, "location[title]"
   end
 
   test "choose mode form shows icon radios from the same RadioGroup" do
@@ -116,7 +120,14 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Office HQ"
     assert_includes response.body, "Melbourne Convention Centre"
-    assert_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
+    assert_includes response.body, "South Wharf, Australia"
+    assert_select "a[href='#{edit_location_path(recording)}']", text: "Edit location"
+    refute_includes response.body, "Sign out"
+    refute_includes response.body, "recording_studio_root_switchable"
+    refute_includes response.body, "This is recording"
+    refute_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
+    assert_select "h3", count: 0
+    assert_select ".fp-card", count: 0
   end
 
   test "choose mode create stores the picked icon" do
@@ -139,20 +150,21 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_equal "star", location.icon
     assert_equal "star", location.resolved_icon
     follow_redirect!
-    assert_includes response.body, 'data-flat-pack--icon-name-value="star"'
+    refute_includes response.body, 'data-flat-pack--icon-name-value="star"'
   ensure
     RecordingStudioLocation.configuration.icon_mode = :type
   end
 
-  test "manual address modal omits title type and icon fields" do
+  test "inline address fields omit title type and icon" do
     get new_location_path
 
-    modal = css_select("[data-controller~='flat-pack--modal']").first
-    assert modal
-    refute_includes modal.to_html, "location[title]"
-    refute_includes modal.to_html, "location[location_type]"
-    refute_includes modal.to_html, "location[icon]"
-    assert_includes modal.to_html, "location[name]"
-    assert_includes modal.to_html, "Address line 1"
+    fields = css_select("[data-recording-studio-location--place-search-target='fields']").first
+    assert fields
+    refute_includes response.body, "flat-pack--modal"
+    refute_includes fields.to_html, "location[title]"
+    refute_includes fields.to_html, "location[location_type]"
+    refute_includes fields.to_html, "location[icon]"
+    assert_includes fields.to_html, "location[name]"
+    assert_includes fields.to_html, "Address line 1"
   end
 end

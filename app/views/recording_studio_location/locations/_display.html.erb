@@ -1,48 +1,19 @@
 <%# Map is opt-in via recording_studio_location_display(location, map: true). %>
 <% address = location.full_address %>
-<% coordinates = location.coordinates_label %>
 <% show_map = local_assigns.fetch(:show_map, false) %>
 <% heading = location.display_name %>
 <% venue_name = location.name.to_s.strip.presence %>
-<% show_venue = venue_name.present? && venue_name != heading %>
 <% show_address = address.present? && address != heading && address != venue_name %>
-<% display_icon = RecordingStudioLocation.configuration.icon_mode_none? ? nil : location.resolved_icon %>
 
-<%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
-  <% card.header do %>
-    <div class="flex items-start gap-3">
-      <% if display_icon.present? %>
-        <span class="mt-0.5 shrink-0 text-[var(--surface-content-color)]" aria-hidden="true">
-          <%= render FlatPack::Shared::IconComponent.new(name: display_icon, size: :lg) %>
-        </span>
-      <% end %>
-      <%= render FlatPack::PageTitle::Component.new(
-        title: heading,
-        variant: :h3,
-        class: "mb-0 pb-0 min-w-0 flex-1"
-      ) %>
-    </div>
-  <% end %>
+<% if show_address %>
+  <p class="text-sm leading-6"><%= address %></p>
+<% end %>
 
-  <% card.body do %>
-    <div class="flex flex-col gap-2 text-sm leading-6">
-      <% if show_venue %>
-        <p><%= venue_name %></p>
-      <% end %>
-
-      <% if show_address %>
-        <p class="<%= show_venue ? "text-(--surface-muted-content-color)" : nil %>"><%= address %></p>
-      <% end %>
-
-      <% if coordinates.present? %>
-        <p class="text-(--surface-muted-content-color)">
-          <%= coordinates %>
-        </p>
-      <% end %>
-
-      <% if show_map %>
-        <%= recording_studio_location_map(latitude: location.latitude, longitude: location.longitude) %>
-      <% end %>
-    </div>
+<% if show_map %>
+  <% map = recording_studio_location_map(latitude: location.latitude, longitude: location.longitude) %>
+  <% if map.present? %>
+    <%= render FlatPack::Grid::Component.new(cols: 2, class: "w-full") do %>
+      <%= map %>
+    <% end %>
   <% end %>
 <% end %>

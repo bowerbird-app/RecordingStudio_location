@@ -1,12 +1,10 @@
-<% dummy_page_nav(title: "Location", back_url: root_path) %>
+<% dummy_page_nav(
+  title: "Location",
+  subtitle: "A Location recording under Studio Workspace.",
+  back_url: root_path
+) %>
 
 <div class="flex w-full flex-col gap-6">
-  <%= render FlatPack::PageTitle::Component.new(
-    title: "Location",
-    subtitle: "A Location recording under Studio Workspace.",
-    variant: :h1
-  ) %>
-
   <% if @location_recording %>
     <%= recording_studio_location_display(@location_recording.recordable) %>
 
@@ -28,7 +26,7 @@
       ) %>
     </div>
   <% else %>
-    <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+    <%= render FlatPack::Card::Component.new(background: :none, border: :default, shadow: :none) do |card| %>
       <% card.body do %>
         <p class="text-sm leading-6">
           Studio Workspace does not have a location yet. Add one to see the form and the read-only display.

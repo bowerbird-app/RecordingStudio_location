@@ -49,8 +49,6 @@ class LocalesTest < ActiveSupport::TestCase
     "searching" => "Searching",
     "add_manually" => "Add address manually",
     "clear" => "Clear location",
-    "done" => "Done",
-    "modal_title" => "Enter address",
     "summary_empty" => "No place selected yet."
   }.freeze
 

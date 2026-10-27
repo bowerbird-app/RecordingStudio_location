@@ -5,9 +5,10 @@ require "test_helper"
 class RecordingStudioTemplateTest < ActiveSupport::TestCase
   test "dummy app loads root switchable config and controller support" do
     assert_equal [ "all_workspaces" ], RecordingStudioRootSwitchable.configuration.scopes.keys
-    assert_equal :application_layout, RecordingStudioRootSwitchable.configuration.layout
+    assert_nil RecordingStudioRootSwitchable.configuration.layout
     assert_includes ApplicationController.ancestors, RecordingStudio::RootSwitchable::ControllerSupport
-    assert_includes ApplicationController.ancestors, RecordingStudio::UsesDefaultLayout
+    assert_includes ApplicationController.ancestors, RecordingStudio::ControllerLayout
+    refute_includes File.read(Rails.root.join("app/controllers/application_controller.rb")), "UsesDefaultLayout"
   end
 
   test "dummy app validates recordable declarations" do
@@ -77,6 +78,6 @@ class RecordingStudioTemplateTest < ActiveSupport::TestCase
     refute RecordingStudio.capability_enabled?(:accessible, for: Page)
     refute RecordingStudio.capability_enabled?(:location, for: Page)
     assert_equal %w[Folder Workspace], RecordingStudio.configuration.enabled_recordable_types_for(:location)
-    assert_includes ApplicationController.ancestors, RecordingStudio::UsesDefaultLayout
+    assert_includes ApplicationController.ancestors, RecordingStudio::ControllerLayout
   end
 end

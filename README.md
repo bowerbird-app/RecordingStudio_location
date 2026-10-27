@@ -32,9 +32,9 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", "~> 4.7"
+gem "recording_studio", ">= 6.1.0"
 gem "recording_studio_location"
-gem "flat_pack"
+gem "flat_pack", ">= 0.1.315"
 ```
 
 ```bash
@@ -162,7 +162,7 @@ Two edit helpers. Both put Title and Type above the venue search or address fiel
 
 The partial is `recording_studio_location/locations/fields`. It uses FlatPack TextInput, RadioGroup, Select, NumberInput, and Button. Type and (in `:choose` mode) icon are RadioGroup `variant: :inline` — real radios drawn as icon + label buttons. Coordinates sit last and are marked optional.
 
-Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address, picks a result, and the structured fields are filled. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually, which opens a FlatPack modal. Title, type, and icon stay outside that modal. A saved or picked place shows a summary with a Clear location control (X). That control empties the venue and address fields, including coordinates, hides the summary and map, and focuses search so the user can pick again. It does not clear title, type, or icon. Hosts choose which helper to render.
+Search is a separate helper. The field is labelled Location. It looks like FlatPack Search: leading magnifying-glass, search tokens, no chevron. The user types a place or address, picks a result, and the structured fields fill in and show under the search. After a pick, the search field shows the place name. When a search returns no results, the dropdown offers Add address manually. The same action is a button under the search while the address fields are hidden. Either one shows those fields and focuses the first input. Title, type, and icon stay above the search. The address fields are inline, so this helper works on a full page and inside a host modal. A saved or picked place shows a summary with a Clear location control (X). That control empties the venue and address fields, including coordinates, hides the summary, the address fields, and the map, and focuses search so the user can pick again. It does not clear title, type, or icon. Hosts choose which helper to render.
 
 ```erb
 <%= recording_studio_location_search_fields(form) %>
@@ -180,7 +180,7 @@ Read-only display:
 <%= recording_studio_location_display(location) %>
 ```
 
-The card shows the resolved icon and title (or venue name when title is blank), then the venue name and address beneath when they add detail, and coordinates only when both values exist. Missing title, type, or icon is fine. Pass `map: true` to embed a pin preview when a map adapter is configured and both coordinates are present:
+The display prints the address when it adds detail beyond the page title and venue name. It does not print coordinates. Pass `map: true` to render the pin preview in column 1 of a two-column grid when a map adapter is configured and both coordinates are present:
 
 ```erb
 <%= recording_studio_location_display(location, map: true) %>
@@ -404,7 +404,7 @@ Location does not reimplement those behaviors.
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v4.7.0`, Accessible `v0.18.0`, Root Switchable `v0.9.0`, Metrics `v0.2.0`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `v0.1.213`. Location is `0.7.0`.
+The dummy app pins Recording Studio `v6.1.0`, Accessible `v0.18.0`, Root Switchable `v0.11.0`, Metrics `v0.6.1`, Trashable `v0.11.0`, Cache `v0.5.0`, and FlatPack `0.1.319`. Location is `0.8.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

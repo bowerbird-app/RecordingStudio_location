@@ -4,7 +4,6 @@
 <% show_icon = local_assigns.fetch(:show_icon, true) %>
 <% filled = recording_studio_location_filled?(location) || location.errors.any? %>
 <% selected_label = recording_studio_location_filled?(location) ? (location.name.presence || location.display_name) : "" %>
-<% modal_id = "location-manual-#{SecureRandom.hex(4)}" %>
 <% list_id = "location-search-#{SecureRandom.hex(4)}" %>
 <% input_id = "#{list_id}-input" %>
 <% map_preview = RecordingStudioLocation::Map.preview(latitude: location.latitude, longitude: location.longitude) %>
@@ -75,7 +74,7 @@
 
   <div class="<%= filled ? '' : 'hidden' %>"
        data-recording-studio-location--place-search-target="summary">
-    <%= render FlatPack::Card::Component.new(style: :outlined) do |card| %>
+    <%= render FlatPack::Card::Component.new(background: :none, border: :default, shadow: :none) do |card| %>
       <% card.body do %>
         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div class="text-sm leading-6">
@@ -104,27 +103,18 @@
     <% end %>
   </div>
 
-  <div data-recording-studio-location--place-search-target="fields">
-    <%= render FlatPack::Modal::Component.new(
-      id: modal_id,
-      title: recording_studio_location_t("search.modal_title"),
-      size: :lg,
-      close_on_escape: true,
-      close_on_backdrop: true
-    ) do |modal| %>
-      <% modal.body do %>
-        <%= recording_studio_location_fields(form, title: false, location_type: false, icon: false) %>
-      <% end %>
-      <% modal.footer do %>
-        <%= render FlatPack::Button::Component.new(
-          text: recording_studio_location_t("search.done"),
-          style: :primary,
-          type: "button",
-          class: "self-start",
-          data: { action: "click->flat-pack--modal#close" }
-        ) %>
-      <% end %>
-    <% end %>
+  <div class="<%= filled ? 'hidden' : '' %>"
+       data-recording-studio-location--place-search-target="manual">
+    <%= render FlatPack::Button::Component.new(
+      text: recording_studio_location_t("search.add_manually"),
+      style: :secondary,
+      type: "button",
+      data: { action: "click->recording-studio-location--place-search#openManual" }
+    ) %>
+  </div>
+
+  <div class="<%= filled ? '' : 'hidden' %>" data-recording-studio-location--place-search-target="fields">
+    <%= recording_studio_location_fields(form, title: false, location_type: false, icon: false) %>
   </div>
 </div>
 </div>
