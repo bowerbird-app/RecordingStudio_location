@@ -17,6 +17,7 @@
 - Remove `RecordingStudio::UsesDefaultLayout`, `recording_studio_page_nav`, and `layout "recording_studio/default_layout"`. Call `recording_studio_layout` and set `content_for :title`.
 - Sibling gems that still declare `recording_studio < 5` need their requirement relaxed before Bundler resolves `6.1.0`. The dummy app does this in `test/support/widen_recording_studio_requirement.rb`.
 - Dummy Root Switchable moves to `v0.11.0` and Metrics to `v0.6.1`. `v0.9.0` still calls removed Flatpack page-nav arguments. `v0.11.0` needs Metrics `>= 0.3.0`.
+- Development Ruby pin is 3.3.13. GitHub's Ubuntu 26.04 image does not publish a Ruby 3.3.6 build.
 
 ## [0.7.0] - 2026-10-14
 
