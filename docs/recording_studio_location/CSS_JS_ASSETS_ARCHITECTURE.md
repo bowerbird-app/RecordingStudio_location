@@ -16,7 +16,7 @@ The pin preview is an iframe sized with FlatPack radius/border tokens. FlatPack 
 - Identity: `app/views/recording_studio_location/locations/_identity_fields.html.erb` — Title (TextInput), Type (RadioGroup `variant: :inline`, icon + label), and in `:choose` mode the same RadioGroup for `allowed_icons`. Radios stay real inputs (`sr-only` in the visual face).
 - Search: `app/views/recording_studio_location/locations/_search_fields.html.erb`
 - Map: `app/views/recording_studio_location/locations/_map.html.erb`
-- Display: `app/views/recording_studio_location/locations/_display.html.erb` — address and coordinates in a card, map outside the card
+- Display: `app/views/recording_studio_location/locations/_display.html.erb` — address text, then the map. No card and no coordinate line.
 - Stimulus: `app/javascript/recording_studio_location/controllers/place_search_controller.js`
 - Stimulus: `app/javascript/recording_studio_location/controllers/identity_controller.js` — type change preselects an icon in `:choose` mode
 

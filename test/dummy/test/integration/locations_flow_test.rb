@@ -117,7 +117,8 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Showroom HQ"
     assert_includes response.body, "Fitzroy Showroom"
     assert_includes response.body, "12 Smith Street, Fitzroy VIC 3065, Australia"
-    assert_includes response.body, "-37.798, 144.978"
+    refute_includes response.body, "-37.798, 144.978"
+    assert_select ".fp-card", count: 0
     assert_select "a[href='#{edit_location_path(recording)}']", text: "Edit location"
     refute_includes response.body, "This is recording"
     refute_includes response.body, "Sign out"
@@ -202,12 +203,13 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "iframe[src]"
     assert_includes css_select("iframe[src]").first["src"], "marker=-37.825300,144.952000"
-    assert_select ".fp-card iframe", count: 0
+    assert_select ".fp-card", count: 0
+    assert_includes response.body, "South Wharf, Australia"
+    refute_includes response.body, "-37.8253, 144.952"
     assert_select "a[href='#{edit_location_path(recording)}']", text: "Edit location"
     refute_includes response.body, "Sign out"
     refute_includes response.body, "This is recording"
     assert_select "h1", text: "Pinned Hall"
-    assert_select ".fp-card", text: /-37\.8253, 144\.952/
   end
 
   test "partial location submits without coordinates or a street" do

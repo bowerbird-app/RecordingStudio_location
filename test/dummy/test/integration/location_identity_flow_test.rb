@@ -123,8 +123,7 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "This is recording"
     refute_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
     assert_select "h3", count: 0
-    assert_select ".fp-card", text: /South Wharf, Australia/
-    refute_includes css_select(".fp-card").first.to_html, "Melbourne Convention Centre"
+    assert_select ".fp-card", count: 0
   end
 
   test "choose mode create stores the picked icon" do

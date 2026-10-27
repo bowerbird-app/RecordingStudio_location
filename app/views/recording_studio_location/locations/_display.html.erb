@@ -1,28 +1,12 @@
 <%# Map is opt-in via recording_studio_location_display(location, map: true). %>
 <% address = location.full_address %>
-<% coordinates = location.coordinates_label %>
 <% show_map = local_assigns.fetch(:show_map, false) %>
 <% heading = location.display_name %>
 <% venue_name = location.name.to_s.strip.presence %>
 <% show_address = address.present? && address != heading && address != venue_name %>
-<% show_coordinates = coordinates.present? && coordinates != heading %>
 
-<% if show_address || show_coordinates %>
-  <%= render FlatPack::Card::Component.new(background: :none, border: :default, shadow: :none) do |card| %>
-    <% card.body do %>
-      <div class="flex flex-col gap-2 text-sm leading-6">
-        <% if show_address %>
-          <p><%= address %></p>
-        <% end %>
-
-        <% if show_coordinates %>
-          <p class="text-(--surface-muted-content-color)">
-            <%= coordinates %>
-          </p>
-        <% end %>
-      </div>
-    <% end %>
-  <% end %>
+<% if show_address %>
+  <p class="text-sm leading-6"><%= address %></p>
 <% end %>
 
 <% if show_map %>

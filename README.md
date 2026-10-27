@@ -180,7 +180,7 @@ Read-only display:
 <%= recording_studio_location_display(location) %>
 ```
 
-The card shows the address and coordinates when they add detail beyond the page title and venue name. Pass `map: true` to render the pin preview outside the card when a map adapter is configured and both coordinates are present:
+The display prints the address when it adds detail beyond the page title and venue name. It does not print coordinates. Pass `map: true` to render the pin preview when a map adapter is configured and both coordinates are present:
 
 ```erb
 <%= recording_studio_location_display(location, map: true) %>
