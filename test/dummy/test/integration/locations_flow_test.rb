@@ -206,6 +206,12 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select ".fp-card", count: 0
     assert_includes response.body, "South Wharf, Australia"
     refute_includes response.body, "-37.8253, 144.952"
+    refute_includes response.body, "max-w-3xl"
+    map_grid = css_select("div.grid").find { |node| node["class"].to_s.include?("md:grid-cols-2") }
+    assert map_grid
+    assert_equal "figure", map_grid.element_children.first.name
+    assert map_grid.element_children.first.at_css("iframe")
+    refute_includes map_grid.to_html, "South Wharf"
     assert_select "a[href='#{edit_location_path(recording)}']", text: "Edit location"
     refute_includes response.body, "Sign out"
     refute_includes response.body, "This is recording"

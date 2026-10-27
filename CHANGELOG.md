@@ -10,7 +10,7 @@
 - `RecordingStudioLocation::Configuration#layout` defaults to nil. The setter accepts a value through `RecordingStudio::Layout.accept`. Engine controllers call `recording_studio_layout` and let a nil setting fall through to the host layout, then `recording_studio/default_layout`.
 - Dummy pages set `content_for :title` and `:subtitle`. The default layout renders the only page `<h1>`. Back and close use `flat_pack_page_nav`. Sign out is a `register_page_nav` entry.
 - Cards use `background`, `border`, and `shadow` instead of `style`.
-- The location display prints the address without a card and does not print coordinates. The map renders under the address. The page title carries the place name.
+- The location display prints the address without a card and does not print coordinates. The map sits in column 1 of a two-column grid. The page title carries the place name.
 
 ### Upgrade notes
 

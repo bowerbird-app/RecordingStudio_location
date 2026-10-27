@@ -10,5 +10,10 @@
 <% end %>
 
 <% if show_map %>
-  <%= recording_studio_location_map(latitude: location.latitude, longitude: location.longitude) %>
+  <% map = recording_studio_location_map(latitude: location.latitude, longitude: location.longitude) %>
+  <% if map.present? %>
+    <%= render FlatPack::Grid::Component.new(cols: 2, class: "w-full") do %>
+      <%= map %>
+    <% end %>
+  <% end %>
 <% end %>
