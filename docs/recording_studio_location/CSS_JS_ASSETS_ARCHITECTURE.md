@@ -8,7 +8,7 @@ SearchInput is a named form control (`type="search"`, trailing clear, no leading
 
 A first-class FlatPack component would need a remote search field that looks like Search, exposes combobox/listbox semantics on the input, and emits the picked row (id/label plus a details callback) without submitting a single hidden value.
 
-Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` from i18n) on the saved-place summary. Search and SearchInput both ship an in-field clear that only empties the query; using that would desync the picked place. The summary X empties structured fields, hides the summary and map, and focuses the search field.
+Clear location is a FlatPack icon-only ghost `Button` (`x-mark`, `aria-label` from i18n) on the saved-place summary. Search and SearchInput both ship an in-field clear that only empties the query; using that would desync the picked place. The summary X empties structured fields, hides the summary, the inline address fields, and the map, and focuses the search field. Add address manually is a secondary button under the search, and the same label in the no-results list. Both reveal the address fields in place. There is no modal in this partial.
 
 The pin preview is an iframe sized with FlatPack radius/border tokens. FlatPack has no map component. The iframe `src` comes from `config.map` (`url_template` with `{lat}` / `{lng}`). No adapter, or missing coordinates, means no `src` and no map request. `tabindex="-1"` keeps it out of the tab order.
 

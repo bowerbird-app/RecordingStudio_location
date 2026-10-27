@@ -60,7 +60,7 @@ A location can carry a user title, a host type, and an icon. `name` stays the ve
 
 `Location#resolved_icon` is stored icon → type icon → `default_icon`. A type or icon later dropped from config is skipped, not an error.
 
-Form helpers accept `title:`, `location_type:`, and `icon:` (all default true) to hide those fields. Type and icon use FlatPack RadioGroup `variant: :inline` (icon + label buttons, real radios). The search helper's manual-address modal is address-only.
+Form helpers accept `title:`, `location_type:`, and `icon:` (all default true) to hide those fields. Type and icon use FlatPack RadioGroup `variant: :inline` (icon + label buttons, real radios). The search helper's manual address fields are inline and address-only, so the same partial works on a page and inside a host modal.
 
 Use `RecordingStudio::Location.permitted_attributes` and `location.api_payload` on host forms, APIs, and MCP serializers.
 

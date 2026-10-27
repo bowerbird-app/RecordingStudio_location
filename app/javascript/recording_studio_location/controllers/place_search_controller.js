@@ -32,6 +32,7 @@ export default class extends Controller {
     "summaryDetail",
     "clearButton",
     "fields",
+    "manual",
     "map",
     "mapFrame"
   ]
@@ -246,6 +247,8 @@ export default class extends Controller {
 
     this.refreshSummary(payload, candidate)
     this.syncMap()
+    if (this.hasFieldsTarget) this.fieldsTarget.classList.remove("hidden")
+    if (this.hasManualTarget) this.manualTarget.classList.add("hidden")
   }
 
   setField(name, value) {
@@ -308,7 +311,9 @@ export default class extends Controller {
     this.resetList()
     if (this.hasFieldsTarget) {
       FIELD_NAMES.forEach((name) => this.setField(name, ""))
+      this.fieldsTarget.classList.add("hidden")
     }
+    if (this.hasManualTarget) this.manualTarget.classList.remove("hidden")
     this.setAttribution(null)
     if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = ""
     if (this.hasSummaryDetailTarget) this.summaryDetailTarget.textContent = ""
@@ -320,15 +325,11 @@ export default class extends Controller {
 
   openManual() {
     this.close()
-    const modal = this.element.querySelector("[data-controller~='flat-pack--modal']")
-    const controller = modal
-      ? this.application.getControllerForElementAndIdentifier(modal, "flat-pack--modal")
-      : null
+    if (!this.hasFieldsTarget) return
 
-    if (!controller || typeof controller.open !== "function") return
-
-    controller.previousActiveElement = this.hasInputTarget ? this.inputTarget : document.activeElement
-    controller.open()
+    this.fieldsTarget.classList.remove("hidden")
+    if (this.hasManualTarget) this.manualTarget.classList.add("hidden")
+    this.fieldsTarget.querySelector("input")?.focus()
   }
 
   activate(option) {

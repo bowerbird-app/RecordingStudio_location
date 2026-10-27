@@ -32,8 +32,10 @@ Then open the app and sign in with:
 
 - `/` - seeded Location on Studio Workspace
 - `/locations` - list locations in the workspace
-- `/locations/new` - search helper (Fake demo adapter and OpenStreetMap pin when no live key). Title and Type sit above Location. Add `?icon_mode=choose` to try the icon picker. The field looks like FlatPack Search (magnifying-glass, no chevron). After a pick, it shows the place name; the summary X clears the venue, not the title.
+- `/locations/new` - search helper (Fake demo adapter and OpenStreetMap pin when no live key). Title and Type sit above Location. Add `?icon_mode=choose` to try the icon picker. The field looks like FlatPack Search (magnifying-glass, no chevron). Add address manually shows the address fields inline. After a pick, it shows the place name and those fields; the summary X clears the venue, not the title.
 - `/locations/:id` - read-only display with optional map
+- `/locations/:id/edit` - search helper with a saved place, inline address fields, and a map when both coordinates are present
+- `/locations/:id/edit?mode=manual` - dummy-only full address form (`recording_studio_location_fields`), without search
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
 - `/users/sign_in` - Devise sign-in page
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only Location pages

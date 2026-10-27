@@ -11,6 +11,8 @@
 - Dummy pages set `content_for :title` and `:subtitle`. The default layout renders the only page `<h1>`. Back and close use `flat_pack_page_nav`. Sign out is a `register_page_nav` entry.
 - Cards use `background`, `border`, and `shadow` instead of `style`.
 - The location display prints the address without a card and does not print coordinates. The map sits in column 1 of a two-column grid. The page title carries the place name.
+- Search address fields render inline in `recording_studio_location_search_fields`. The partial no longer uses `FlatPack::Modal`, so it works on a full page and inside a host modal. Add address manually (the button under search, and the no-results row) shows the fields and focuses the first input. Picking a place shows them too. Clear location hides them again.
+- Removed unused copy keys `recording_studio.location.search.done` and `recording_studio.location.search.modal_title`.
 
 ### Upgrade notes
 
@@ -19,6 +21,7 @@
 - Sibling gems that still declare `recording_studio < 5` need their requirement relaxed before Bundler resolves `6.1.0`. The dummy app does this in `test/support/widen_recording_studio_requirement.rb`.
 - Dummy Root Switchable moves to `v0.11.0` and Metrics to `v0.6.1`. `v0.9.0` still calls removed Flatpack page-nav arguments. `v0.11.0` needs Metrics `>= 0.3.0`.
 - Development Ruby pin is 3.3.13. GitHub's Ubuntu 26.04 image does not publish a Ruby 3.3.6 build.
+- Drop host overrides of `recording_studio.location.search.done` and `search.modal_title`. If a host copied the old search partial, render the address fields inline instead of opening a modal. Rebuild Tailwind so `hidden` on those fields is included.
 
 ## [0.7.0] - 2026-10-14
 

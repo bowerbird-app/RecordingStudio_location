@@ -60,7 +60,6 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "Edit address"
     assert_includes response.body, "Add address manually"
     assert_includes response.body, "Clear location"
-    assert_includes response.body, "Done"
     assert_includes response.body, "Searching"
     assert_includes response.body, "Optional. Your name for this place."
     assert_includes response.body, "Office HQ"
@@ -72,8 +71,10 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes search_field.to_html, "chevron-down"
     assert_select "[data-modal-id]", count: 0
     assert_select "[aria-label='Clear location']"
-    assert_includes response.body, "Enter address"
-    assert_includes response.body, "flat-pack--modal"
+    refute_includes response.body, "Enter address"
+    refute_includes response.body, "flat-pack--modal"
+    assert_inline_address_fields(hidden: true)
+    assert_place_search_reveals_fields_inline
     assert_includes response.body, "recording-studio-location--place-search"
     assert_includes response.body, "Address line 1"
     assert_includes response.body, "Locality"
@@ -153,7 +154,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_equal "Fitzroy Showroom", recording.recordable.name
   end
 
-  test "edit form shows a saved place summary and the manual address modal" do
+  test "edit form shows a saved place summary and inline address fields" do
     recording = @root.record(RecordingStudio::Location::Location) do |location|
       location.name = "Seeded Hall"
       location.locality = "Melbourne"
@@ -174,11 +175,42 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes search_field.to_html, "magnifying-glass"
     refute_includes search_field.to_html, "chevron-down"
     assert_includes response.body, ">Location</label>"
-    assert_includes response.body, "Enter address"
+    refute_includes response.body, "Enter address"
     assert_includes response.body, "Add address manually"
     refute_includes response.body, "Enter address manually"
-    assert_includes response.body, "flat-pack--modal"
+    refute_includes response.body, "flat-pack--modal"
+    assert_inline_address_fields(hidden: false)
     assert_select "iframe[src]", count: 0
+  end
+
+  test "validation errors show the inline address fields" do
+    post locations_path, params: { location: { country_code: "Australia" } }
+
+    assert_response :unprocessable_entity
+    refute_includes response.body, "flat-pack--modal"
+    assert_inline_address_fields(hidden: false)
+    fields = address_fields_node
+    assert_includes fields.to_html, "must be a two-letter ISO country code"
+  end
+
+  test "manual mode renders the full address form without search" do
+    recording = @root.record(RecordingStudio::Location::Location) do |location|
+      location.name = "Manual Hall"
+      location.locality = "Melbourne"
+      location.country_code = "AU"
+    end
+
+    get edit_location_path(recording, mode: "manual")
+
+    assert_response :success
+    assert_includes response.body, "location[title]"
+    assert_includes response.body, "location[name]"
+    assert_includes response.body, "Address line 1"
+    assert_includes response.body, "Manual Hall"
+    refute_includes response.body, "recording-studio-location--place-search"
+    refute_includes response.body, "flat-pack--modal"
+    refute_includes response.body, "Search for a place or address"
+    refute_includes response.body, "Add address manually"
   end
 
   test "a saved place with coordinates renders a map on edit and display" do
@@ -193,6 +225,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     get edit_location_path(recording)
 
     assert_response :success
+    assert_inline_address_fields(hidden: false)
     assert_select "iframe[src]"
     iframe_src = css_select("iframe[src]").first["src"]
     assert_includes iframe_src, "marker=-37.825300,144.952000"
@@ -237,5 +270,59 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Melbourne, Victoria, Australia"
     refute_includes response.body, ", ,"
     assert_nil recording.recordable.coordinates
+  end
+
+  private
+
+  def address_fields_node
+    css_select("[data-recording-studio-location--place-search-target='fields']").first
+  end
+
+  def manual_entry_node
+    css_select("[data-recording-studio-location--place-search-target='manual']").first
+  end
+
+  def assert_inline_address_fields(hidden:)
+    fields = address_fields_node
+    manual = manual_entry_node
+
+    assert fields
+    assert manual
+    if hidden
+      assert_includes fields["class"].to_s.split, "hidden"
+      refute_includes manual["class"].to_s.split, "hidden"
+    else
+      refute_includes fields["class"].to_s.split, "hidden"
+      assert_includes manual["class"].to_s.split, "hidden"
+    end
+    assert_includes fields.to_html, "location[name]"
+    assert_includes fields.to_html, "Address line 1"
+    assert_includes fields.to_html, "location[country_code]"
+    refute_includes fields.to_html, "location[title]"
+    refute_includes fields.to_html, "location[location_type]"
+    refute_includes fields.to_html, "location[icon]"
+    refute_includes fields.to_html, "flat-pack--modal"
+    assert_includes manual.to_html, "Add address manually"
+    assert_includes manual.to_html, "recording-studio-location--place-search#openManual"
+  end
+
+  def assert_place_search_reveals_fields_inline
+    controller = File.read(
+      RecordingStudioLocation::Engine.root.join(
+        "app/javascript/recording_studio_location/controllers/place_search_controller.js"
+      )
+    )
+    template = File.read(
+      RecordingStudioLocation::Engine.root.join(
+        "app/views/recording_studio_location/locations/_search_fields.html.erb"
+      )
+    )
+
+    refute_includes controller, "flat-pack--modal"
+    assert_includes controller, 'this.fieldsTarget.classList.remove("hidden")'
+    assert_includes controller, 'this.fieldsTarget.classList.add("hidden")'
+    assert_includes controller, 'this.fieldsTarget.querySelector("input")?.focus()'
+    refute_includes template, "FlatPack::Modal"
+    assert_includes template, "recording_studio_location_fields(form, title: false, location_type: false, icon: false)"
   end
 end
