@@ -69,6 +69,7 @@ namespace :test do
       env = dummy_bundle_env
 
       run_command!(env, "bundle", "exec", "bin/rails", "db:prepare")
+      run_command!(env, "bundle", "exec", "bin/rails", "tailwindcss:build")
       run_command!(env, "bundle", "exec", "bin/rails", "test")
       DUMMY_TEST_FILES.each do |test_file|
         run_command!(env, "bundle", "exec", "ruby", "-I#{TEST_ROOT}", test_file)

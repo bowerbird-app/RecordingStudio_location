@@ -38,13 +38,15 @@ Host apps already lazy-load `controllers` the way they load FlatPack.
 
 The host Tailwind build must scan the gem views and FlatPack components. The install generator adds `@source` lines to `app/assets/tailwind/application.css` when that file exists.
 
-Dummy app sources live in `test/dummy/app/assets/tailwind/application.css`. After view markup changes:
+Dummy app sources live in `test/dummy/app/assets/tailwind/application.css`. `bin/rails tailwindcss:build` links `vendor/engines/flat_pack` and `vendor/engines/recording_studio` to the installed engines, then scans them. `rake test:dummy` and `rake app:test` run that build before the dummy suite.
 
 ```bash
 cd test/dummy
 bin/rails tailwindcss:build
 ```
 
-Missing styles usually mean the `@source` paths did not match the installed gem path, or the dummy CSS was not rebuilt.
+Recording Studio's default layout already links `flat_pack/application.css` before `tailwind.css`. Do not add `recording_studio/_default_layout_head` to link Flatpack again. That second sheet loads Tailwind preflight (`* { padding: 0 }`) after the utilities, so form padding and radius disappear.
+
+Missing styles usually mean the engine symlink points at an old checkout, or the dummy CSS was not rebuilt.
 
 Location does not embed maps or load a mapping JavaScript SDK. Place search calls engine JSON endpoints, not a provider from the browser.

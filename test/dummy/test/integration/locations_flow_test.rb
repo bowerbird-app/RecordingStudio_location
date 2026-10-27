@@ -90,6 +90,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select "iframe[src]", count: 0
     assert_select "iframe[tabindex='-1']"
     assert_select "figure.hidden"
+    assert_flatpack_stylesheet_precedes_tailwind
   end
 
   test "creating and revising a location uses the recording and the display" do
@@ -304,6 +305,17 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes fields.to_html, "flat-pack--modal"
     assert_includes manual.to_html, "Add address manually"
     assert_includes manual.to_html, "recording-studio-location--place-search#openManual"
+  end
+
+  def assert_flatpack_stylesheet_precedes_tailwind
+    hrefs = css_select("link[rel='stylesheet']").map { |node| node["href"].to_s }
+    flatpack = hrefs.index { |href| href.include?("flat_pack/application") }
+    tailwind = hrefs.index { |href| href.include?("tailwind") }
+
+    assert flatpack, "expected flat_pack/application.css in #{hrefs.inspect}"
+    assert tailwind, "expected tailwind.css in #{hrefs.inspect}"
+    assert_operator flatpack, :<, tailwind
+    assert_equal 1, hrefs.count { |href| href.include?("flat_pack/application") }
   end
 
   def assert_place_search_reveals_fields_inline

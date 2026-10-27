@@ -174,10 +174,12 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes tailwind_source, ":root {"
     refute_includes tailwind_source, "--color-fp-primary"
 
-    head_partial = File.read(
+    refute File.exist?(
       File.expand_path("dummy/app/views/recording_studio/_default_layout_head.html.erb", __dir__)
-    )
-    assert_includes head_partial, 'stylesheet_link_tag "flat_pack/application"'
+    ), "a second flat_pack/application.css after Tailwind lets preflight zero form padding"
+
+    root_rakefile = File.read(File.expand_path("../Rakefile", __dir__))
+    assert_includes root_rakefile, 'run_command!(env, "bundle", "exec", "bin/rails", "tailwindcss:build")'
 
     rake_task = File.read(File.expand_path("dummy/lib/tasks/tailwindcss.rake", __dir__))
     assert_includes rake_task, "FlatPack::Engine.root"
