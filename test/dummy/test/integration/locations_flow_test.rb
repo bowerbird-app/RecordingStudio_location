@@ -57,7 +57,6 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Search for a place or address"
     refute_includes response.body, "Enter address manually"
     refute_includes response.body, "Pick a place to fill"
-    refute_includes response.body, "Edit address"
     assert_includes response.body, "Add address manually"
     assert_includes response.body, "Clear location"
     assert_includes response.body, "Searching"
@@ -74,6 +73,11 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "Enter address"
     refute_includes response.body, "flat-pack--modal"
     assert_inline_address_fields(hidden: true)
+    search_box = place_search_target("searchBox")
+    summary = place_search_target("summary")
+    refute_includes search_box["class"].to_s.split, "hidden"
+    assert_includes summary["class"].to_s.split, "hidden"
+    assert_includes summary.to_html, "Edit address"
     assert_place_search_reveals_fields_inline
     assert_includes response.body, "recording-studio-location--place-search"
     assert_includes response.body, "Address line 1"
@@ -85,6 +89,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "location[country_code]"
     refute_includes response.body, "mapbox"
     refute_includes response.body, "googleapis"
+    refute_includes response.body, "key="
     assert_includes response.body, "map-url-template-value"
     assert_select "iframe[title]"
     assert_select "iframe[src]", count: 0
@@ -155,7 +160,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_equal "Fitzroy Showroom", recording.recordable.name
   end
 
-  test "edit form shows a saved place summary and inline address fields" do
+  test "edit form shows a saved place summary with collapsed address fields" do
     recording = @root.record(RecordingStudio::Location::Location) do |location|
       location.name = "Seeded Hall"
       location.locality = "Melbourne"
@@ -166,7 +171,6 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "Seeded Hall"
-    refute_includes response.body, "Edit address"
     assert_includes response.body, "Clear location"
     assert_includes response.body, "recording-studio-location--place-search#clear"
     assert_select "[aria-label='Clear location']"
@@ -180,7 +184,22 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Add address manually"
     refute_includes response.body, "Enter address manually"
     refute_includes response.body, "flat-pack--modal"
-    assert_inline_address_fields(hidden: false)
+    search_box = place_search_target("searchBox")
+    fields = address_fields_node
+    summary = place_search_target("summary")
+    manual = manual_entry_node
+    edit_address = summary.at_css("[data-recording-studio-location--place-search-target='editAddress']")
+    edit_button = edit_address&.at_css("button")
+    assert_includes search_box["class"].to_s.split, "hidden"
+    assert_includes fields["class"].to_s.split, "hidden"
+    assert_includes fields.to_html, "location[name]"
+    assert_includes fields.to_html, "Seeded Hall"
+    refute_includes summary["class"].to_s.split, "hidden"
+    assert_includes manual["class"].to_s.split, "hidden"
+    assert edit_button
+    assert_includes edit_button.text, "Edit address"
+    refute_includes edit_button["class"].to_s.split, "hidden"
+    refute_includes edit_address["class"].to_s.split, "hidden"
     assert_select "iframe[src]", count: 0
   end
 
@@ -191,7 +210,12 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "flat-pack--modal"
     assert_inline_address_fields(hidden: false)
     fields = address_fields_node
+    edit_address = place_search_target("editAddress")
+    manual = manual_entry_node
+    refute_includes fields["class"].to_s.split, "hidden"
     assert_includes fields.to_html, "must be a two-letter ISO country code"
+    assert_includes edit_address["class"].to_s.split, "hidden"
+    assert_includes manual["class"].to_s.split, "hidden"
   end
 
   test "manual mode renders the full address form without search" do
@@ -226,7 +250,8 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     get edit_location_path(recording)
 
     assert_response :success
-    assert_inline_address_fields(hidden: false)
+    fields = address_fields_node
+    assert_includes fields["class"].to_s.split, "hidden"
     assert_select "iframe[src]"
     iframe_src = css_select("iframe[src]").first["src"]
     assert_includes iframe_src, "marker=-37.825300,144.952000"
@@ -275,8 +300,12 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
 
   private
 
+  def place_search_target(name)
+    css_select("[data-recording-studio-location--place-search-target='#{name}']").first
+  end
+
   def address_fields_node
-    css_select("[data-recording-studio-location--place-search-target='fields']").first
+    place_search_target("fields")
   end
 
   def manual_entry_node
@@ -334,6 +363,9 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_includes controller, 'this.fieldsTarget.classList.remove("hidden")'
     assert_includes controller, 'this.fieldsTarget.classList.add("hidden")'
     assert_includes controller, 'this.fieldsTarget.querySelector("input")?.focus()'
+    assert_includes controller, 'this.searchBoxTarget.classList.remove("hidden")'
+    assert_includes controller, 'this.searchBoxTarget.classList.add("hidden")'
+    assert_includes controller, "setFieldsOpen"
     refute_includes template, "FlatPack::Modal"
     assert_includes template, "recording_studio_location_fields(form, title: false, location_type: false, icon: false)"
   end

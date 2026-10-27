@@ -25,12 +25,14 @@ const MUTED_ROW_CLASSES = "px-3 py-2 text-sm text-[var(--surface-muted-content-c
 export default class extends Controller {
   static targets = [
     "input",
+    "searchBox",
     "list",
     "attribution",
     "summary",
     "summaryTitle",
     "summaryDetail",
     "clearButton",
+    "editAddress",
     "fields",
     "manual",
     "map",
@@ -77,7 +79,6 @@ export default class extends Controller {
     this.syncMap()
 
     if (this.hasFieldsTarget && this.fieldsTarget.querySelector("[aria-invalid='true']")) {
-      if (this.hasSummaryTarget) this.summaryTarget.classList.remove("hidden")
       this.openManual()
     }
   }
@@ -247,8 +248,46 @@ export default class extends Controller {
 
     this.refreshSummary(payload, candidate)
     this.syncMap()
-    if (this.hasFieldsTarget) this.fieldsTarget.classList.remove("hidden")
+    this.showPlaceChrome("summary")
+    this.setFieldsOpen(false)
+  }
+
+  showPlaceChrome(which) {
+    if (which === "search") {
+      if (this.hasSearchBoxTarget) this.searchBoxTarget.classList.remove("hidden")
+      if (this.hasManualTarget) this.manualTarget.classList.remove("hidden")
+      if (this.hasSummaryTarget) this.summaryTarget.classList.add("hidden")
+      return
+    }
+
+    if (this.hasSearchBoxTarget) this.searchBoxTarget.classList.add("hidden")
     if (this.hasManualTarget) this.manualTarget.classList.add("hidden")
+    if (this.hasSummaryTarget) this.summaryTarget.classList.remove("hidden")
+    if (!this.hasEditAddressTarget) return
+
+    const fieldsOpen = this.hasFieldsTarget && !this.fieldsTarget.classList.contains("hidden")
+    if (fieldsOpen) {
+      this.editAddressTarget.classList.add("hidden")
+    } else {
+      this.editAddressTarget.classList.remove("hidden")
+    }
+  }
+
+  setFieldsOpen(open) {
+    if (open) {
+      if (this.hasFieldsTarget) this.fieldsTarget.classList.remove("hidden")
+      if (this.hasManualTarget) this.manualTarget.classList.add("hidden")
+      if (this.hasEditAddressTarget) this.editAddressTarget.classList.add("hidden")
+      return
+    }
+
+    if (this.hasFieldsTarget) this.fieldsTarget.classList.add("hidden")
+    if (this.hasSummaryTarget && !this.summaryTarget.classList.contains("hidden")) {
+      if (this.hasEditAddressTarget) this.editAddressTarget.classList.remove("hidden")
+    }
+    if (this.hasSummaryTarget && this.summaryTarget.classList.contains("hidden")) {
+      if (this.hasManualTarget) this.manualTarget.classList.remove("hidden")
+    }
   }
 
   setField(name, value) {
@@ -289,7 +328,6 @@ export default class extends Controller {
     const detail = payload.formatted_address || candidate.label || ""
     if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = title
     if (this.hasSummaryDetailTarget) this.summaryDetailTarget.textContent = detail === title ? "" : detail
-    if (this.hasSummaryTarget) this.summaryTarget.classList.remove("hidden")
     this.setInputValue(title)
   }
 
@@ -311,25 +349,21 @@ export default class extends Controller {
     this.resetList()
     if (this.hasFieldsTarget) {
       FIELD_NAMES.forEach((name) => this.setField(name, ""))
-      this.fieldsTarget.classList.add("hidden")
     }
-    if (this.hasManualTarget) this.manualTarget.classList.remove("hidden")
     this.setAttribution(null)
     if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = ""
     if (this.hasSummaryDetailTarget) this.summaryDetailTarget.textContent = ""
-    if (this.hasSummaryTarget) this.summaryTarget.classList.add("hidden")
     this.syncMap()
+    this.showPlaceChrome("search")
+    this.setFieldsOpen(false)
     this.setInputValue("")
     this.inputTarget?.focus()
   }
 
   openManual() {
     this.close()
-    if (!this.hasFieldsTarget) return
-
-    this.fieldsTarget.classList.remove("hidden")
-    if (this.hasManualTarget) this.manualTarget.classList.add("hidden")
-    this.fieldsTarget.querySelector("input")?.focus()
+    this.setFieldsOpen(true)
+    if (this.hasFieldsTarget) this.fieldsTarget.querySelector("input")?.focus()
   }
 
   activate(option) {
@@ -422,7 +456,40 @@ export default class extends Controller {
 
   onFieldsInput(event) {
     const name = event.target?.name || ""
-    if (name.includes("[latitude]") || name.includes("[longitude]")) this.syncMap()
+    if (name.includes("latitude") || name.includes("longitude")) this.syncMap()
+    if (this.hasSummaryTarget && !this.summaryTarget.classList.contains("hidden")) {
+      this.refreshSummaryFromFields()
+    }
+  }
+
+  refreshSummaryFromFields() {
+    const title = this.fieldValue("name") || this.fieldValue("address_line_1") || this.fieldValue("locality")
+    const localityLine = [
+      this.fieldValue("locality"),
+      this.fieldValue("region"),
+      this.fieldValue("postal_code")
+    ].filter((part) => part).join(" ")
+    const detail = [
+      this.fieldValue("address_line_1"),
+      this.fieldValue("address_line_2"),
+      localityLine,
+      this.countryVisibleLabel()
+    ].filter((part) => part).join(", ")
+
+    if (this.hasSummaryTitleTarget) this.summaryTitleTarget.textContent = title
+    if (this.hasSummaryDetailTarget) {
+      this.summaryDetailTarget.textContent = detail === title ? "" : detail
+    }
+  }
+
+  countryVisibleLabel() {
+    if (!this.hasFieldsTarget) return ""
+
+    const field = this.fieldsTarget.querySelector(`[name$="[country_code]"]`)
+    const root = field?.closest("[data-controller~='flat-pack--select']")
+    const text = root?.querySelector("[data-flat-pack--select-target='valueLabel']")?.textContent?.trim() || ""
+    if (!text || text === "Not set") return ""
+    return text
   }
 
   syncMap() {

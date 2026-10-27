@@ -9,6 +9,10 @@
 - FlatPack `>= 0.1.315` (dummy git ref `1fcbafe94f8eb118f0a22182f63f5110fcc97a56`, version `0.1.319`)
 - Public RubyGems and GitHub access for dependency installation
 
+## Upgrades
+
+- 0.8.1 changes search disclosure and needs no migration.
+
 ## Verification
 
 Install both bundles and run the complete gem and dummy app test path:
