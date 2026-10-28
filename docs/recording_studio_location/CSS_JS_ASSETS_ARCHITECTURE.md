@@ -36,7 +36,7 @@ Host apps already lazy-load `controllers` the way they load FlatPack.
 
 ## Tailwind
 
-The host Tailwind build must scan the gem views and FlatPack components. The install generator adds `@source` lines to `app/assets/tailwind/application.css` when that file exists.
+The host Tailwind build must scan the gem views and FlatPack components. The install generator adds `@source` lines to `app/assets/tailwind/application.css` when that file exists, including paths relative to each engine root.
 
 Dummy app sources live in `test/dummy/app/assets/tailwind/application.css`. `bin/rails tailwindcss:build` links `vendor/engines/flat_pack` and `vendor/engines/recording_studio` to the installed engines, then scans them. `rake test:dummy` and `rake app:test` run that build before the dummy suite.
 

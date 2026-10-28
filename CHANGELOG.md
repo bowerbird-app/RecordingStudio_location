@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-10-28
+
+### Changed
+
+- Dummy credentials tests look up `recording_studio_location.api_key` instead of leftover `gem_template`.
+- The install generator writes Tailwind `@source` paths relative to `RecordingStudioLocation::Engine.root` (and FlatPack’s engine root) instead of a hard-coded `/usr/local/bundle` prefix.
+- `UPDATE_SUMMARY.md` matches the dummy pin list on main (Trashable `v0.11.0`, Cache `v0.5.0`).
+
+### Upgrade notes
+
+- Bump to `0.8.2`. No migration. Hosts that already installed may re-run `bin/rails generate recording_studio_location:install` so Tailwind `@source` lines follow the engine root, or leave the old `/usr/local/bundle` lines if that path still matches the host.
+
 ## [0.8.1] - 2026-10-27
 
 ### Changed
@@ -254,7 +266,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.6.1...v0.7.0

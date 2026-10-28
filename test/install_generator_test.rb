@@ -2,6 +2,7 @@
 
 require "test_helper"
 require "fileutils"
+require "pathname"
 require "tmpdir"
 require "generators/recording_studio_location/install/install_generator"
 
@@ -51,7 +52,12 @@ class InstallGeneratorTest < Minitest::Test
       end
 
       css = File.read(css_path)
-      assert_tailwind_sources_present(css)
+      assert_tailwind_sources_present(css, dir)
+      views = RecordingStudioLocation::Engine.root.relative_path_from(
+        Pathname.new(dir).join("app/assets/tailwind")
+      )
+      assert_includes css, %(@source "#{views}/app/views/**/*.erb";)
+      refute_includes css, "/usr/local/bundle"
     end
   end
 
@@ -60,10 +66,7 @@ class InstallGeneratorTest < Minitest::Test
       css_path = File.join(dir, "app/assets/tailwind/application.css")
       File.write(css_path, <<~CSS)
         @import "tailwindcss";
-        @source "../../vendor/bundle/**/recording_studio_location/app/views/**/*.erb";
-        @source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/recording_studio_location-*/app/views/**/*.erb";
-        @source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";
-        @source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/flatpack-*/app/components/**/*.{rb,erb}";
+        #{tailwind_source_lines_for(dir).join("\n")}
       CSS
 
       generator = build_generator(dir)
@@ -75,8 +78,9 @@ class InstallGeneratorTest < Minitest::Test
       end
 
       css = File.read(css_path)
-      assert_tailwind_sources_present(css)
-      assert_tailwind_sources_count(css, 1)
+      assert_tailwind_sources_present(css, dir)
+      assert_tailwind_sources_count(css, dir, 1)
+      refute_includes css, "/usr/local/bundle"
     end
   end
 
@@ -94,7 +98,7 @@ class InstallGeneratorTest < Minitest::Test
 
       assert_includes messages, ["Tailwind CSS not detected. Skipping Tailwind configuration.", :yellow]
       assert_includes messages, ["If you use Tailwind, add these lines to your Tailwind CSS config:", :yellow]
-      tailwind_source_lines.each do |line|
+      tailwind_source_lines_for(dir).each do |line|
         assert_includes messages, ["  #{line}", :yellow]
       end
     end
@@ -116,7 +120,7 @@ class InstallGeneratorTest < Minitest::Test
       assert_equal "@source \"../local/**/*.erb\";\n", File.read(css_path)
       assert_includes messages, ["Could not find @import \"tailwindcss\" in your Tailwind config.", :yellow]
       assert_includes messages, ["Please manually add these lines to your Tailwind CSS config:", :yellow]
-      tailwind_source_lines.each do |line|
+      tailwind_source_lines_for(dir).each do |line|
         assert_includes messages, ["  #{line}", :yellow]
       end
     end
@@ -189,28 +193,22 @@ class InstallGeneratorTest < Minitest::Test
 
   private
 
-  def assert_tailwind_sources_present(css)
-    tailwind_source_lines.each do |line|
+  def assert_tailwind_sources_present(css, dir)
+    tailwind_source_lines_for(dir).each do |line|
       assert_includes css, line
     end
   end
 
-  def assert_tailwind_sources_count(css, count)
-    tailwind_source_lines.each do |line|
+  def assert_tailwind_sources_count(css, dir, count)
+    tailwind_source_lines_for(dir).each do |line|
       assert_equal count, css.scan(line).size
     end
   end
 
-  def tailwind_source_lines
-    [
-      '@source "../../vendor/bundle/**/recording_studio_location/app/views/**/*.erb";',
-      gem_source("recording_studio_location-*/app/views/**/*.erb"),
-      '@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";',
-      gem_source("flatpack-*/app/components/**/*.{rb,erb}")
-    ]
-  end
-
-  def gem_source(path)
-    %(@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/#{path}";)
+  def tailwind_source_lines_for(dir)
+    generator = build_generator(dir)
+    Rails.stub(:root, Pathname.new(dir)) do
+      generator.send(:tailwind_source_lines)
+    end
   end
 end

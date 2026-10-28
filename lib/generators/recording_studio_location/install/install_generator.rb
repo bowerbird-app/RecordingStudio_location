@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "pathname"
 require "rails/generators"
 
 module RecordingStudioLocation
@@ -125,14 +126,22 @@ module RecordingStudioLocation
       def tailwind_source_lines
         [
           '@source "../../vendor/bundle/**/recording_studio_location/app/views/**/*.erb";',
-          engine_gem_source("recording_studio_location-*/app/views/**/*.erb"),
+          engine_root_source(RecordingStudioLocation::Engine.root, "app/views/**/*.erb"),
           '@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";',
-          engine_gem_source("flatpack-*/app/components/**/*.{rb,erb}")
+          engine_root_source(flatpack_engine_root, "app/components/**/*.{rb,erb}")
         ]
       end
 
-      def engine_gem_source(path)
-        %(@source "../../../../../../usr/local/bundle/ruby/**/bundler/gems/#{path}";)
+      def flatpack_engine_root
+        return FlatPack::Engine.root if defined?(FlatPack::Engine)
+
+        RecordingStudioLocation::Engine.root
+      end
+
+      def engine_root_source(root, glob)
+        from = Pathname.new(Rails.root).join("app/assets/tailwind")
+        relative = Pathname.new(root).relative_path_from(from)
+        %(@source "#{relative}/#{glob}";)
       end
     end
   end

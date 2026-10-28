@@ -58,12 +58,7 @@ Do not list host models such as Business or PressKit inside this gem.
 
 ## Tailwind
 
-The installer looks for `@import "tailwindcss"` and injects sources similar to:
-
-```css
-@source "../../vendor/bundle/**/recording_studio_location/app/views/**/*.erb";
-@source "../../vendor/bundle/**/flatpack/app/components/**/*.{rb,erb}";
-```
+The installer looks for `@import "tailwindcss"` and injects vendor-bundle globs plus `@source` paths computed from `RecordingStudioLocation::Engine.root` (and FlatPack’s engine root).
 
 Rebuild with `bin/rails tailwindcss:build`.
 
