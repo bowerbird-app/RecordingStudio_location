@@ -4,7 +4,7 @@
 
 Bump to `0.8.2`. No Location migration.
 
-The install generator writes Tailwind `@source` lines from `RecordingStudioLocation::Engine.root` (and FlatPack’s engine root) instead of a hard-coded `/usr/local/bundle` path. Re-run `bin/rails generate recording_studio_location:install` if you want those lines rewritten. Dummy sibling pins are unchanged from 0.8.1.
+Dummy sibling pins are unchanged from 0.8.1.
 
 ## 0.8.1
 

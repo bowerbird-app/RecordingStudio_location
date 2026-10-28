@@ -6,13 +6,11 @@
 
 ### Changed
 
-- Dummy credentials tests look up `recording_studio_location.api_key` instead of leftover `gem_template`.
-- The install generator writes Tailwind `@source` paths relative to `RecordingStudioLocation::Engine.root` (and FlatPack’s engine root) instead of a hard-coded `/usr/local/bundle` prefix.
 - `UPDATE_SUMMARY.md` matches the dummy pin list on main (Trashable `v0.11.0`, Cache `v0.5.0`).
 
 ### Upgrade notes
 
-- Bump to `0.8.2`. No migration. Hosts that already installed may re-run `bin/rails generate recording_studio_location:install` so Tailwind `@source` lines follow the engine root, or leave the old `/usr/local/bundle` lines if that path still matches the host.
+- Bump to `0.8.2`. No migration.
 
 ## [0.8.1] - 2026-10-27
 

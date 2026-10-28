@@ -4,7 +4,7 @@ These notes are internals for Recording Studio Location. Hosts should start with
 
 | Doc | What it covers |
 | --- | --- |
-| [Installing](INSTALLING.md) | Gem, generators, mount path, engine-root Tailwind `@source` |
+| [Installing](INSTALLING.md) | Gem, generators, mount path, Tailwind `@source` |
 | [Configuration](CONFIGURATION.md) | Initializer, YAML, optional geocoder |
 | [Migrations](MIGRATIONS.md) | `recording_studio_locations` table |
 | [Hooks](HOOKS.md) | Core Recording Studio hooks on this engine |
