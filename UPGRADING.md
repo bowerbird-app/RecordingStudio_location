@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.8.3
+
+Bump to `0.8.3`. No Location migration.
+
+Dummy sibling pins are unchanged from 0.8.2. Lockfiles use Rails 8.1.4.1.
+
 ## 0.8.2
 
 Bump to `0.8.2`. No Location migration.
