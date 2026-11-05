@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-11-05
+
+### Changed
+
+- Lockfiles use Rails 8.1.4.1 with rack 3.2.8, nokogiri 1.19.7, loofah 2.25.3, and rails-html-sanitizer 1.7.2.
+
+### Upgrade notes
+
+- Bump to `0.8.3`. No migration.
+
 ## [0.8.2] - 2026-10-28
 
 ### Changed
@@ -264,7 +274,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.2...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.3...HEAD
+[0.8.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.2...v0.8.3
 [0.8.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.7.0...v0.8.0

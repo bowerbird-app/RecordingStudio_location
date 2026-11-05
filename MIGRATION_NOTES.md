@@ -11,6 +11,7 @@
 
 ## Upgrades
 
+- 0.8.3 is a lockfile security bump. No migration.
 - 0.8.2 is docs hygiene. No migration.
 - 0.8.1 changes search disclosure and needs no migration.
 
