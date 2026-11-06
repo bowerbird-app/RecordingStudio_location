@@ -6,7 +6,7 @@ require_relative "../support/widen_recording_studio_requirement"
 gem "recording_studio_location", path: "../.."
 
 # RecordingStudio engine
-gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v6.1.0"
+gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v6.5.0"
 gem "recording_studio_accessible", github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.24.2"
 # Root Switchable 0.11 requires Metrics >= 0.3 (GitHub-only; pin for Bundler resolution)
 gem "recording_studio_metrics", github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.7.3"

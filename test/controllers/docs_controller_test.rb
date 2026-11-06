@@ -166,6 +166,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def record_child(recordable, root_recording, parent_recording)
+    become_studio_writer!(root_recording, actor: @user)
     RecordingStudio.record!(
       action: "created",
       recordable: recordable,

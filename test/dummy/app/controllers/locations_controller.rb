@@ -93,11 +93,10 @@ class LocationsController < ApplicationController
   end
 
   def find_location_recording(role:)
-    recording = RecordingStudio::Recording.find(params[:id])
-    unless recording.recordable_type == RecordingStudio::Location::LOCATION_TYPE &&
-           location_authorized?(recording, role)
-      raise ActiveRecord::RecordNotFound
-    end
+    recording = RecordingStudio::Recording.where(
+      recordable_type: RecordingStudio::Location::LOCATION_TYPE
+    ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).find(params[:id])
+    raise ActiveRecord::RecordNotFound unless location_authorized?(recording, role)
 
     recording
   end

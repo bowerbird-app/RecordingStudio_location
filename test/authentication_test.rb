@@ -1,68 +1,53 @@
 # frozen_string_literal: true
 
-require "test_helper"
-require File.expand_path("../app/controllers/recording_studio_location/authentication", __dir__)
+ENV["RAILS_ENV"] = "test"
+require_relative "dummy/config/environment"
+require "devise/test/integration_helpers"
+require "rails/test_help"
+require_relative "dummy/test/support/accessible_grants"
 
-class AuthenticationTest < Minitest::Test
-  class Harness
-    include RecordingStudioLocation::Authentication
+class AuthenticationTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+  include AccessibleGrants
 
-    attr_reader :status
-
-    def initialize
-      @performed = false
+  setup do
+    @user = User.find_or_create_by!(email: "authentication-http@example.com") do |user|
+      user.password = "Password123!"
+      user.password_confirmation = "Password123!"
     end
-
-    def head(status)
-      @status = status
-      @performed = true
-    end
-
-    def performed?
-      @performed
-    end
-
-    def respond_to?(name, *args, include_private: false)
-      include_private = args.first unless args.empty?
-      return false if name.to_sym == :authenticate_user!
-
-      super(name, include_private)
-    end
+    sign_in @user
+    @previous_authenticate = RecordingStudioLocation.configuration.authenticate
   end
 
-  def setup
-    @previous = RecordingStudioLocation.configuration.authenticate
+  teardown do
+    RecordingStudioLocation.configuration.authenticate = @previous_authenticate
   end
 
-  def teardown
-    RecordingStudioLocation.configuration.authenticate = @previous
-  end
-
-  def test_identity_callback_can_halt_without_accessible
+  test "identity callback can halt without accessible" do
     RecordingStudioLocation.configuration.authenticate = ->(controller) { controller.head :forbidden }
-    harness = Harness.new
 
-    harness.send(:authenticate_location_request!)
+    get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
 
-    assert_equal :forbidden, harness.status
+    assert_response :forbidden
   end
 
-  def test_signed_in_request_is_forbidden_when_accessible_is_missing
-    RecordingStudioLocation.configuration.authenticate = ->(*) {}
-    harness = Harness.new
+  test "signed_in_request_is_forbidden_when_accessible_is_missing" do
+    ActionView::Base
+    hidden = Object.send(:remove_const, :RecordingStudioAccessible)
 
-    harness.send(:authenticate_location_request!)
+    get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
 
-    assert_equal :forbidden, harness.status
-    refute defined?(RecordingStudioAccessible)
+    assert_response :forbidden
+  ensure
+    Object.const_set(:RecordingStudioAccessible, hidden) if hidden && !defined?(::RecordingStudioAccessible)
   end
 
-  def test_missing_identity_is_unauthorized
+  test "missing_identity_is_unauthorized" do
     RecordingStudioLocation.configuration.authenticate = nil
-    harness = Harness.new
+    sign_out @user
 
-    harness.send(:authenticate_location_request!)
+    get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
 
-    assert_equal :unauthorized, harness.status
+    assert_response :unauthorized
   end
 end

@@ -5,8 +5,10 @@ require_relative "test_helper"
 require_relative "dummy/config/environment"
 
 require "rails/test_help"
+require_relative "dummy/test/support/accessible_grants"
 
 class RecordingStudioDeclarationsTest < ActiveSupport::TestCase
+  include AccessibleGrants
   test "dummy recordable declarations validate and expose parent/root introspection" do
     assert RecordingStudio.validate_recordable_declarations!
     assert_equal ["Workspace"], RecordingStudio.root_recordable_types
@@ -29,6 +31,7 @@ class RecordingStudioDeclarationsTest < ActiveSupport::TestCase
     root_recording = RecordingStudio.root_recording_for(Workspace.create!(name: unique_name("Child Workspace")))
     folder = Folder.new(name: unique_name("Allowed Folder"))
 
+    become_studio_writer!(root_recording)
     event = RecordingStudio.record!(
       action: "created",
       recordable: folder,
@@ -96,6 +99,7 @@ class RecordingStudioDeclarationsTest < ActiveSupport::TestCase
   private
 
   def record_child(recordable, root_recording, parent_recording)
+    become_studio_writer!(root_recording)
     RecordingStudio.record!(
       action: "created",
       recordable: recordable,
