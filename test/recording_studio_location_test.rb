@@ -11,6 +11,11 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_kind_of Class, ::RecordingStudioLocation::Engine
   end
 
+  def test_accessible_available_reads_the_optional_gem
+    refute defined?(::RecordingStudioAccessible)
+    assert_nil RecordingStudioLocation.accessible_available?
+  end
+
   def test_gemspec_allows_recording_studio_6_1
     gemspec = File.read(File.expand_path("../recording_studio_location.gemspec", __dir__))
 
@@ -229,7 +234,7 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v6.1.0`"
+    assert_includes readme, "Recording Studio `v6.5.0`"
     assert_includes readme, "FlatPack `0.1.319`"
     refute_includes readme, "Recording Studio `v4.7.0`"
     refute_includes readme, "FlatPack `v0.1.213`"

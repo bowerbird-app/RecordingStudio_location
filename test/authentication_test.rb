@@ -32,13 +32,19 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "signed_in_request_is_forbidden_when_accessible_is_missing" do
-    hidden = Object.send(:remove_const, :RecordingStudioAccessible)
+    singleton = RecordingStudioLocation.singleton_class
+    singleton.alias_method :accessible_available_without_test, :accessible_available?
+    singleton.define_method(:accessible_available?) { false }
 
     get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
 
     assert_response :forbidden
   ensure
-    Object.const_set(:RecordingStudioAccessible, hidden) if hidden && !defined?(::RecordingStudioAccessible)
+    singleton = RecordingStudioLocation.singleton_class
+    if singleton.method_defined?(:accessible_available_without_test)
+      singleton.alias_method :accessible_available?, :accessible_available_without_test
+      singleton.remove_method :accessible_available_without_test
+    end
   end
 
   test "missing_identity_is_unauthorized" do
