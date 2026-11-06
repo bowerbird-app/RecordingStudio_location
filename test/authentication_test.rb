@@ -32,7 +32,6 @@ class AuthenticationTest < ActionDispatch::IntegrationTest
   end
 
   test "signed_in_request_is_forbidden_when_accessible_is_missing" do
-    ActionView::Base
     hidden = Object.send(:remove_const, :RecordingStudioAccessible)
 
     get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
