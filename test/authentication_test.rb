@@ -22,10 +22,11 @@ class AuthenticationTest < Minitest::Test
       @performed
     end
 
-    def respond_to?(name, include_private = false)
+    def respond_to?(name, *args, include_private: false)
+      include_private = args.first unless args.empty?
       return false if name.to_sym == :authenticate_user!
 
-      super
+      super(name, include_private)
     end
   end
 

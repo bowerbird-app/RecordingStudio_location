@@ -44,6 +44,10 @@ module RecordingStudioLocation
         return
       end
 
+      authorize_location_search_recording(actor)
+    end
+
+    def authorize_location_search_recording(actor)
       recording = location_search_recording_for(actor)
       return if recording && RecordingStudioAccessible.authorized?(actor: actor, recording: recording, role: :view)
 
