@@ -77,7 +77,7 @@ Engine controllers call `recording_studio_layout { RecordingStudioLocation.confi
 
 ### authenticate
 
-Search endpoints require a logged-in user. Set `config.authenticate` to a proc if the host is not Devise. Default is `authenticate_user!` when that method exists, otherwise `401`.
+Search endpoints identify the caller, then require Accessible `:view` on a workspace. Set `config.authenticate` to a proc if the host is not Devise. Default is `authenticate_user!` when that method exists, otherwise `401`. After that, missing Accessible or no grant is `403`.
 
 ## Credentials
 

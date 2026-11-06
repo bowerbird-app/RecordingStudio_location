@@ -4,11 +4,16 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.8.3", ::RecordingStudioLocation::VERSION
+    assert_equal "0.9.0", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
     assert_kind_of Class, ::RecordingStudioLocation::Engine
+  end
+
+  def test_accessible_available_reads_the_optional_gem
+    refute defined?(::RecordingStudioAccessible)
+    assert_nil RecordingStudioLocation.accessible_available?
   end
 
   def test_gemspec_allows_recording_studio_6_1
@@ -46,14 +51,14 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_recording_studio_6_1
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.1.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.18.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.5.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.24.2"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.11.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.6.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.7.3"'
     refute_includes gemfile, 'tag: "v0.9.0"'
     refute_includes gemfile, 'tag: "v0.2.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.11.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.5.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.12.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"'
     refute_includes gemfile, 'tag: "v4.7.0"'
     refute_includes gemfile, 'tag: "v0.1.213"'
@@ -65,6 +70,7 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes gemfile, 'tag: "v4.2.2"'
     refute_includes gemfile, 'tag: "v4.2.1"'
     refute_includes gemfile, 'tag: "v4.2.0"'
+    refute_includes gemfile, 'tag: "v0.18.0"'
     refute_includes gemfile, 'tag: "v0.17.0"'
     refute_includes gemfile, 'tag: "v0.15.0"'
     refute_includes gemfile, 'tag: "v0.13.0"'
@@ -103,6 +109,22 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_includes schema, 'create_table "recording_studio_access_rules"'
     assert_includes schema, "index_recording_studio_access_constraints_on_action"
     assert_includes schema, "index_recording_studio_access_rules_on_action"
+    assert_includes schema, 'create_table "recording_studio_access_requests"'
+    assert_includes schema, 'create_table "recording_studio_access_request_intents"'
+    requests_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261016000015_create_recording_studio_access_requests.rb",
+        __dir__
+      )
+    )
+    intents_migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261016000016_create_recording_studio_access_request_intents.rb",
+        __dir__
+      )
+    )
+    assert_includes requests_migration, "create_table :recording_studio_access_requests"
+    assert_includes intents_migration, "create_table :recording_studio_access_request_intents"
     constraints_migration = File.read(
       File.expand_path(
         "dummy/db/migrate/20261010000013_create_recording_studio_access_constraints.rb",
@@ -212,21 +234,22 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v6.1.0`"
+    assert_includes readme, "Recording Studio `v6.5.0`"
     assert_includes readme, "FlatPack `0.1.319`"
     refute_includes readme, "Recording Studio `v4.7.0`"
     refute_includes readme, "FlatPack `v0.1.213`"
-    assert_includes readme, "Accessible `v0.18.0`"
+    assert_includes readme, "Accessible `v0.24.2`"
     assert_includes readme, "Root Switchable `v0.11.0`"
-    assert_includes readme, "Metrics `v0.6.1`"
+    assert_includes readme, "Metrics `v0.7.3`"
     refute_includes readme, "Root Switchable `v0.9.0`"
     refute_includes readme, "Metrics `v0.2.0`"
-    assert_includes readme, "Trashable `v0.11.0`"
-    assert_includes readme, "Cache `v0.5.0`"
+    assert_includes readme, "Trashable `v0.12.3`"
+    assert_includes readme, "Cache `v0.6.3`"
     refute_includes readme, "Recording Studio `v4.6.0`"
     refute_includes readme, "Recording Studio `v4.5.0`"
     refute_includes readme, "Recording Studio `v4.4.0`"
     refute_includes readme, "Recording Studio `v4.3.0`"
+    refute_includes readme, "Accessible `v0.18.0`"
     refute_includes readme, "Accessible `v0.17.0`"
     refute_includes readme, "Accessible `v0.15.0`"
     refute_includes readme, "Accessible `v0.13.0`"

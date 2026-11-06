@@ -7,7 +7,7 @@ gemspec
 
 # recording_studio and flat_pack are not published to RubyGems; resolve the gemspec pins from GitHub.
 gem "flat_pack", github: "bowerbird-app/flatpack", ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"
-gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v6.1.0"
+gem "recording_studio", github: "bowerbird-app/RecordingStudio", tag: "v6.5.0"
 
 gem "devise"
 gem "puma"

@@ -25,22 +25,25 @@ class LocationsController < ApplicationController
   end
 
   def show
-    @recording = find_location_recording
+    @recording = find_location_recording(role: :view)
     @location = @recording.recordable
   end
 
   def edit
-    @recording = find_location_recording
+    @recording = find_location_recording(role: :edit)
     @location = editable_copy(@recording)
   end
 
   def update
-    @recording = find_location_recording
+    @recording = find_location_recording(role: :edit)
     @location = editable_copy(@recording)
     @location.assign_attributes(location_params)
 
     if @location.valid?
-      @recording = studio_root!.revise(@recording) do |location|
+      parent = @recording.parent_recording
+      raise ActiveRecord::RecordNotFound unless location_authorized?(parent, :edit)
+
+      @recording = parent.revise(@recording) do |location|
         location.assign_attributes(location_params)
       end
       redirect_to location_path(@recording)
@@ -51,20 +54,34 @@ class LocationsController < ApplicationController
 
   private
 
-  def studio_workspace
-    Workspace.find_by(name: "Studio Workspace")
+  def location_actor
+    Current.actor.presence || current_user
+  end
+
+  def location_authorized?(recording, role)
+    recording && location_actor && defined?(RecordingStudioAccessible) &&
+      RecordingStudioAccessible.authorized?(actor: location_actor, recording: recording, role: role)
   end
 
   def studio_root
-    workspace = studio_workspace
-    return if workspace.nil?
+    candidate = current_root_recording if respond_to?(:current_root_recording)
+    return candidate if location_authorized?(candidate, :view)
 
-    RecordingStudio.root_recording_for(workspace)
+    return unless defined?(RecordingStudioAccessible)
+
+    RecordingStudioAccessible.root_recordings_for(actor: location_actor, minimum_role: :view).first
   end
 
   def studio_root!
-    workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
-    RecordingStudio.root_recording_for(workspace)
+    candidate = current_root_recording if respond_to?(:current_root_recording)
+    return candidate if location_authorized?(candidate, :edit)
+
+    root = if defined?(RecordingStudioAccessible)
+      RecordingStudioAccessible.root_recordings_for(actor: location_actor, minimum_role: :edit).first
+    end
+    raise ActiveRecord::RecordNotFound if root.nil?
+
+    root
   end
 
   def location_recordings(root)
@@ -75,8 +92,13 @@ class LocationsController < ApplicationController
     ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).order(:created_at)
   end
 
-  def find_location_recording
-    location_recordings(studio_root!).find(params[:id])
+  def find_location_recording(role:)
+    recording = RecordingStudio::Recording.where(
+      recordable_type: RecordingStudio::Location::LOCATION_TYPE
+    ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).find(params[:id])
+    raise ActiveRecord::RecordNotFound unless location_authorized?(recording, role)
+
+    recording
   end
 
   def editable_copy(recording)

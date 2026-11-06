@@ -31,6 +31,7 @@ class RecordingStudioTemplateTest < ActiveSupport::TestCase
 
     load Rails.root.join("db/seeds.rb").to_s
 
+    user = User.find_by!(email: "admin@admin.com")
     workspace = Workspace.find_by!(name: "Studio Workspace")
     accessible_workspace = Workspace.find_by!(name: "Client Workspace")
     private_workspace = Workspace.find_by!(name: "Private Workspace")
@@ -50,6 +51,8 @@ class RecordingStudioTemplateTest < ActiveSupport::TestCase
     assert_equal root_recording, folder_recording.root_recording
     assert_equal folder_recording, page_recording.parent_recording
     assert_equal root_recording, page_recording.root_recording
+    assert RecordingStudioAccessible.authorized?(actor: user, recording: root_recording, role: :admin)
+    refute RecordingStudioAccessible.authorized?(actor: user, recording: private_root_recording, role: :view)
     assert_equal 3, Workspace.count
 
     assert_no_difference -> { User.count } do

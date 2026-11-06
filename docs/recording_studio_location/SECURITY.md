@@ -12,7 +12,7 @@ Treat those as data-sharing choices in the host's own policy.
 
 Do not put the API key in YAML, git, docs, or logs. Use Rails credentials or the host secret store. Error messages from the Google adapter strip the `key` query parameter.
 
-Search endpoints require a logged-in user (`config.authenticate`, Devise `authenticate_user!`, or 401). Queries shorter than 3 characters never reach the adapter. Autocomplete responses may be cached for 45 seconds without the key in the cache key.
+Search endpoints identify the caller (`config.authenticate`, Devise `authenticate_user!`, or 401) and then require Recording Studio Accessible `:view` on a workspace. Missing Accessible or no grant is 403. Queries shorter than 3 characters never reach the adapter. Autocomplete responses may be cached for 45 seconds without the key in the cache key.
 
 A pick fills form fields only after the user chooses a result. Users can edit or clear every filled field, including coordinates.
 
