@@ -18,8 +18,8 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
       user.password_confirmation = "Password123!"
     end
     sign_in @user
-    @workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
-    RecordingStudio.root_recording_for(@workspace)
+    @workspace = Workspace.create!(name: "English #{SecureRandom.hex(4)}")
+    grant_admin_access!(actor: @user, recording: RecordingStudio.root_recording_for(@workspace))
     @previous_locales = I18n.available_locales
     I18n.available_locales = (@previous_locales + %i[en de fr]).uniq
   end

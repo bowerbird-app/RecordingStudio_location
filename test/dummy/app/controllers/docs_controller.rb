@@ -17,7 +17,7 @@ class DocsController < ApplicationController
   end
 
   def recordings_tree
-    recordings = RecordingStudio::Recording.includes(:recordable).reorder(:created_at, :id).to_a
+    recordings = visible_recordings_for_tree
     recordings_by_parent_id = recordings.group_by(&:parent_recording_id)
 
     @recording_tree = recordings_by_parent_id.fetch(nil, []).map do |recording|
@@ -37,6 +37,20 @@ class DocsController < ApplicationController
   end
 
   private
+
+  def visible_recordings_for_tree
+    actor = Current.actor.presence || current_user
+    scope = RecordingStudio::Recording.includes(:recordable)
+    return [] unless defined?(RecordingStudioAccessible) && actor
+
+    root_ids = RecordingStudioAccessible.root_recording_ids_for(actor: actor, minimum_role: :view)
+    return [] if root_ids.empty?
+
+    table = RecordingStudio::Recording.arel_table
+    scope.where(table[:id].in(root_ids).or(table[:root_recording_id].in(root_ids)))
+      .reorder(:created_at, :id)
+      .to_a
+  end
 
   def normalize_recordable_declaration(declaration)
     {

@@ -37,6 +37,14 @@ begin
   accessible_root_recording = RecordingStudio.root_recording_for(accessible_workspace)
   private_root_recording = RecordingStudio.root_recording_for(private_workspace)
 
+  unless RecordingStudioAccessible.authorized?(actor: user, recording: root_recording, role: :admin)
+    studio_access = RecordingStudioAccessible.bootstrap_owner_access!(
+      recording: root_recording,
+      actor: user
+    )
+    raise studio_access.error if studio_access.failure?
+  end
+
   folder_recording = find_or_record_child.call(folder, root_recording, root_recording)
 
   find_or_record_child.call(page, root_recording, folder_recording)
@@ -79,3 +87,4 @@ puts "Seeded: Workspace '#{accessible_workspace.name}' with root recording ##{ac
 puts "Seeded: Workspace '#{private_workspace.name}' with root recording ##{private_root_recording.id}"
 puts "Seeded: Folder '#{folder.name}' and page '#{page.title}'"
 puts "Seeded: Location 'Melbourne Convention Centre' under '#{workspace.name}'"
+puts "Seeded: Accessible admin on '#{workspace.name}' for admin@admin.com"

@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-06
+
+### Changed
+
+- Search and place endpoints still identify the caller with `config.authenticate` or Devise, then require Recording Studio Accessible `:view` on a workspace. Missing Accessible is forbidden, not a signed-in pass.
+- Dummy location pages and the recordings tree list only workspaces and places the current person can use. They no longer hard-code Studio Workspace or dump every recording.
+- Dummy pins Accessible `v0.24.2`, Metrics `v0.7.3`, Trashable `v0.12.3`, and Cache `v0.6.3`. Recording Studio stays `v6.1.0`.
+
+### Upgrade notes
+
+- Bump to `0.9.0`. No Location migration.
+- Hosts must grant Accessible access on a workspace before search, place lookup, or dummy location pages succeed. Signed-in with no grant is now denied.
+- Dummy sibling pins: Accessible `v0.24.2`, Metrics `v0.7.3`, Trashable `v0.12.3`, Cache `v0.6.3`. Recording Studio stays `v6.1.0`. Copy Accessible access-request migrations if the dummy schema is your template.
+
 ## [0.8.3] - 2026-11-05
 
 ### Changed
@@ -274,7 +288,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.3...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.3...v0.9.0
 [0.8.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.2...v0.8.3
 [0.8.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.0...v0.8.1

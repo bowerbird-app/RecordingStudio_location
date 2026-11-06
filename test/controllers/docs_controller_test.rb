@@ -6,9 +6,11 @@ require_relative "../dummy/config/environment"
 
 require "devise/test/integration_helpers"
 require "rails/test_help"
+require_relative "../dummy/test/support/accessible_grants"
 
 class DocsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  include AccessibleGrants
 
   TEST_PASSWORD = "DocsTestPassword!2026"
 
@@ -74,10 +76,14 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
   test "recordings tree page renders successfully" do
     workspace = Workspace.create!(name: "Tree Workspace")
     root_recording = RecordingStudio.root_recording_for(workspace)
+    grant_admin_access!(actor: @user, recording: root_recording)
     folder = Folder.create!(name: "Reference")
     folder_recording = record_child(folder, root_recording, root_recording)
     page = Page.create!(title: "API")
     record_child(page, root_recording, folder_recording)
+
+    hidden_workspace = Workspace.create!(name: "Hidden Tree Workspace")
+    RecordingStudio.root_recording_for(hidden_workspace)
 
     get docs_recordings_tree_path
 
@@ -86,8 +92,10 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Workspace: Tree Workspace"
     assert_includes response.body, "Folder: Reference"
     assert_includes response.body, "Page: API"
+    tree = css_select("div[role='tree']").first.to_s
+    refute_includes tree, "Hidden Tree Workspace"
     refute_includes response.body, "Access boundary"
-    refute_includes response.body, "Access: Admin"
+    assert_includes tree, "Access: Admin"
     assert_select "div[role='tree']", count: 1
     assert_select "[role='treeitem']", minimum: 3
     refute_includes response.body, "Current structure"

@@ -12,8 +12,9 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
       user.password_confirmation = "Password123!"
     end
     sign_in @user
-    @workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
+    @workspace = Workspace.create!(name: "Identity #{SecureRandom.hex(4)}")
     @root = RecordingStudio.root_recording_for(@workspace)
+    grant_admin_access!(actor: @user, recording: @root)
     @previous_mode = RecordingStudioLocation.configuration.icon_mode
   end
 

@@ -1,5 +1,13 @@
 # Upgrading
 
+## 0.9.0
+
+Bump to `0.9.0`. No Location migration.
+
+Search and place endpoints require Accessible `:view` after sign-in. Dummy location pages and the recordings tree follow the same grants. Signed-in with no grant is denied.
+
+Dummy pins Accessible `v0.24.2`, Metrics `v0.7.3`, Trashable `v0.12.3`, and Cache `v0.6.3`. Recording Studio stays `v6.1.0`.
+
 ## 0.8.3
 
 Bump to `0.8.3`. No Location migration.

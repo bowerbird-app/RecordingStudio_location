@@ -7,6 +7,7 @@ Add Location to a Recording Studio host. The public product notes live in the [R
 - Rails 8.1+
 - PostgreSQL (UUID primary keys)
 - `recording_studio >= 6.1.0`
+- Recording Studio Accessible for search, place lookup, and dummy location pages
 - FlatPack for the form and display partials
 
 ## Add the gem
