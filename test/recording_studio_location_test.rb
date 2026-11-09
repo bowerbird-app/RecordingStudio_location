@@ -11,9 +11,9 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_kind_of Class, ::RecordingStudioLocation::Engine
   end
 
-  def test_accessible_available_reads_the_optional_gem
+  def test_gem_suite_bundle_does_not_load_accessible
     refute defined?(::RecordingStudioAccessible)
-    assert_nil RecordingStudioLocation.accessible_available?
+    refute RecordingStudioLocation.respond_to?(:accessible_available?)
   end
 
   def test_gemspec_allows_recording_studio_6_1

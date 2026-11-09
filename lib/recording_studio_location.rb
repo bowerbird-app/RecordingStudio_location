@@ -21,9 +21,5 @@ module RecordingStudioLocation
     def configure
       yield(configuration) if block_given?
     end
-
-    def accessible_available?
-      defined?(::RecordingStudioAccessible)
-    end
   end
 end

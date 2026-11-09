@@ -33,7 +33,7 @@ module RecordingStudioLocation
     end
 
     def authorize_location_search!
-      unless RecordingStudioLocation.accessible_available?
+      unless defined?(::RecordingStudioAccessible)
         head :forbidden
         return
       end
