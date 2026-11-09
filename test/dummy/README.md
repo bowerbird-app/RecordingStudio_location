@@ -5,6 +5,7 @@ This Rails app exists to validate Recording Studio Location in a real host appli
 ## What It Covers
 
 - Devise authentication with a seeded admin user
+- Accessible admin grant on Studio Workspace for that user
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio default layout, FlatPack assets, and Tailwind source scanning
@@ -31,7 +32,7 @@ Then open the app and sign in with:
 ## Useful Routes
 
 - `/` - seeded Location on Studio Workspace
-- `/locations` - list locations in the workspace
+- `/locations` - list locations in a workspace you can use
 - `/locations/new` - search helper (Fake demo adapter and OpenStreetMap pin when no live key). Title and Type sit above Location. Add `?icon_mode=choose` to try the icon picker. The field looks like FlatPack Search (magnifying-glass, no chevron). Add address manually shows the address fields inline. After a pick, it shows the place name and those fields; the summary X clears the venue, not the title.
 - `/locations/:id` - read-only display with optional map
 - `/locations/:id/edit` - search helper with a saved place, inline address fields, and a map when both coordinates are present

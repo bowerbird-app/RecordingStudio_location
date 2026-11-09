@@ -12,8 +12,70 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
       user.password_confirmation = "Password123!"
     end
     sign_in @user
-    @workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
+    @workspace = Workspace.create!(name: "Places #{SecureRandom.hex(4)}")
     @root = RecordingStudio.root_recording_for(@workspace)
+    grant_admin_access!(actor: @user, recording: @root)
+    Current.actor = @user
+  end
+
+  test "index lists only locations under a workspace the actor can use" do
+    other_root = RecordingStudio.root_recording_for(Workspace.create!(name: "Hidden #{SecureRandom.hex(4)}"))
+    hidden = with_studio_writer(other_root) do
+      other_root.record(RecordingStudio::Location::Location) do |location|
+        location.locality = "Hiddenville"
+        location.country_code = "AU"
+      end
+    end
+    visible = @root.record(RecordingStudio::Location::Location) do |location|
+      location.locality = "Shownville"
+      location.country_code = "AU"
+    end
+
+    get locations_path
+
+    assert_response :success
+    assert_includes response.body, location_path(visible)
+    refute_includes response.body, location_path(hidden)
+  end
+
+  test "show denies a trashed location" do
+    recording = trashed_location_recording
+
+    get location_path(recording)
+
+    assert_response :not_found
+  end
+
+  test "edit denies a trashed location" do
+    recording = trashed_location_recording
+
+    get edit_location_path(recording)
+
+    assert_response :not_found
+  end
+
+  test "update denies a trashed location" do
+    recording = trashed_location_recording
+
+    patch location_path(recording), params: {
+      location: { name: "Still trashed", country_code: "AU" }
+    }
+
+    assert_response :not_found
+  end
+
+  test "show hides a location the actor cannot use" do
+    other_root = RecordingStudio.root_recording_for(Workspace.create!(name: "Closed #{SecureRandom.hex(4)}"))
+    hidden = with_studio_writer(other_root) do
+      other_root.record(RecordingStudio::Location::Location) do |location|
+        location.name = "Closed hall"
+        location.country_code = "AU"
+      end
+    end
+
+    get location_path(hidden)
+
+    assert_response :not_found
   end
 
   test "new location form renders gem english when the host has no legacy override" do
@@ -299,6 +361,15 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def trashed_location_recording
+    recording = @root.record(RecordingStudio::Location::Location) do |location|
+      location.name = "Trashed hall"
+      location.country_code = "AU"
+    end
+    recording.update_column(:trashed_at, Time.current)
+    recording
+  end
 
   def place_search_target(name)
     css_select("[data-recording-studio-location--place-search-target='#{name}']").first

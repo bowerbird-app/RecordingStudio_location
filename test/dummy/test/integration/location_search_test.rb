@@ -12,9 +12,34 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
       user.password_confirmation = "Password123!"
     end
     sign_in @user
-    @workspace = Workspace.find_or_create_by!(name: "Studio Workspace")
-    RecordingStudio.root_recording_for(@workspace)
+    @workspace = Workspace.create!(name: "Search #{SecureRandom.hex(4)}")
+    @root = RecordingStudio.root_recording_for(@workspace)
+    grant_admin_access!(actor: @user, recording: @root)
     @adapter = RecordingStudio::Location.geocoder
+  end
+
+  test "search requires Accessible view on a workspace" do
+    stranger = User.find_or_create_by!(email: "location-search-stranger@example.com") do |user|
+      user.password = "Password123!"
+      user.password_confirmation = "Password123!"
+    end
+    sign_in stranger
+
+    get recording_studio_location.searches_path, params: { q: "melbourne" }, as: :json
+
+    assert_response :forbidden
+  end
+
+  test "place details require Accessible view on a workspace" do
+    stranger = User.find_or_create_by!(email: "location-places-stranger@example.com") do |user|
+      user.password = "Password123!"
+      user.password_confirmation = "Password123!"
+    end
+    sign_in stranger
+
+    get recording_studio_location.places_path, params: { id: "demo-mcec", lookup: "full" }, as: :json
+
+    assert_response :forbidden
   end
 
   test "search requires a signed-in user" do

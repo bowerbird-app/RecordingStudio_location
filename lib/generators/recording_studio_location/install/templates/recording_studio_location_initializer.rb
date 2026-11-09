@@ -19,8 +19,10 @@ RecordingStudioLocation.configure do |config|
   config.lookup_depth = :full
 
   # Optional. Proc receives the engine controller. Default is Devise
-  # authenticate_user! when present, otherwise 401.
-  # config.authenticate = ->(controller) { controller.authenticate_user! }
+  # authenticate_user! when present, otherwise 401. Search then requires
+  # Accessible :view on a workspace (403 when Accessible is missing or there
+  # is no grant).
+  # config.authenticate = ->(controller) { controller.authenticate_user! } }
 
   # User title, type, and icon. name stays the venue the search fills.
   # Labels are English defaults; hosts override with i18n under
