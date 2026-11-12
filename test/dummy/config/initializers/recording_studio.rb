@@ -6,11 +6,13 @@ RecordingStudio.configure do |config|
     "Workspace",
     "Folder",
     "Page",
+    "AdminRoot",
     "RecordingStudio::Location::Location",
     "RecordingStudio::Access",
     "RecordingStudioApi::ApiClient",
     "RecordingStudioApi::ApiCredential",
-    "RecordingStudioApi::ApiAccessToken"
+    "RecordingStudioApi::ApiAccessToken",
+    "RecordingStudioApi::AdminApi"
   ]
 
   # Require each configured ActiveRecord type to call recording_studio_recordable.
