@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.9.0", ::RecordingStudioLocation::VERSION
+    assert_equal "0.10.0", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
@@ -59,7 +59,13 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes gemfile, 'tag: "v0.2.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.12.3"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.21.3"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.12.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_logs", tag: "v0.7.4"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_moveable", tag: "v4.1.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_icons", tag: "v0.2.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.341"'
+    refute_includes gemfile, 'ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"'
     refute_includes gemfile, 'tag: "v4.7.0"'
     refute_includes gemfile, 'tag: "v0.1.213"'
     refute_includes gemfile, "recording_studio/v3.0.0"
@@ -235,7 +241,8 @@ class RecordingStudioLocationTest < Minitest::Test
 
     assert_includes readme, "RecordingStudio::Location::Location"
     assert_includes readme, "Recording Studio `v6.5.0`"
-    assert_includes readme, "FlatPack `0.1.319`"
+    assert_includes readme, "Recording Studio API `v0.21.3`"
+    assert_includes readme, "FlatPack `0.1.341`"
     refute_includes readme, "Recording Studio `v4.7.0`"
     refute_includes readme, "FlatPack `v0.1.213`"
     assert_includes readme, "Accessible `v0.24.2`"

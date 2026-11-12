@@ -4,7 +4,7 @@ Location stores address text and optional coordinates. Geocoding and place searc
 
 When a host assigns an adapter:
 
-- `geocode!` / `reverse!` send address text or coordinates to that provider in the same request.
+- `geocode!` / `reverse!` send address text or coordinates to that provider in the same request. Recording Studio API `location_geocode` and `location_reverse` do the same (paid traffic). Place search and place details are not API endpoints.
 - The search helper sends the typed query to `GET /recording_studio_location/searches`, which calls `#search` server-side. A pick calls `GET /recording_studio_location/places`, which calls `#details`. The geocoding API key never reaches the browser.
 - A map pin is a separate adapter. It loads only after the user picks a result or types both coordinates (or when displaying a saved pair). Empty coordinates make no map request. Google Embed puts a **browser** key in the iframe URL: restrict that key by HTTP referrer and never reuse the server Geocoding key. OpenStreetMap embed needs no key. Hosts may need `frame-src` CSP for the provider origin.
 

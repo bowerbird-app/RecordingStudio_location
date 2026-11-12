@@ -15,6 +15,7 @@ A location can sit under whatever host recordable a product allows: a press kit,
 - `display_name`, `full_address`, `coordinates`, and `resolved_icon`
 - optional `geocode!` / `reverse!` when a host assigns a geocoder
 - optional place search (`#search` / `#details`) behind engine JSON endpoints
+- Recording Studio API named lookups (`location_geocode`, `location_reverse`) when that gem is loaded
 - FlatPack form fields, a search helper, and a read-only display partial
 
 ```text
@@ -214,7 +215,7 @@ recording_studio_location:
     api_key: "..."
 ```
 
-Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check.
+Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check. Recording Studio API exposes geocode and reverse as named endpoints. Place search and place details stay off that API so MCP does not call the paid geocoder.
 
 ```ruby
 RecordingStudioLocation.configure do |config|
@@ -400,11 +401,34 @@ Pair Location with the rest of Recording Studio when you need it:
 
 Location does not reimplement those behaviors.
 
+## JSON API and MCP
+
+When Recording Studio API is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. MCP hosts that wrap that API see the named endpoint tools. Place search and place details stay on the HTML engine only.
+
+| Name | Verb | Path | Access |
+| --- | --- | --- | --- |
+| `location_geocode` | POST | `/recording_studio_api/api/v1/location/geocode/:id` | `:edit` on the location |
+| `location_reverse` | POST | `/recording_studio_api/api/v1/location/reverse/:id` | `:edit` on the location |
+
+Reverse takes optional `force`. `location_geocode` and `location_reverse` call the existing bang methods inside a location revision.
+
+Geocode and reverse resolve the location through Accessible recordings and authorize `:edit`. They call the host geocoder (paid traffic). Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises.
+
+Install Recording Studio API in the host if you want the JSON surface:
+
+```bash
+bin/rails generate recording_studio_api:install
+bin/rails generate recording_studio_api:migrations
+bin/rails db:migrate
+```
+
+Turn on `:api_access_point` on roots that should hold API clients, and add `RecordingStudioApi::ApiClient` to `access_actor_types`. Recording Studio MCP needs no extra Location code.
+
 ## Development
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v6.5.0`, Accessible `v0.24.2`, Root Switchable `v0.11.0`, Metrics `v0.7.3`, Trashable `v0.12.3`, Cache `v0.6.3`, and FlatPack `0.1.319`. Location is `0.9.0`.
+The dummy app pins Recording Studio `v6.5.0`, Accessible `v0.24.2`, Root Switchable `v0.11.0`, Metrics `v0.7.3`, Trashable `v0.12.3`, Cache `v0.6.3`, Recording Studio API `v0.21.3`, Admin `v2.12.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.341`. Location is `0.10.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

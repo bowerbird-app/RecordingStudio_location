@@ -8,6 +8,14 @@ RecordingStudio.configure do |config|
     "Page",
     "RecordingStudio::Location::Location"
   ]
+  config.recordable_types += [ "AdminRoot" ]
+  config.recordable_types += [
+    "RecordingStudio::Access",
+    "RecordingStudioApi::ApiClient",
+    "RecordingStudioApi::ApiCredential",
+    "RecordingStudioApi::ApiAccessToken",
+    "RecordingStudioApi::AdminApi"
+  ]
 
   # Require each configured ActiveRecord type to call recording_studio_recordable.
   config.require_recordable_declarations = true
