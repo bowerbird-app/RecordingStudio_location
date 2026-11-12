@@ -33,18 +33,6 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     RecordingStudio::Location.geocoder = @previous_geocoder
   end
 
-  test "place search and details succeed through the named endpoints" do
-    searched = call(:get, "/location/place_search", @editor_token, query: "melbourne")
-    assert_response :success, response.body
-    assert searched.fetch("results").any? { |result| result["id"] == "demo-mcec" }
-    refute_includes response.body, "api_key"
-
-    detailed = call(:get, "/location/place_details", @editor_token, place_id: "demo-mcec", lookup: "full")
-    assert_response :success, response.body
-    assert_equal "Melbourne Convention and Exhibition Centre", detailed.fetch("name")
-    assert_equal "South Wharf", detailed.fetch("locality")
-  end
-
   test "geocode and reverse revise the location through an edit Access grant" do
     assert RecordingStudioAccessible.authorized?(actor: @editor_client, recording: @location, role: :edit)
 
@@ -86,15 +74,9 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_equal "12 Smith Street", @location.recordable.address_line_1
   end
 
-  test "view can search and is forbidden from geocode and reverse" do
+  test "view is forbidden from geocode and reverse" do
     assert RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :view)
     refute RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :edit)
-
-    call(:get, "/location/place_search", @viewer_token, query: "melbourne")
-    assert_response :success, response.body
-
-    call(:get, "/location/place_details", @viewer_token, place_id: "demo-mcec")
-    assert_response :success, response.body
 
     call(:post, "/location/geocode/#{@location.id}", @viewer_token)
     assert_response :forbidden, response.body
@@ -113,18 +95,22 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_response :not_found, response.body
   end
 
-  test "missing search and details fields are unprocessable" do
-    call(:get, "/location/place_search", @editor_token)
-    assert_response :unprocessable_entity, response.body
+  test "registry lists neither place search nor place details" do
+    refute RecordingStudioApi.registered_endpoint(:location_place_search)
+    refute RecordingStudioApi.registered_endpoint(:location_place_details)
+    refute RecordingStudioApi.capability_action(:location_place_search)
+    refute RecordingStudioApi.capability_action(:location_place_details)
+    refute_includes RecordingStudioLocation::Api::ENDPOINTS, :location_place_search
+    refute_includes RecordingStudioLocation::Api::ENDPOINTS, :location_place_details
+    refute RecordingStudioLocation::Api::Lookups::DEFINITIONS.key?(:location_place_search)
+    refute RecordingStudioLocation::Api::Lookups::DEFINITIONS.key?(:location_place_details)
 
-    call(:get, "/location/place_details", @editor_token, place_id: "")
-    assert_response :unprocessable_entity, response.body
-
-    call(:get, "/location/place_details", @editor_token, place_id: "demo-mcec", lookup: "satellite")
-    assert_response :unprocessable_entity, response.body
+    paths = RecordingStudioApi::Services::OpenapiDocument.call.fetch(:paths)
+    refute paths.key?("/recording_studio_api/api/v1/location/place_search")
+    refute paths.key?("/recording_studio_api/api/v1/location/place_details")
   end
 
-  test "location api registration is four named endpoints and raises on a collision" do
+  test "location api registration is two named endpoints and raises on a collision" do
     refute RecordingStudioApi.recordable_registration_for(TYPE)
 
     RecordingStudioLocation::Api::ENDPOINTS.each do |name|
@@ -133,39 +119,29 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
       assert_nil RecordingStudioApi.capability_action(name)
     end
 
-    search = RecordingStudioApi.registered_endpoint(:location_place_search)
-    details = RecordingStudioApi.registered_endpoint(:location_place_details)
     geocode = RecordingStudioApi.registered_endpoint(:location_geocode)
     reverse = RecordingStudioApi.registered_endpoint(:location_reverse)
-    assert_equal :view, RecordingStudioLocation::Api::Lookups.definition(:location_place_search).fetch(:required_role)
-    assert_equal :view, RecordingStudioLocation::Api::Lookups.definition(:location_place_details).fetch(:required_role)
     assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_geocode).fetch(:required_role)
     assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_reverse).fetch(:required_role)
-    assert_equal RecordingStudioLocation::Api::Lookups::PlaceSearch, search.handler
-    assert_equal RecordingStudioLocation::Api::Lookups::PlaceDetails, details.handler
     assert_equal RecordingStudioLocation::Api::Lookups::Geocode, geocode.handler
     assert_equal RecordingStudioLocation::Api::Lookups::Reverse, reverse.handler
-    assert_includes search.openapi.fetch(:description), "paid traffic"
-    assert_includes details.openapi.fetch(:description), "paid traffic"
     assert_includes geocode.openapi.fetch(:description), "paid traffic"
     assert_includes reverse.openapi.fetch(:description), "paid traffic"
-    assert_equal false, search.input_contract.as_json.fetch(:reject_unknown)
+    assert_equal false, geocode.input_contract.as_json.fetch(:reject_unknown)
 
     RecordingStudioLocation::Api.register!
 
     error = assert_raises(RecordingStudioApi::ConfigurationError) do
       RecordingStudioApi.register_endpoint(
-        :location_place_search,
-        http_verb: :get,
-        path: "location/other_search",
+        :location_geocode,
+        http_verb: :post,
+        path: "location/other_geocode/:id",
         handler: ->(_context) { {} }
       )
     end
     assert_match(/already registered/, error.message)
 
     paths = RecordingStudioApi::Services::OpenapiDocument.call.fetch(:paths)
-    assert paths.key?("/recording_studio_api/api/v1/location/place_search")
-    assert paths.key?("/recording_studio_api/api/v1/location/place_details")
     assert paths.key?("/recording_studio_api/api/v1/location/geocode/{id}")
     assert paths.key?("/recording_studio_api/api/v1/location/reverse/{id}")
   end

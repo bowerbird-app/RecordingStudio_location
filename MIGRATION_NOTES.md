@@ -12,7 +12,7 @@
 
 ## Upgrades
 
-- 0.10.0 adds Recording Studio API lookups. No Location migration. Copy API and Logs migrations when mounting API in a host or dummy.
+- 0.10.0 adds Recording Studio API lookups `location_geocode` and `location_reverse`. Place search and place details stay off that API. No Location migration. Copy API and Logs migrations when mounting API in a host or dummy.
 - 0.9.0 routes search, dummy locations, and the recordings tree through Accessible. No Location migration. Copy Accessible access-request migrations when bumping the dummy Accessible pin.
 - 0.8.3 is a lockfile security bump. No migration.
 - 0.8.2 is docs hygiene. No migration.

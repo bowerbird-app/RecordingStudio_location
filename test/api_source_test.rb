@@ -14,6 +14,8 @@ class ApiSourceTest < Minitest::Test
     refute_includes source, "register_resource_handler"
     refute_includes source, "const_set"
     refute_includes source, "remove_const"
+    refute_includes source, "location_place_search"
+    refute_includes source, "location_place_details"
   end
 
   def test_engine_registers_the_api_after_reload

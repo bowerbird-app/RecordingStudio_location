@@ -7,8 +7,6 @@ module RecordingStudioLocation
   module Api
     TYPE = "RecordingStudio::Location::Location"
     ENDPOINTS = %i[
-      location_place_search
-      location_place_details
       location_geocode
       location_reverse
     ].freeze
