@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   mount RecordingStudio::Engine, at: "/recording_studio"
   mount RecordingStudioRootSwitchable::Engine, at: "/recording_studio_root_switchable"
   mount RecordingStudioLocation::Engine, at: "/recording_studio_location"
+  mount RecordingStudioApi::Engine, at: "/recording_studio_api"
 
   resources :locations, only: %i[index new create show edit update]
 

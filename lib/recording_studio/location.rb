@@ -48,3 +48,10 @@ RecordingStudio.register_capability(
   source: "recording_studio_location",
   child_recordables: [RecordingStudio::Location::LOCATION_TYPE]
 )
+
+# Member API actions run on Location recordings. :location stays the parent opt-in
+# so Location is not a legal parent of itself.
+RecordingStudio.register_capability(
+  :location_lookup,
+  source: "recording_studio_location"
+)

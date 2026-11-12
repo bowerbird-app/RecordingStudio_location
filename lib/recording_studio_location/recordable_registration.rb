@@ -10,6 +10,7 @@ module RecordingStudioLocation
 
       recordable = RecordingStudio::Location::Location
       RecordingStudio.register_recordable_type(recordable.name)
+      RecordingStudio.enable_capability(:location_lookup, on: recordable)
     end
   end
 end

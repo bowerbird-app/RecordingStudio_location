@@ -9,7 +9,7 @@ This Rails app exists to validate Recording Studio Location in a real host appli
 - `Current.actor` wiring for Recording Studio events
 - Root workspace plus seeded folder and page recordables
 - Recording Studio default layout, FlatPack assets, and Tailwind source scanning
-- Mounted `RecordingStudio::Engine` and `RecordingStudioLocation::Engine`
+- Mounted `RecordingStudio::Engine`, `RecordingStudioLocation::Engine`, and `RecordingStudioApi::Engine`
 - Seeded Melbourne Convention Centre location under Studio Workspace
 - Dummy-only `/docs/*` pages for Location onboarding
 
@@ -38,6 +38,7 @@ Then open the app and sign in with:
 - `/locations/:id/edit` - search helper with a saved place, inline address fields, and a map when both coordinates are present
 - `/locations/:id/edit?mode=manual` - dummy-only full address form (`recording_studio_location_fields`), without search
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
+- `/recording_studio_api/api/v1/location/place_search` - JSON place search for an API client with `:view`
 - `/users/sign_in` - Devise sign-in page
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only Location pages
 - `/up` - Rails health check

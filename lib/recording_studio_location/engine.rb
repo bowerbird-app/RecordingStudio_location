@@ -147,5 +147,9 @@ module RecordingStudioLocation
         RecordingStudioLocation::RecordableRegistration.register!
       end
     end
+
+    initializer "recording_studio_location.api" do
+      config.to_prepare { Api.register! }
+    end
   end
 end

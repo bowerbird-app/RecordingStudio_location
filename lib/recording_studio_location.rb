@@ -11,6 +11,7 @@ require "recording_studio_location/place_search"
 require "recording_studio_location/place_lookup"
 require "recording_studio/capabilities/location"
 require "recording_studio/location"
+require "recording_studio_location/api"
 
 module RecordingStudioLocation
   class << self

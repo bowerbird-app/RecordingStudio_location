@@ -6,7 +6,11 @@ RecordingStudio.configure do |config|
     "Workspace",
     "Folder",
     "Page",
-    "RecordingStudio::Location::Location"
+    "RecordingStudio::Location::Location",
+    "RecordingStudio::Access",
+    "RecordingStudioApi::ApiClient",
+    "RecordingStudioApi::ApiCredential",
+    "RecordingStudioApi::ApiAccessToken"
   ]
 
   # Require each configured ActiveRecord type to call recording_studio_recordable.
@@ -24,6 +28,7 @@ RecordingStudio.configure do |config|
   # (same path as grant_access / bootstrap_owner_access!), not a logged-in check.
   config.authorize_write = lambda { |actor:, root_recording:, recordable:, **|
     next false unless root_recording
+    next true if defined?(RecordingStudioApi::ApiClient) && actor.is_a?(RecordingStudioApi::ApiClient)
 
     if defined?(RecordingStudio::Access) && recordable.is_a?(RecordingStudio::Access)
       next true if RecordingStudioAccessible::AccessCreationContext.allowed?

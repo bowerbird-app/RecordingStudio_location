@@ -15,6 +15,7 @@ A location can sit under whatever host recordable a product allows: a press kit,
 - `display_name`, `full_address`, `coordinates`, and `resolved_icon`
 - optional `geocode!` / `reverse!` when a host assigns a geocoder
 - optional place search (`#search` / `#details`) behind engine JSON endpoints
+- Recording Studio API lookups (`place_search`, `place_details`, `geocode`, `reverse`) when that gem is loaded
 - FlatPack form fields, a search helper, and a read-only display partial
 
 ```text
@@ -214,7 +215,7 @@ recording_studio_location:
     api_key: "..."
 ```
 
-Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check.
+Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check. Recording Studio API exposes the same lookups for API clients and MCP: named endpoints plus capability actions on Location. CRUD stays off this resource.
 
 ```ruby
 RecordingStudioLocation.configure do |config|
@@ -400,11 +401,40 @@ Pair Location with the rest of Recording Studio when you need it:
 
 Location does not reimplement those behaviors.
 
+## JSON API and MCP
+
+When Recording Studio API is loaded, this gem registers Location lookups on the public API. MCP hosts that wrap that API get the same actions through `capability_action` and through named endpoint tools. Location tree CRUD is rejected (422). Recording Studio API still lists default CRUD operations because `operations: []` is treated as the full set in that gem.
+
+| Verb | Path | Access |
+| --- | --- | --- |
+| GET | `/recording_studio_api/api/v1/location/place_search?query=` | `:view` on the request root |
+| GET | `/recording_studio_api/api/v1/location/place_details?place_id=` | `:view` on the request root |
+| GET | `/recording_studio_api/api/v1/locations/:id/actions/place_search` | `:view` on the location |
+| GET | `/recording_studio_api/api/v1/locations/:id/actions/place_details` | `:view` on the location |
+| POST | `/recording_studio_api/api/v1/locations/:id/actions/geocode` | `:edit` on the location |
+| POST | `/recording_studio_api/api/v1/locations/:id/geocode` | `:edit` on the location |
+| POST | `/recording_studio_api/api/v1/locations/:id/actions/reverse` | `:edit` on the location |
+| POST | `/recording_studio_api/api/v1/locations/:id/reverse` | `:edit` on the location |
+
+Search takes `query` and optional `session`. Details take `place_id`, optional `lookup` (`full` or `address`), and optional `session`. Reverse takes optional `force`. `geocode` and `reverse` call the existing bang methods inside a location revision.
+
+Search and details authorize the request root on the named endpoint because those lookups are not a saved location yet. Member actions authorize the location recording in the URL. Google HTTP stays in the geocoder adapter.
+
+Install Recording Studio API in the host if you want the JSON surface:
+
+```bash
+bin/rails generate recording_studio_api:install
+bin/rails generate recording_studio_api:migrations
+bin/rails db:migrate
+```
+
+Turn on `:api_access_point` on roots that should hold API clients, and add `RecordingStudioApi::ApiClient` to `access_actor_types`. Recording Studio MCP needs no extra Location code.
+
 ## Development
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v6.5.0`, Accessible `v0.24.2`, Root Switchable `v0.11.0`, Metrics `v0.7.3`, Trashable `v0.12.3`, Cache `v0.6.3`, and FlatPack `0.1.319`. Location is `0.9.0`.
+The dummy app pins Recording Studio `v6.5.0`, Accessible `v0.24.2`, Root Switchable `v0.11.0`, Metrics `v0.7.3`, Trashable `v0.12.3`, Cache `v0.6.3`, Recording Studio API `v0.21.3`, Admin `v2.12.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.341`. Location is `0.10.0`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 
