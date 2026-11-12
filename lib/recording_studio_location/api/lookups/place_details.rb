@@ -29,8 +29,8 @@ module RecordingStudioLocation
           title: "Location - Place Details",
           summary: "Load place details",
           description: "Return structured address fields for a place id from search. " \
-                       "Does not save a location. Authorize :view on the request root when this " \
-                       "is the named endpoint, or on the location recording when this is a capability action."
+                       "Does not save a location. Calls the host geocoder provider (paid traffic). " \
+                       "Authorize :view on the request root."
         }.freeze
 
         def self.call(context)

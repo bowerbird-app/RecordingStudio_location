@@ -41,7 +41,7 @@ Mount line:
 mount RecordingStudioLocation::Engine, at: "/recording_studio_location"
 ```
 
-The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API is loaded, the same lookups register as named endpoints and Location capability actions.
+The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API is loaded, the same lookups register as named endpoints. Search and details call the host geocoder (paid traffic).
 
 ## Enable it on a parent
 

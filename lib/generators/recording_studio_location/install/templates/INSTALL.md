@@ -7,6 +7,6 @@ Next steps:
 3. Install the engine migrations with `bin/rails generate recording_studio_location:migrations`.
 4. Apply the migrations with `bin/rails db:migrate`.
 5. Run `bin/rails tailwindcss:build` if you use Tailwind CSS.
-6. Mount routes are added at the configured mount path. Adjust auth, layout, and current actor integration to match your host app. Search endpoints live under that mount and require a logged-in user. Recording Studio API lookups register themselves when that gem is loaded.
+6. Mount routes are added at the configured mount path. Adjust auth, layout, and current actor integration to match your host app. Search endpoints live under that mount and require a logged-in user. Recording Studio API named lookups register themselves when that gem is loaded. Search and details call the host geocoder (paid traffic).
 7. Confirm `config/importmap.rb` pins RecordingStudioLocation Stimulus controllers if you use the search helper.
 8. Keep strict recordable declarations enabled and add `recording_studio_recordable(...)` to every configured recordable before running `RecordingStudio.validate_recordable_declarations!`.

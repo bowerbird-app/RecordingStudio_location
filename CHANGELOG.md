@@ -6,8 +6,8 @@
 
 ### Added
 
-- Recording Studio API lookups for place search, place details, geocode, and reverse. Named endpoints and Location capability actions share the same handlers. MCP sees both surfaces. Location tree CRUD is rejected on this resource. Recording Studio API still lists default CRUD operations because `operations: []` is treated as the full set there.
-- Dummy mounts Recording Studio API `v0.21.3` and covers 200 / 403 / 404 / 422 over the Fake adapter.
+- Recording Studio API named lookups `location_place_search`, `location_place_details`, `location_geocode`, and `location_reverse` when that gem is loaded. Location is not registered as an API recordable type. Search and details authorize `:view` on the request root and call the host geocoder (paid traffic). Geocode and reverse authorize `:edit` on the location recording through Accessible.
+- Dummy mounts Recording Studio API `v0.21.3` and covers 200 / 403 / 404 / 422 over the Fake adapter. An edit API key can geocode. A view key cannot.
 
 ### Changed
 
@@ -17,7 +17,7 @@
 
 - Bump to `0.10.0`. No Location migration.
 - Hosts that want the JSON surface install Recording Studio API, enable `:api_access_point` on roots that hold API clients, and add `RecordingStudioApi::ApiClient` to `access_actor_types`.
-- Search and details on the named endpoints authorize `:view` on the request root. Member actions authorize the location recording. `geocode` and `reverse` need `:edit` and call the existing bang methods inside a revision.
+- Search and details authorize `:view` on the request root. `location_geocode` and `location_reverse` need `:edit` on the location and call the existing bang methods inside a revision. Endpoint names raise on collision.
 - Dummy sibling pins: Recording Studio API `v0.21.3`, Admin `v2.12.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, FlatPack `0.1.341`. Recording Studio stays `v6.5.0`. Copy API and Logs migrations if the dummy schema is your template.
 
 ## [0.9.0] - 2026-11-06

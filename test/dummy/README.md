@@ -38,7 +38,7 @@ Then open the app and sign in with:
 - `/locations/:id/edit` - search helper with a saved place, inline address fields, and a map when both coordinates are present
 - `/locations/:id/edit?mode=manual` - dummy-only full address form (`recording_studio_location_fields`), without search
 - `/recording_studio` - redirects to `/` while the mounted Recording Studio engine stays available under that prefix for non-root routes
-- `/recording_studio_api/api/v1/location/place_search` - JSON place search for an API client with `:view`
+- `/recording_studio_api/api/v1/location/place_search` - JSON place search for an API client with `:view`. Calls the host geocoder (paid traffic).
 - `/users/sign_in` - Devise sign-in page
 - `/docs/install`, `/docs/config`, `/docs/recordable_types`, `/docs/recordings_tree`, `/docs/gem_views`, `/docs/methods` - dummy-only Location pages
 - `/up` - Rails health check

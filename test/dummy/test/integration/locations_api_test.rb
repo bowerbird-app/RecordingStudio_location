@@ -14,12 +14,15 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     @viewer = user("viewer")
     Current.actor = @owner
     @workspace = owned_root(Workspace.create!(name: "API Places #{SecureRandom.hex(4)}"))
-    @stranger = user("stranger")
-    @other = owned_root(Workspace.create!(name: "Other places #{SecureRandom.hex(4)}"), actor: @stranger)
     @editor_access = grant!(@workspace, @editor, :edit)
     @viewer_access = grant!(@workspace, @viewer, :view)
-    @editor_token, = token_for(@editor_access)
-    @viewer_token, = token_for(@viewer_access)
+    @editor_token, @editor_client = token_for(@editor_access)
+    @viewer_token, @viewer_client = token_for(@viewer_access)
+    @stranger = user("stranger")
+    previous = Current.actor
+    Current.actor = @stranger
+    @other = owned_root(Workspace.create!(name: "Other places #{SecureRandom.hex(4)}"), actor: @stranger)
+    Current.actor = previous
     @adapter = RecordingStudioLocation::Geocoder::Fake.demo
     RecordingStudio::Location.geocoder = @adapter
     @location = record_location(@workspace)
@@ -30,7 +33,7 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     RecordingStudio::Location.geocoder = @previous_geocoder
   end
 
-  test "place search and details succeed through the endpoint and capability action" do
+  test "place search and details succeed through the named endpoints" do
     searched = call(:get, "/location/place_search", @editor_token, query: "melbourne")
     assert_response :success, response.body
     assert searched.fetch("results").any? { |result| result["id"] == "demo-mcec" }
@@ -40,27 +43,11 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_response :success, response.body
     assert_equal "Melbourne Convention and Exhibition Centre", detailed.fetch("name")
     assert_equal "South Wharf", detailed.fetch("locality")
-
-    member_search = call(
-      :get,
-      "/locations/#{@location.id}/actions/place_search",
-      @editor_token,
-      query: "melbourne"
-    )
-    assert_response :success, response.body
-    assert_equal searched.fetch("results"), member_search.fetch("results")
-
-    member_details = call(
-      :get,
-      "/locations/#{@location.id}/actions/place_details",
-      @editor_token,
-      place_id: "demo-mcec"
-    )
-    assert_response :success, response.body
-    assert_equal detailed.fetch("name"), member_details.fetch("name")
   end
 
-  test "geocode and reverse revise the location through the adapter seam" do
+  test "geocode and reverse revise the location through an edit Access grant" do
+    assert RecordingStudioAccessible.authorized?(actor: @editor_client, recording: @location, role: :edit)
+
     @adapter.stub_geocode(
       "12 Smith Street, Fitzroy, VIC, 3065, Australia",
       {
@@ -81,7 +68,7 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
       }
     )
 
-    geocoded = call(:post, "/locations/#{@location.id}/actions/geocode", @editor_token)
+    geocoded = call(:post, "/location/geocode/#{@location.id}", @editor_token)
     assert_response :success, response.body
     assert_equal @location.id, geocoded.fetch("id")
     assert_in_delta(-37.798, geocoded.fetch("latitude").to_f)
@@ -92,37 +79,37 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     refute_equal previous_recordable_id, @location.recordable_id
     assert_in_delta(-37.798, @location.recordable.latitude)
 
-    reversed = call(:post, "/locations/#{@location.id}/reverse", @editor_token)
+    reversed = call(:post, "/location/reverse/#{@location.id}", @editor_token)
     assert_response :success, response.body
     assert_equal @location.id, reversed.fetch("id")
     @location.reload
     assert_equal "12 Smith Street", @location.recordable.address_line_1
   end
 
-  test "view can search and is forbidden from geocode" do
+  test "view can search and is forbidden from geocode and reverse" do
+    assert RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :view)
+    refute RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :edit)
+
     call(:get, "/location/place_search", @viewer_token, query: "melbourne")
     assert_response :success, response.body
 
-    call(:get, "/locations/#{@location.id}/actions/place_details", @viewer_token, place_id: "demo-mcec")
+    call(:get, "/location/place_details", @viewer_token, place_id: "demo-mcec")
     assert_response :success, response.body
 
-    call(:post, "/locations/#{@location.id}/actions/geocode", @viewer_token)
+    call(:post, "/location/geocode/#{@location.id}", @viewer_token)
     assert_response :forbidden, response.body
 
-    call(:post, "/locations/#{@location.id}/actions/reverse", @viewer_token)
+    call(:post, "/location/reverse/#{@location.id}", @viewer_token)
     assert_response :forbidden, response.body
   end
 
   test "a location in another workspace is not found" do
     stranger_location = record_location(@other, actor: @stranger)
 
-    call(:get, "/locations/#{stranger_location.id}/actions/place_search", @editor_token, query: "melbourne")
+    call(:post, "/location/geocode/#{stranger_location.id}", @editor_token)
     assert_response :not_found, response.body
 
-    call(:post, "/locations/#{stranger_location.id}/actions/geocode", @editor_token)
-    assert_response :not_found, response.body
-
-    call(:post, "/locations/#{stranger_location.id}/geocode", @editor_token)
+    call(:post, "/location/reverse/#{stranger_location.id}", @editor_token)
     assert_response :not_found, response.body
   end
 
@@ -137,34 +124,50 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity, response.body
   end
 
-  test "location api registration skips crud and documents lookup actions" do
-    registration = RecordingStudioApi.recordable_registration_for(TYPE)
-    assert_equal %w[geocode place_details place_search reverse].sort, registration.capability_actions.sort
-    assert_equal false, registration.auto_capability_actions
-    RecordingStudioLocation::Api::Crud::OPERATIONS.each do |action|
-      assert_equal RecordingStudioLocation::Api::Crud::Reject, RecordingStudioApi.resource_handler(TYPE, action)
+  test "location api registration is four named endpoints and raises on a collision" do
+    refute RecordingStudioApi.recordable_registration_for(TYPE)
+
+    RecordingStudioLocation::Api::ENDPOINTS.each do |name|
+      endpoint = RecordingStudioApi.registered_endpoint(name)
+      refute_nil endpoint, name.to_s
+      assert_nil RecordingStudioApi.capability_action(name)
     end
 
-    call(:get, "/locations", @editor_token)
-    assert_response :unprocessable_entity, response.body
-    call(:get, "/locations/#{@location.id}", @editor_token)
-    assert_response :unprocessable_entity, response.body
-    call(:post, "/locations", @editor_token, parent_id: @workspace.id, title: "Nope")
-    assert_response :unprocessable_entity, response.body
-
-    search = RecordingStudioApi.capability_action(:place_search)
-    details = RecordingStudioApi.capability_action(:place_details)
-    geocode = RecordingStudioApi.capability_action(:geocode)
-    reverse = RecordingStudioApi.capability_action(:reverse)
-    assert_equal :view, search.required_role
-    assert_equal :view, details.required_role
-    assert_equal :edit, geocode.required_role
-    assert_equal :edit, reverse.required_role
-    assert_equal :location_lookup, search.capability
-    assert_equal "Location - Search Places", search.openapi.fetch(:title)
+    search = RecordingStudioApi.registered_endpoint(:location_place_search)
+    details = RecordingStudioApi.registered_endpoint(:location_place_details)
+    geocode = RecordingStudioApi.registered_endpoint(:location_geocode)
+    reverse = RecordingStudioApi.registered_endpoint(:location_reverse)
+    assert_equal :view, RecordingStudioLocation::Api::Lookups.definition(:location_place_search).fetch(:required_role)
+    assert_equal :view, RecordingStudioLocation::Api::Lookups.definition(:location_place_details).fetch(:required_role)
+    assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_geocode).fetch(:required_role)
+    assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_reverse).fetch(:required_role)
+    assert_equal RecordingStudioLocation::Api::Lookups::PlaceSearch, search.handler
+    assert_equal RecordingStudioLocation::Api::Lookups::PlaceDetails, details.handler
+    assert_equal RecordingStudioLocation::Api::Lookups::Geocode, geocode.handler
+    assert_equal RecordingStudioLocation::Api::Lookups::Reverse, reverse.handler
+    assert_includes search.openapi.fetch(:description), "paid traffic"
+    assert_includes details.openapi.fetch(:description), "paid traffic"
+    assert_includes geocode.openapi.fetch(:description), "paid traffic"
+    assert_includes reverse.openapi.fetch(:description), "paid traffic"
     assert_equal false, search.input_contract.as_json.fetch(:reject_unknown)
-    assert_equal RecordingStudioLocation::Api::Lookups::PlaceSearch,
-                 RecordingStudioApi.registered_endpoint(:place_search).handler
+
+    RecordingStudioLocation::Api.register!
+
+    error = assert_raises(RecordingStudioApi::ConfigurationError) do
+      RecordingStudioApi.register_endpoint(
+        :location_place_search,
+        http_verb: :get,
+        path: "location/other_search",
+        handler: ->(_context) { {} }
+      )
+    end
+    assert_match(/already registered/, error.message)
+
+    paths = RecordingStudioApi::Services::OpenapiDocument.call.fetch(:paths)
+    assert paths.key?("/recording_studio_api/api/v1/location/place_search")
+    assert paths.key?("/recording_studio_api/api/v1/location/place_details")
+    assert paths.key?("/recording_studio_api/api/v1/location/geocode/{id}")
+    assert paths.key?("/recording_studio_api/api/v1/location/reverse/{id}")
   end
 
   private
@@ -193,14 +196,17 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
   end
 
   def token_for(access_recording)
+    access_point = access_recording.parent_recording || access_recording.root_recording
+    wanted_role = access_recording.recordable.role
     provision = RecordingStudioApi::Services::ProvisionApiClient.call(
-      access_point_recording: access_recording.parent_recording || access_recording.root_recording,
+      access_point_recording: access_point,
       manager_actor: @owner,
-      role: access_recording.recordable.role,
+      role: :edit,
       name: "Client #{SecureRandom.hex(3)}"
     )
     raise provision.error unless provision.success?
 
+    client = provision.value.fetch(:api_client)
     issued = RecordingStudioApi::Services::IssueOauthAccessToken.call(
       grant_type: "client_credentials",
       client_id: provision.value.fetch(:credential).oauth_client_id,
@@ -208,7 +214,17 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     )
     raise issued.error unless issued.success?
 
-    [issued.value.fetch(:access_token), provision.value.fetch(:api_client)]
+    if wanted_role.to_s != "edit"
+      grant = RecordingStudioAccessible.grant_access(
+        recording: access_point,
+        actor: client,
+        role: wanted_role,
+        manager_actor: @owner
+      )
+      raise grant.error if grant.failure?
+    end
+
+    [ issued.value.fetch(:access_token), client ]
   end
 
   def record_location(root, actor: @owner)

@@ -24,8 +24,8 @@ module RecordingStudioLocation
           title: "Location - Search Places",
           summary: "Search for places",
           description: "Return place candidates for a query. Does not save a location. " \
-                       "Authorize :view on the request root when this is the named endpoint, " \
-                       "or on the location recording when this is a capability action."
+                       "Calls the host geocoder provider (paid traffic). " \
+                       "Authorize :view on the request root."
         }.freeze
 
         def self.call(context)

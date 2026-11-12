@@ -5,11 +5,11 @@ module RecordingStudioLocation
     module Lookups
       PASSTHROUGH = ->(result, **) { result }
       RECORDING_SERIALIZER = lambda do |recording, **kwargs|
-        ::RecordingStudioApi::Serializers::ResourceRecordingSerializer.call(
+        ::RecordingStudioApi::Serializers::RecordingSerializer.call(
           recording,
           version: kwargs[:version] || "v1",
           api: kwargs[:api] || :public
-        )
+        ).merge(recording.recordable.api_payload)
       end
 
       module_function
@@ -21,14 +21,10 @@ module RecordingStudioLocation
       end
 
       def view_recording(context)
-        return context.recording if recording_present?(context)
-
         context.root_recording
       end
 
       def location_recording(context)
-        return context.recording if recording_present?(context)
-
         recording = context.access_grant.accessible_recordings.find_by(
           id: context.params[:id],
           recordable_type: RecordingStudioLocation::Api::TYPE
@@ -36,10 +32,6 @@ module RecordingStudioLocation
         raise ::RecordingStudioApi::NotFoundError, "Resource was not found in this API scope" if recording.nil?
 
         recording
-      end
-
-      def recording_present?(context)
-        context.respond_to?(:recording) && context.recording
       end
 
       def adapter

@@ -15,7 +15,7 @@ A location can sit under whatever host recordable a product allows: a press kit,
 - `display_name`, `full_address`, `coordinates`, and `resolved_icon`
 - optional `geocode!` / `reverse!` when a host assigns a geocoder
 - optional place search (`#search` / `#details`) behind engine JSON endpoints
-- Recording Studio API lookups (`place_search`, `place_details`, `geocode`, `reverse`) when that gem is loaded
+- Recording Studio API named lookups (`location_place_search`, `location_place_details`, `location_geocode`, `location_reverse`) when that gem is loaded
 - FlatPack form fields, a search helper, and a read-only display partial
 
 ```text
@@ -215,7 +215,7 @@ recording_studio_location:
     api_key: "..."
 ```
 
-Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check. Recording Studio API exposes the same lookups for API clients and MCP: named endpoints plus capability actions on Location. CRUD stays off this resource.
+Enable the Places API (legacy) on that key as well as Geocoding if you want as-you-type search. The geocoding API key never goes to the browser. Engine endpoints (`GET /recording_studio_location/searches` and `GET /recording_studio_location/places`) proxy the adapter after a logged-in user check. Recording Studio API exposes the same lookups as named endpoints. `location_place_search` and `location_place_details` call the external geocoder provider (paid traffic).
 
 ```ruby
 RecordingStudioLocation.configure do |config|
@@ -403,22 +403,18 @@ Location does not reimplement those behaviors.
 
 ## JSON API and MCP
 
-When Recording Studio API is loaded, this gem registers Location lookups on the public API. MCP hosts that wrap that API get the same actions through `capability_action` and through named endpoint tools. Location tree CRUD is rejected (422). Recording Studio API still lists default CRUD operations because `operations: []` is treated as the full set in that gem.
+When Recording Studio API is loaded, this gem registers four named lookups on each API. Location is not an API recordable type. MCP hosts that wrap that API see the named endpoint tools.
 
-| Verb | Path | Access |
-| --- | --- | --- |
-| GET | `/recording_studio_api/api/v1/location/place_search?query=` | `:view` on the request root |
-| GET | `/recording_studio_api/api/v1/location/place_details?place_id=` | `:view` on the request root |
-| GET | `/recording_studio_api/api/v1/locations/:id/actions/place_search` | `:view` on the location |
-| GET | `/recording_studio_api/api/v1/locations/:id/actions/place_details` | `:view` on the location |
-| POST | `/recording_studio_api/api/v1/locations/:id/actions/geocode` | `:edit` on the location |
-| POST | `/recording_studio_api/api/v1/locations/:id/geocode` | `:edit` on the location |
-| POST | `/recording_studio_api/api/v1/locations/:id/actions/reverse` | `:edit` on the location |
-| POST | `/recording_studio_api/api/v1/locations/:id/reverse` | `:edit` on the location |
+| Name | Verb | Path | Access |
+| --- | --- | --- | --- |
+| `location_place_search` | GET | `/recording_studio_api/api/v1/location/place_search?query=` | `:view` on the request root |
+| `location_place_details` | GET | `/recording_studio_api/api/v1/location/place_details?place_id=` | `:view` on the request root |
+| `location_geocode` | POST | `/recording_studio_api/api/v1/location/geocode/:id` | `:edit` on the location |
+| `location_reverse` | POST | `/recording_studio_api/api/v1/location/reverse/:id` | `:edit` on the location |
 
-Search takes `query` and optional `session`. Details take `place_id`, optional `lookup` (`full` or `address`), and optional `session`. Reverse takes optional `force`. `geocode` and `reverse` call the existing bang methods inside a location revision.
+Search takes `query` and optional `session`. Details take `place_id`, optional `lookup` (`full` or `address`), and optional `session`. Reverse takes optional `force`. `location_geocode` and `location_reverse` call the existing bang methods inside a location revision.
 
-Search and details authorize the request root on the named endpoint because those lookups are not a saved location yet. Member actions authorize the location recording in the URL. Google HTTP stays in the geocoder adapter.
+`location_place_search` and `location_place_details` call the external geocoder provider (paid traffic). They authorize `:view` on the request root because those lookups are not a saved location yet. Geocode and reverse resolve the location through Accessible recordings and authorize `:edit`. Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises.
 
 Install Recording Studio API in the host if you want the JSON surface:
 

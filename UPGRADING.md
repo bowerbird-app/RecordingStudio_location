@@ -4,7 +4,7 @@
 
 Bump to `0.10.0`. No Location migration.
 
-Location lookups are on Recording Studio API when that gem is loaded: `place_search`, `place_details`, `geocode`, and `reverse`. Location CRUD is not. Named search and details authorize `:view` on the request root. Member actions authorize the location recording. `geocode` and `reverse` need `:edit`.
+Location lookups are on Recording Studio API when that gem is loaded: `location_place_search`, `location_place_details`, `location_geocode`, and `location_reverse`. Location is not an API recordable type. Search and details authorize `:view` on the request root and call the host geocoder (paid traffic). `location_geocode` and `location_reverse` need `:edit` on the location.
 
 Install Recording Studio API, enable `:api_access_point` on roots that hold API clients, and add `RecordingStudioApi::ApiClient` to `access_actor_types`. Dummy pins API `v0.21.3`, Admin `v2.12.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.341`. Recording Studio stays `v6.5.0`. Copy API and Logs migrations if the dummy schema is your template.
 

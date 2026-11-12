@@ -1,90 +1,56 @@
 # frozen_string_literal: true
 
 require_relative "api/errors"
-require_relative "api/crud"
 require_relative "api/lookups"
 
 module RecordingStudioLocation
   module Api
     TYPE = "RecordingStudio::Location::Location"
-    LOOKUP_CAPABILITY = :location_lookup
-    ACTIONS = %i[place_search place_details geocode reverse].freeze
-    OUTPUT_KEYS = %i[
-      title location_type icon name address_line_1 address_line_2 locality region
-      postal_code country_code latitude longitude resolved_icon display_name
-      full_address coordinates
+    ENDPOINTS = %i[
+      location_place_search
+      location_place_details
+      location_geocode
+      location_reverse
     ].freeze
 
     module_function
 
-    def register!(apis: [:public])
+    def register!
       return unless defined?(::RecordingStudioApi)
 
-      Array(apis).each { |api| register_api(api) }
+      ::RecordingStudioApi.configuration.each_api { |api| register_api(api) }
     end
 
     def register_api(api)
-      register_type(api)
-      register_crud_rejects(api)
-      ACTIONS.each do |name|
-        register_action(api, name)
-        register_named_endpoint(api, name)
-      end
-    end
-
-    def register_type(api)
-      ::RecordingStudioApi.register_recordable_type_api(
-        TYPE,
-        api:,
-        operations: [],
-        auto_capability_actions: false,
-        capability_actions: ACTIONS,
-        serializer: method(:serialize_fields),
-        output_keys: OUTPUT_KEYS
-      )
-    end
-
-    def register_crud_rejects(api)
-      Crud::OPERATIONS.each do |action|
-        next if ::RecordingStudioApi.resource_handler(TYPE, action, api:)
-
-        ::RecordingStudioApi.register_resource_handler(TYPE, action, api:, handler: Crud::Reject)
-      end
-    end
-
-    def register_action(api, name)
-      return if ::RecordingStudioApi.capability_action(name, api:)
-
-      ::RecordingStudioApi.register_capability_action(name, **action_options(api, name))
+      ENDPOINTS.each { |name| register_named_endpoint(api, name) }
     end
 
     def register_named_endpoint(api, name)
-      return if ::RecordingStudioApi.registered_endpoint(name, api:)
+      definition = Lookups.definition(name)
+      existing = ::RecordingStudioApi.registered_endpoint(name, api: api.name)
+      if existing
+        unless ours?(existing, definition)
+          raise ::RecordingStudioApi::ConfigurationError, "API endpoint #{name} is already registered"
+        end
 
-      ::RecordingStudioApi.register_endpoint(name, **endpoint_options(api, name))
+        return
+      end
+
+      ::RecordingStudioApi.register_endpoint(name, **endpoint_options(api, definition))
     end
 
-    def action_options(api, name)
-      definition = Lookups.definition(name)
+    def ours?(existing, definition)
+      existing.handler == definition.fetch(:handler) &&
+        existing.http_verb == definition.fetch(:http_verb) &&
+        existing.path == definition.fetch(:path)
+    end
+
+    def endpoint_options(api, definition)
       {
-        capability: LOOKUP_CAPABILITY, version: "1.0.0", api:,
-        http_verb: definition.fetch(:http_verb), required_role: definition.fetch(:required_role),
+        api: api.name, http_verb: definition.fetch(:http_verb), path: definition.fetch(:path),
         handler: definition.fetch(:handler), serializer: definition[:serializer],
         input_contract: definition[:input_contract], openapi: definition.fetch(:openapi)
       }
-    end
-
-    def endpoint_options(api, name)
-      definition = Lookups.definition(name)
-      {
-        api:, http_verb: definition.fetch(:http_verb), path: definition.fetch(:path),
-        handler: definition.fetch(:handler), serializer: definition[:serializer],
-        input_contract: definition[:input_contract], openapi: definition.fetch(:openapi)
-      }
-    end
-
-    def serialize_fields(location, **)
-      location.api_payload
     end
   end
 end

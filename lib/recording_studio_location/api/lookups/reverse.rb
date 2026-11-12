@@ -18,7 +18,8 @@ module RecordingStudioLocation
           title: "Location - Reverse Geocode",
           summary: "Fill blank address fields from coordinates",
           description: "Call reverse! inside a location revision. Blank address fields are filled. " \
-                       "Pass force to overwrite text that is already there."
+                       "Pass force to overwrite text that is already there. " \
+                       "Calls the host geocoder provider (paid traffic). Authorize :edit on the location."
         }.freeze
 
         def self.call(context)

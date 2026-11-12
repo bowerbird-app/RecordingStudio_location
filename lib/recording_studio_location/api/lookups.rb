@@ -10,7 +10,7 @@ module RecordingStudioLocation
   module Api
     module Lookups
       DEFINITIONS = {
-        place_search: {
+        location_place_search: {
           http_verb: :get,
           required_role: :view,
           path: "location/place_search",
@@ -19,7 +19,7 @@ module RecordingStudioLocation
           input_contract: PlaceSearch::CONTRACT,
           openapi: PlaceSearch::OPENAPI
         },
-        place_details: {
+        location_place_details: {
           http_verb: :get,
           required_role: :view,
           path: "location/place_details",
@@ -28,19 +28,19 @@ module RecordingStudioLocation
           input_contract: PlaceDetails::CONTRACT,
           openapi: PlaceDetails::OPENAPI
         },
-        geocode: {
+        location_geocode: {
           http_verb: :post,
           required_role: :edit,
-          path: "locations/:id/geocode",
+          path: "location/geocode/:id",
           handler: Geocode,
           serializer: RECORDING_SERIALIZER,
           input_contract: Geocode::CONTRACT,
           openapi: Geocode::OPENAPI
         },
-        reverse: {
+        location_reverse: {
           http_verb: :post,
           required_role: :edit,
-          path: "locations/:id/reverse",
+          path: "location/reverse/:id",
           handler: Reverse,
           serializer: RECORDING_SERIALIZER,
           input_contract: Reverse::CONTRACT,

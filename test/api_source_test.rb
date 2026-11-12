@@ -7,6 +7,11 @@ class ApiSourceTest < Minitest::Test
     source = File.read(File.expand_path("../lib/recording_studio_location/api.rb", __dir__))
 
     assert_equal 1, source.scan("defined?(::RecordingStudioApi)").size
+    assert_includes source, "each_api"
+    assert_includes source, "already registered"
+    refute_includes source, "register_recordable_type_api"
+    refute_includes source, "register_capability_action"
+    refute_includes source, "register_resource_handler"
     refute_includes source, "const_set"
     refute_includes source, "remove_const"
   end
@@ -17,10 +22,7 @@ class ApiSourceTest < Minitest::Test
     assert_includes names, "recording_studio_location.api"
   end
 
-  def test_lookup_capability_is_registered_without_children
-    registration = RecordingStudio.registered_capabilities.fetch(:location_lookup)
-
-    assert_equal "recording_studio_location", registration[:source]
-    assert_equal [], Array(registration[:child_recordables])
+  def test_lookup_is_not_a_core_capability
+    refute RecordingStudio.registered_capabilities.key?(:location_lookup)
   end
 end
