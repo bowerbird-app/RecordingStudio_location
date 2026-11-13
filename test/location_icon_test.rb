@@ -37,7 +37,7 @@ class LocationIconTest < Minitest::Test
 
   def test_default_icons_exist_in_flatpack
     heroicons = File.read(
-      File.expand_path("dummy/vendor/engines/flat_pack/app/javascript/flat_pack/heroicons.js", __dir__)
+      File.join(Gem.loaded_specs.fetch("flat_pack").full_gem_path, "app/javascript/flat_pack/heroicons.js")
     )
     icons = (
       RecordingStudioLocation::Configuration::DEFAULT_ALLOWED_ICONS +
