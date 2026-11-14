@@ -4,7 +4,8 @@
 
 ### Changed
 
-- Dummy and development pins move to Recording Studio `v6.7.0`, Accessible `v0.31.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.0`, Recording Studio API `v0.22.1`, Admin `v2.13.0`, and FlatPack `v0.1.356`. Logs, Moveable, Icons, and Cache stay on their previous tags.
+- Dummy and development pins move to Recording Studio `v6.10.0`, Accessible `v0.37.0`, Trashable `v0.14.1`, Recording Studio API `v0.23.1`, and FlatPack `v0.1.366`. Root Switchable `v0.15.0`, Metrics `v0.8.0`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and Cache `v0.6.3` stay on their previous tags.
+- The dummy app copies Recording Studio `20261114090000_add_root_recording_id_to_recording_studio_events` so events written on core 6.9+ store `root_recording_id`.
 - The dummy app no longer relaxes sibling `recording_studio` requirements. `test/support/widen_recording_studio_requirement.rb` is gone.
 - Dummy root switching lists workspaces the actor can view. Root Switchable `v0.15.0` forbids the switch page when the current root is not viewable.
 
