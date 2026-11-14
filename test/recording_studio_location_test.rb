@@ -51,22 +51,23 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_recording_studio_6_1
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.7.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.31.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v6.10.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.37.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.15.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.8.0"'
     refute_includes gemfile, 'tag: "v0.9.0"'
     refute_includes gemfile, 'tag: "v0.2.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.14.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.14.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.22.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.23.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.13.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_logs", tag: "v0.7.4"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_moveable", tag: "v4.1.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_icons", tag: "v0.2.1"'
-    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.356"'
+    assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.366"'
     refute_includes gemfile, "widen_recording_studio_requirement"
     refute_includes gemfile, 'ref: "1fcbafe94f8eb118f0a22182f63f5110fcc97a56"'
+    refute_includes gemfile, 'tag: "v6.7.0"'
     refute_includes gemfile, 'tag: "v6.5.0"'
     refute_includes gemfile, 'tag: "v0.24.2"'
     refute_includes gemfile, 'tag: "v0.11.0"'
@@ -152,6 +153,21 @@ class RecordingStudioLocationTest < Minitest::Test
     )
     assert_includes constraints_migration, "create_table :recording_studio_access_constraints"
     assert_includes rules_migration, "create_table :recording_studio_access_rules"
+  end
+
+  def test_dummy_copies_events_root_recording_migration
+    schema = File.read(File.expand_path("dummy/db/schema.rb", __dir__))
+    migration = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261114090000_add_root_recording_id_to_recording_studio_events.rb",
+        __dir__
+      )
+    )
+
+    assert_includes migration, "add_column :recording_studio_events, :root_recording_id, :uuid"
+    assert_includes migration, "change_column_null :recording_studio_events, :root_recording_id, false"
+    assert_includes schema, 't.uuid "root_recording_id", null: false'
+    assert_includes schema, "index_rs_events_on_root_and_timeline"
   end
 
   def test_template_does_not_ship_copied_core_hooks_or_base_service
@@ -247,17 +263,17 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v6.7.0`"
-    assert_includes readme, "Recording Studio API `v0.22.1`"
-    assert_includes readme, "FlatPack `0.1.356`"
+    assert_includes readme, "Recording Studio `v6.10.0`"
+    assert_includes readme, "Recording Studio API `v0.23.1`"
+    assert_includes readme, "FlatPack `0.1.366`"
     refute_includes readme, "Recording Studio `v4.7.0`"
     refute_includes readme, "FlatPack `v0.1.213`"
-    assert_includes readme, "Accessible `v0.31.0`"
+    assert_includes readme, "Accessible `v0.37.0`"
     assert_includes readme, "Root Switchable `v0.15.0`"
     assert_includes readme, "Metrics `v0.8.0`"
     refute_includes readme, "Root Switchable `v0.9.0`"
     refute_includes readme, "Metrics `v0.2.0`"
-    assert_includes readme, "Trashable `v0.14.0`"
+    assert_includes readme, "Trashable `v0.14.1`"
     assert_includes readme, "Admin `v2.13.0`"
     assert_includes readme, "Cache `v0.6.3`"
     refute_includes readme, "Recording Studio `v4.6.0`"

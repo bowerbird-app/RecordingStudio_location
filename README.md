@@ -428,7 +428,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v6.7.0`, Accessible `v0.31.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.0`, Cache `v0.6.3`, Recording Studio API `v0.22.1`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.356`. Location is `0.10.0`.
+The dummy app pins Recording Studio `v6.10.0`, Accessible `v0.37.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.1`, Cache `v0.6.3`, Recording Studio API `v0.23.1`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.366`. Location is `0.10.0`. The dummy copies core migration `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

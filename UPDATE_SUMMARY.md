@@ -11,7 +11,7 @@
 - FlatPack form fields, a progressive search helper (summary when a place is selected, address fields on demand), and a read-only display partial
 - Optional geocoder/search adapter (Google built-in, Fake for tests), `geocode!` / `reverse!`, plus `#search` / `#details`
 - Gemspec: `add_dependency "recording_studio", ">= 6.1.0"` and `flat_pack >= 0.1.315`
-- Dummy GitHub pins: Recording Studio `v6.7.0`, Accessible `v0.31.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.0`, Cache `v0.6.3`, Recording Studio API `v0.22.1`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, FlatPack `0.1.356`
+- Dummy GitHub pins: Recording Studio `v6.10.0`, Accessible `v0.37.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.1`, Cache `v0.6.3`, Recording Studio API `v0.23.1`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, FlatPack `0.1.366`
 - Location is `0.10.0`
 
 Installing the gem does not enable Location on every type. Enable `:location` on each parent that may contain a place.
