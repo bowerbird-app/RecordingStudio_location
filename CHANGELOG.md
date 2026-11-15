@@ -12,6 +12,7 @@
 - Dummy `authorize_write` allows a persisted user to create a root when `root_recording` is nil. Later writes still need a role on that root.
 - Dummy location lists use `Recording.kept`. Trashable `v0.16.1` removed `recording_studio_trashable_kept_sql`. API `v0.23.4` is the released tag that calls `Recording.kept` instead.
 - The dummy app copies Recording Studio `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`.
+- Dummy lockfile updates `msgpack` to `1.8.7` (CVE-2026-126366). Bootsnap still allows `~> 1.5`.
 
 ### Upgrade notes
 

@@ -2,7 +2,7 @@
 
 ## 0.11.0
 
-Bump to `0.11.0` with Recording Studio `>= 7.0, < 8.0`. No Location migration.
+Bump to `0.11.0` with Recording Studio `>= 7.0, < 8.0`. No Location migration. Dummy lockfile updates `msgpack` to `1.8.7`.
 
 `RecordingStudio.root_recording_for` only finds a root and returns `nil` when there is none. Seeds, setup, and request paths that created a root by looking it up call `create_root_recording!` with an actor. `authorize_write` must allow that create when `root_recording` is nil.
 
