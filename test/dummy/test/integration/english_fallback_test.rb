@@ -19,7 +19,7 @@ class EnglishFallbackTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "English #{SecureRandom.hex(4)}")
-    grant_admin_access!(actor: @user, recording: RecordingStudio.root_recording_for(@workspace))
+    grant_admin_access!(actor: @user, recording: create_workspace_root!(@workspace))
     @previous_locales = I18n.available_locales
     I18n.available_locales = (@previous_locales + %i[en de fr]).uniq
   end

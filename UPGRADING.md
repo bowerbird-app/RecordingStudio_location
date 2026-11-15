@@ -1,5 +1,13 @@
 # Upgrading
 
+## 0.11.0
+
+Bump to `0.11.0` with Recording Studio `>= 7.0, < 8.0`. No Location migration.
+
+`RecordingStudio.root_recording_for` only finds a root and returns `nil` when there is none. Seeds, setup, and request paths that created a root by looking it up call `create_root_recording!` with an actor. `authorize_write` must allow that create when `root_recording` is nil.
+
+Dummy pins: Recording Studio `v7.0.0`, Accessible `v0.43.1`, Trashable `v0.16.1`, Admin `v2.16.0`, Root Switchable `v0.15.1`, and API `v0.23.4`. Metrics `v0.8.0`, Cache `v0.6.3`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `v0.1.366` stay. With Trashable 0.16, use `Recording.kept` instead of `recording_studio_trashable_kept_sql`. API `v0.23.1` still calls that removed method, so the dummy pin is `v0.23.4`.
+
 ## 0.10.0
 
 Bump to `0.10.0`. No Location migration.

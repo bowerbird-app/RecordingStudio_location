@@ -22,7 +22,7 @@ class EnglishFallbackBootOverrideTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "English boot #{SecureRandom.hex(4)}")
-    grant_admin_access!(actor: @user, recording: RecordingStudio.root_recording_for(@workspace))
+    grant_admin_access!(actor: @user, recording: create_workspace_root!(@workspace))
 
     # Force I18n to initialize before store_translations / assertions.
     I18n.t("recording_studio.location.fields.title")

@@ -89,13 +89,13 @@ class LocationsController < ApplicationController
 
     root.child_recordings.where(
       recordable_type: RecordingStudio::Location::LOCATION_TYPE
-    ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).order(:created_at)
+    ).kept.order(:created_at)
   end
 
   def find_location_recording(role:)
     recording = RecordingStudio::Recording.where(
       recordable_type: RecordingStudio::Location::LOCATION_TYPE
-    ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).find(params[:id])
+    ).kept.find(params[:id])
     raise ActiveRecord::RecordNotFound unless location_authorized?(recording, role)
 
     recording

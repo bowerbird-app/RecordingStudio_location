@@ -2,12 +2,23 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-15
+
 ### Changed
 
-- Dummy and development pins move to Recording Studio `v6.10.0`, Accessible `v0.37.0`, Trashable `v0.14.1`, Recording Studio API `v0.23.1`, and FlatPack `v0.1.366`. Root Switchable `v0.15.0`, Metrics `v0.8.0`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and Cache `v0.6.3` stay on their previous tags.
-- The dummy app copies Recording Studio `20261114090000_add_root_recording_id_to_recording_studio_events` so events written on core 6.9+ store `root_recording_id`.
-- The dummy app no longer relaxes sibling `recording_studio` requirements. `test/support/widen_recording_studio_requirement.rb` is gone.
-- Dummy root switching lists workspaces the actor can view. Root Switchable `v0.15.0` forbids the switch page when the current root is not viewable.
+- Requires Recording Studio `>= 7.0, < 8.0`. Development and dummy pins use tag `v7.0.0`.
+- Dummy pins move to Accessible `v0.43.1`, Trashable `v0.16.1`, Admin `v2.16.0`, Root Switchable `v0.15.1`, and Recording Studio API `v0.23.4`. Metrics `v0.8.0`, Cache `v0.6.3`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `v0.1.366` stay on their previous tags.
+- Seeds and tests that created a workspace root by calling `root_recording_for` call `create_root_recording!`. Lookup stays on `root_recording_for`.
+- Dummy `authorize_write` allows a persisted user to create a root when `root_recording` is nil. Later writes still need a role on that root.
+- Dummy location lists use `Recording.kept`. Trashable `v0.16.1` removed `recording_studio_trashable_kept_sql`. API `v0.23.4` is the released tag that calls `Recording.kept` instead.
+- The dummy app copies Recording Studio `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`.
+
+### Upgrade notes
+
+- Bump to `0.11.0`. No Location migration.
+- Hosts need Recording Studio `>= 7.0, < 8.0`.
+- A call that created a root through `root_recording_for` now gets `nil`. Call `create_root_recording!` with an actor. Allow that write when `root_recording` is nil.
+- With Trashable 0.16, replace `recording_studio_trashable_kept_sql` with `Recording.kept`.
 
 ## [0.10.0] - 2026-11-12
 
@@ -313,7 +324,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.3...v0.9.0
 [0.8.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.2...v0.8.3

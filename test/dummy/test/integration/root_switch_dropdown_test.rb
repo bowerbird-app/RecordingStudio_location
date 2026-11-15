@@ -27,7 +27,7 @@ class RootSwitchDropdownTest < ActionDispatch::IntegrationTest
     sign_in user
 
     workspace = Workspace.create!(name: "Dropdown Workspace")
-    grant_admin_access!(actor: user, recording: RecordingStudio.root_recording_for(workspace))
+    grant_admin_access!(actor: user, recording: create_workspace_root!(workspace))
 
     get root_path
 
@@ -45,7 +45,7 @@ class RootSwitchDropdownTest < ActionDispatch::IntegrationTest
     sign_in user
 
     workspace = Workspace.create!(name: "Switch Page Workspace")
-    grant_admin_access!(actor: user, recording: RecordingStudio.root_recording_for(workspace))
+    grant_admin_access!(actor: user, recording: create_workspace_root!(workspace))
 
     get "/recording_studio_root_switchable/v1/root_switch?scope=all_workspaces"
 
@@ -64,8 +64,8 @@ class RootSwitchDropdownTest < ActionDispatch::IntegrationTest
 
     source_workspace = Workspace.create!(name: "Source Workspace")
     target_workspace = Workspace.create!(name: "Target Workspace")
-    target_root_recording = RecordingStudio.root_recording_for(target_workspace)
-    grant_admin_access!(actor: user, recording: RecordingStudio.root_recording_for(source_workspace))
+    target_root_recording = create_workspace_root!(target_workspace)
+    grant_admin_access!(actor: user, recording: create_workspace_root!(source_workspace))
     grant_admin_access!(actor: user, recording: target_root_recording)
 
     patch "/recording_studio_root_switchable/v1/root_switch", params: {
@@ -89,8 +89,8 @@ class RootSwitchDropdownTest < ActionDispatch::IntegrationTest
 
     source_workspace = Workspace.create!(name: "Fallback Source Workspace")
     target_workspace = Workspace.create!(name: "Fallback Target Workspace")
-    target_root_recording = RecordingStudio.root_recording_for(target_workspace)
-    grant_admin_access!(actor: user, recording: RecordingStudio.root_recording_for(source_workspace))
+    target_root_recording = create_workspace_root!(target_workspace)
+    grant_admin_access!(actor: user, recording: create_workspace_root!(source_workspace))
     grant_admin_access!(actor: user, recording: target_root_recording)
 
     patch "/recording_studio_root_switchable/v1/root_switch", params: {

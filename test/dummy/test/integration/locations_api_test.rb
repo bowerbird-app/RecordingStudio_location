@@ -157,7 +157,7 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
   end
 
   def owned_root(recordable, actor: @owner)
-    root = RecordingStudio.root_recording_for(recordable)
+    root = create_workspace_root!(recordable, actor: actor)
     result = RecordingStudioAccessible.bootstrap_owner_access!(recording: root, actor:)
     raise result.error if result.failure?
 

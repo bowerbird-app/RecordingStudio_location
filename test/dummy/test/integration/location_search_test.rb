@@ -13,7 +13,7 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "Search #{SecureRandom.hex(4)}")
-    @root = RecordingStudio.root_recording_for(@workspace)
+    @root = create_workspace_root!(@workspace)
     grant_admin_access!(actor: @user, recording: @root)
     @adapter = RecordingStudio::Location.geocoder
   end
