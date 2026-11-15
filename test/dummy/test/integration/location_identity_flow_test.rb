@@ -13,7 +13,7 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "Identity #{SecureRandom.hex(4)}")
-    @root = RecordingStudio.root_recording_for(@workspace)
+    @root = create_workspace_root!(@workspace)
     grant_admin_access!(actor: @user, recording: @root)
     @previous_mode = RecordingStudioLocation.configuration.icon_mode
   end

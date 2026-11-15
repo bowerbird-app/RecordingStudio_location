@@ -21,7 +21,7 @@ class LocationValidationHostOverrideTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "Host validation #{SecureRandom.hex(4)}")
-    grant_admin_access!(actor: @user, recording: RecordingStudio.root_recording_for(@workspace))
+    grant_admin_access!(actor: @user, recording: create_workspace_root!(@workspace))
   end
 
   teardown do

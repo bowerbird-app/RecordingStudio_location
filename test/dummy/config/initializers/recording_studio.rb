@@ -28,10 +28,14 @@ RecordingStudio.configure do |config|
 
   # Hosts must set authorize_write before Recording Studio core 6.5.0.
   # Writes fail closed. `actor.present?` is not a write policy.
+  # Core 7 creates a root with root_recording nil. A persisted user may create
+  # that first root. Later writes still need a role on the root.
   # Access grant/bootstrap writes go through Accessible's AccessCreationContext
   # (same path as grant_access / bootstrap_owner_access!), not a logged-in check.
   config.authorize_write = lambda { |actor:, root_recording:, recordable:, **|
-    next false unless root_recording
+    if root_recording.nil?
+      next actor.is_a?(User) && actor.persisted?
+    end
 
     if defined?(RecordingStudio::Access) && recordable.is_a?(RecordingStudio::Access)
       next true if RecordingStudioAccessible::AccessCreationContext.allowed?

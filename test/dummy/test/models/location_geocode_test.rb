@@ -23,7 +23,7 @@ class LocationGeocodeTest < ActiveSupport::TestCase
       country_code: "US"
     )
 
-    root = RecordingStudio.root_recording_for(Workspace.create!(name: unique_name("Workspace")))
+    root = create_workspace_root!(Workspace.create!(name: unique_name("Workspace")))
     recording = record_child(
       RecordingStudio::Location::Location.new(
         address_line_1: "12 Smith Street",

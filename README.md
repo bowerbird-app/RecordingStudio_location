@@ -33,7 +33,7 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", ">= 6.1.0"
+gem "recording_studio", ">= 7.0", "< 8.0"
 gem "recording_studio_location"
 gem "flat_pack", ">= 0.1.315"
 ```
@@ -72,7 +72,7 @@ end
 The engine also registers `RecordingStudio::Location::Location` after the host initializers load. Enabling the capability is what makes a parent legal. A type without `:location` cannot contain a Location, and a Location cannot be a root.
 
 ```ruby
-root = RecordingStudio.root_recording_for(workspace)
+root = RecordingStudio.create_root_recording!(workspace, actor: Current.actor)
 
 recording = root.record(RecordingStudio::Location::Location) do |location|
   location.title = "Office HQ"
@@ -428,7 +428,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v6.10.0`, Accessible `v0.37.0`, Root Switchable `v0.15.0`, Metrics `v0.8.0`, Trashable `v0.14.1`, Cache `v0.6.3`, Recording Studio API `v0.23.1`, Admin `v2.13.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.366`. Location is `0.10.0`. The dummy copies core migration `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`.
+The dummy app pins Recording Studio `v7.0.0`, Accessible `v0.43.1`, Root Switchable `v0.15.1`, Metrics `v0.8.0`, Trashable `v0.16.1`, Cache `v0.6.3`, Recording Studio API `v0.23.4`, Admin `v2.16.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.366`. Location is `0.11.0`. The dummy copies core migration `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

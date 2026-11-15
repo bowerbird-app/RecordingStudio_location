@@ -3,6 +3,20 @@
 module AccessibleGrants
   STUDIO_WRITER_PASSWORD = "Password123!"
 
+  def create_workspace_root!(recordable, actor: nil)
+    RecordingStudio.create_root_recording!(recordable, actor: actor || workspace_root_actor)
+  end
+
+  def workspace_root_actor
+    current = Current.actor if defined?(Current)
+    return current if current.is_a?(User) && current.persisted?
+
+    User.find_or_create_by!(email: "root-creator@example.com") do |user|
+      user.password = STUDIO_WRITER_PASSWORD
+      user.password_confirmation = STUDIO_WRITER_PASSWORD
+    end
+  end
+
   def grant_admin_access!(actor:, recording:)
     result = RecordingStudioAccessible.bootstrap_owner_access!(recording: recording, actor: actor)
     return recording if result.success?

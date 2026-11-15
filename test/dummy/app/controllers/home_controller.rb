@@ -7,7 +7,7 @@ class HomeController < ApplicationController
     @location_recording = if @root_recording
       @root_recording.child_recordings.where(
         recordable_type: RecordingStudio::Location::LOCATION_TYPE
-      ).where(RecordingStudio::Recording.recording_studio_trashable_kept_sql).order(:created_at).first
+      ).kept.order(:created_at).first
     end
   end
 end

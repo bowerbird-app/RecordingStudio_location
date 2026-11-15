@@ -13,13 +13,13 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     end
     sign_in @user
     @workspace = Workspace.create!(name: "Places #{SecureRandom.hex(4)}")
-    @root = RecordingStudio.root_recording_for(@workspace)
+    @root = create_workspace_root!(@workspace)
     grant_admin_access!(actor: @user, recording: @root)
     Current.actor = @user
   end
 
   test "index lists only locations under a workspace the actor can use" do
-    other_root = RecordingStudio.root_recording_for(Workspace.create!(name: "Hidden #{SecureRandom.hex(4)}"))
+    other_root = create_workspace_root!(Workspace.create!(name: "Hidden #{SecureRandom.hex(4)}"))
     hidden = with_studio_writer(other_root) do
       other_root.record(RecordingStudio::Location::Location) do |location|
         location.locality = "Hiddenville"
@@ -65,7 +65,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "show hides a location the actor cannot use" do
-    other_root = RecordingStudio.root_recording_for(Workspace.create!(name: "Closed #{SecureRandom.hex(4)}"))
+    other_root = create_workspace_root!(Workspace.create!(name: "Closed #{SecureRandom.hex(4)}"))
     hidden = with_studio_writer(other_root) do
       other_root.record(RecordingStudio::Location::Location) do |location|
         location.name = "Closed hall"

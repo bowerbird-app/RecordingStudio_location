@@ -17,7 +17,7 @@ class LocationTest < ActiveSupport::TestCase
   end
 
   test "a location can be recorded under workspace and folder and not under page" do
-    root = RecordingStudio.root_recording_for(Workspace.create!(name: unique_name("Workspace")))
+    root = create_workspace_root!(Workspace.create!(name: unique_name("Workspace")))
     folder_recording = record_child(Folder.new(name: unique_name("Folder")), root, root)
     page_recording = record_child(Page.new(title: unique_name("Page")), root, folder_recording)
 
@@ -39,12 +39,12 @@ class LocationTest < ActiveSupport::TestCase
     location = RecordingStudio::Location::Location.create!(name: "Orphan")
 
     assert_raises(RecordingStudio::RootNotAllowed) do
-      RecordingStudio.root_recording_for(location)
+      RecordingStudio.create_root_recording!(location)
     end
   end
 
   test "partial places are valid and several locations can share a parent" do
-    root = RecordingStudio.root_recording_for(Workspace.create!(name: unique_name("Multi")))
+    root = create_workspace_root!(Workspace.create!(name: unique_name("Multi")))
 
     city = record_child(
       RecordingStudio::Location::Location.new(locality: "Melbourne", region: "Victoria", country_code: "au"),
