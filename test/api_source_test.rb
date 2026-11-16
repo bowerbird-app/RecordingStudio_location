@@ -9,6 +9,10 @@ class ApiSourceTest < Minitest::Test
     assert_equal 1, source.scan("defined?(::RecordingStudioApi)").size
     assert_includes source, "each_api"
     assert_includes source, "already registered"
+    assert_includes source, 'Gem::Requirement.new(">= 1.1", "< 2.0")'
+    assert_includes source, "recordable_type: TYPE"
+    assert_includes source, "required_role: definition.fetch(:required_role)"
+    refute_includes source, "scope_id: false"
     refute_includes source, "register_recordable_type_api"
     refute_includes source, "register_capability_action"
     refute_includes source, "register_resource_handler"
@@ -22,6 +26,19 @@ class ApiSourceTest < Minitest::Test
     names = RecordingStudioLocation::Engine.initializers.map(&:name)
 
     assert_includes names, "recording_studio_location.api"
+  end
+
+  def test_handlers_read_the_scoped_recording
+    support = File.read(File.expand_path("../lib/recording_studio_location/api/lookups/support.rb", __dir__))
+    geocode = File.read(File.expand_path("../lib/recording_studio_location/api/lookups/geocode.rb", __dir__))
+    reverse = File.read(File.expand_path("../lib/recording_studio_location/api/lookups/reverse.rb", __dir__))
+
+    refute_includes support, "def location_recording"
+    refute_includes support, "def authorize!"
+    assert_includes geocode, "context.recording"
+    assert_includes reverse, "context.recording"
+    refute_includes geocode, "location_recording"
+    refute_includes reverse, "authorize!"
   end
 
   def test_lookup_is_not_a_core_capability

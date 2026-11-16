@@ -1,5 +1,15 @@
 # Upgrading
 
+## 0.12.0
+
+Bump to `0.12.0` with Recording Studio `>= 7.1, < 8.0`. No Location migration. On Recording Studio 7.2 or newer, run `20261116120000_add_recording_studio_events_timeline_index`.
+
+`location_geocode` and `location_reverse` pass `recordable_type: "RecordingStudio::Location::Location"` and `required_role: :edit`. Recording Studio API scopes that `:id` and authorizes `:edit` before the handler. Handlers read `context.recording`. A foreign id, another recordable type, or a trashed location is 404.
+
+When Recording Studio API is loaded, this gem requires `>= 1.1, < 2.0`. It is still not a gemspec dependency.
+
+Dummy pins: Recording Studio `v7.3.0`, Accessible `v0.44.0`, Logs `v0.8.0`, Metrics `v0.9.0`, Moveable `v5.0.0`, Root Switchable `v0.16.0`, Trashable `v0.17.0`, and API `v1.1.0`. Admin `v2.16.0`, Cache `v0.6.3`, Icons `v0.2.1`, and FlatPack `v0.1.366` stay.
+
 ## 0.11.0
 
 Bump to `0.11.0` with Recording Studio `>= 7.0, < 8.0`. No Location migration. Dummy lockfile updates `msgpack` to `1.8.7`.

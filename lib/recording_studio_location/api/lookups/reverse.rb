@@ -24,9 +24,7 @@ module RecordingStudioLocation
 
         def self.call(context)
           Errors.wrap do
-            recording = Lookups.location_recording(context)
-            Lookups.authorize!(context, recording:, role: :edit)
-            Lookups.revise_location(recording, actor: context.access_grant.actor) do |location|
+            Lookups.revise_location(context.recording, actor: context.access_grant.actor) do |location|
               location.reverse!(force: context.params[:force] == true)
             end
           end

@@ -95,6 +95,26 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_response :not_found, response.body
   end
 
+  test "a trashed location is not found" do
+    @location.update_column(:trashed_at, Time.current)
+
+    call(:post, "/location/geocode/#{@location.id}", @editor_token)
+    assert_response :not_found, response.body
+
+    call(:post, "/location/reverse/#{@location.id}", @editor_token)
+    assert_response :not_found, response.body
+  end
+
+  test "an id of another recordable type is not found" do
+    folder = record_folder(@workspace)
+
+    call(:post, "/location/geocode/#{folder.id}", @editor_token)
+    assert_response :not_found, response.body
+
+    call(:post, "/location/reverse/#{folder.id}", @editor_token)
+    assert_response :not_found, response.body
+  end
+
   test "registry lists neither place search nor place details" do
     refute RecordingStudioApi.registered_endpoint(:location_place_search)
     refute RecordingStudioApi.registered_endpoint(:location_place_details)
@@ -121,8 +141,12 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
 
     geocode = RecordingStudioApi.registered_endpoint(:location_geocode)
     reverse = RecordingStudioApi.registered_endpoint(:location_reverse)
-    assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_geocode).fetch(:required_role)
-    assert_equal :edit, RecordingStudioLocation::Api::Lookups.definition(:location_reverse).fetch(:required_role)
+    assert_equal TYPE, geocode.recordable_type
+    assert_equal TYPE, reverse.recordable_type
+    assert_equal :edit, geocode.required_role
+    assert_equal :edit, reverse.required_role
+    assert geocode.scopes_recording?
+    assert reverse.scopes_recording?
     assert_equal RecordingStudioLocation::Api::Lookups::Geocode, geocode.handler
     assert_equal RecordingStudioLocation::Api::Lookups::Reverse, reverse.handler
     assert_includes geocode.openapi.fetch(:description), "paid traffic"
@@ -136,6 +160,7 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
         :location_geocode,
         http_verb: :post,
         path: "location/other_geocode/:id",
+        recordable_type: TYPE,
         handler: ->(_context) { {} }
       )
     end
@@ -201,6 +226,16 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     end
 
     [ issued.value.fetch(:access_token), client ]
+  end
+
+  def record_folder(root, actor: @owner)
+    previous = Current.actor
+    Current.actor = actor
+    root.record(Folder, actor:) do |folder|
+      folder.name = "Cabinet"
+    end
+  ensure
+    Current.actor = previous
   end
 
   def record_location(root, actor: @owner)

@@ -6,14 +6,14 @@ Add Location to a Recording Studio host. The public product notes live in the [R
 
 - Rails 8.1+
 - PostgreSQL (UUID primary keys)
-- `recording_studio >= 7.0, < 8.0`
+- `recording_studio >= 7.1, < 8.0`
 - Recording Studio Accessible for search, place lookup, and dummy location pages
 - FlatPack for the form and display partials
 
 ## Add the gem
 
 ```ruby
-gem "recording_studio", ">= 7.0", "< 8.0"
+gem "recording_studio", ">= 7.1", "< 8.0"
 gem "recording_studio_location"
 gem "flat_pack", ">= 0.1.315"
 ```
@@ -41,7 +41,7 @@ Mount line:
 mount RecordingStudioLocation::Engine, at: "/recording_studio_location"
 ```
 
-The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API is loaded, `location_geocode` and `location_reverse` register as named endpoints. Place search and place details stay on those HTML engine routes.
+The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API `>= 1.1, < 2.0` is loaded, `location_geocode` and `location_reverse` register as named endpoints with Location `recordable_type` and `required_role: :edit`. Place search and place details stay on those HTML engine routes.
 
 ## Enable it on a parent
 
