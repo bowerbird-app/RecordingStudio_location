@@ -11,6 +11,7 @@
 - `location_geocode` and `location_reverse` register `recordable_type` `RecordingStudio::Location::Location` and `required_role: :edit`. The API scopes `:id` and authorizes before the handler. Handlers read `context.recording`.
 - Dummy pins move to Accessible `v0.44.0`, Logs `v0.8.0`, Metrics `v0.9.0`, Moveable `v5.0.0`, Root Switchable `v0.16.0`, and Trashable `v0.17.0`. Admin `v2.16.0`, Cache `v0.6.3`, Icons `v0.2.1`, and FlatPack `v0.1.366` stay.
 - The dummy app copies Recording Studio `20261116120000_add_recording_studio_events_timeline_index`.
+- Lockfiles update `puma` to `8.1.1`. `8.0.2` is covered by the Puma advisories fixed in `8.0.3`.
 
 ### Upgrade notes
 
