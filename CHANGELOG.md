@@ -2,17 +2,6 @@
 
 ## [Unreleased]
 
-## [0.13.0] - 2026-11-16
-
-### Changed
-
-- Dummy and development GitHub pins move to the latest releases that resolve together. Accessible is `v0.45.1`, Trashable is `v1.0.0`, Cache is `v0.7.0`, API is `v1.2.1`, Admin is `v2.18.0`, Moveable is `v6.0.0`, Icons is `v0.4.0`, and FlatPack is `v0.1.377`. Recording Studio stays `v7.3.0`. Metrics stays `v0.9.0`. Logs stays `v0.8.0`. Root Switchable stays `v0.16.0`.
-
-### Upgrade notes
-
-- Bump to `0.13.0`. No Location migration. The gemspec still requires Recording Studio `>= 7.1, < 8.0` and FlatPack `>= 0.1.315`.
-- When Recording Studio API is loaded, Location still requires `>= 1.1, < 2.0`. The dummy pin is tag `v1.2.1`.
-
 ## [0.12.0] - 2026-11-16
 
 ### Changed
@@ -353,8 +342,7 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.13.0...HEAD
-[0.13.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.0...v0.13.0
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.0...HEAD
 [0.12.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.9.0...v0.10.0
