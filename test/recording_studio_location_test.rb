@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.11.0", ::RecordingStudioLocation::VERSION
+    assert_equal "0.12.0", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
@@ -19,7 +19,7 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_gemspec_allows_recording_studio_7
     gemspec = File.read(File.expand_path("../recording_studio_location.gemspec", __dir__))
 
-    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 7.0", "< 8.0"'
+    assert_includes gemspec, 'spec.add_dependency "recording_studio", ">= 7.1", "< 8.0"'
     assert_includes gemspec, 'spec.add_dependency "flat_pack", ">= 0.1.315"'
     refute_includes gemspec, 'spec.add_dependency "recording_studio", "~> 4'
   end
@@ -51,18 +51,17 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_recording_studio_7
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v7.0.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.43.1"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.15.1"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.8.0"'
-    refute_includes gemfile, 'tag: "v0.9.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v7.3.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.44.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.16.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.9.0"'
     refute_includes gemfile, 'tag: "v0.2.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.16.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_trashable", tag: "v0.17.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_cache", tag: "v0.6.3"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v0.23.4"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_api", tag: "v1.1.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_admin", tag: "v2.16.0"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_logs", tag: "v0.7.4"'
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_moveable", tag: "v4.1.1"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_logs", tag: "v0.8.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_moveable", tag: "v5.0.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_icons", tag: "v0.2.1"'
     assert_includes gemfile, 'github: "bowerbird-app/flatpack", tag: "v0.1.366"'
     refute_includes gemfile, "widen_recording_studio_requirement"
@@ -87,7 +86,11 @@ class RecordingStudioLocationTest < Minitest::Test
     refute_includes gemfile, 'tag: "v4.2.1"'
     refute_includes gemfile, 'tag: "v4.2.0"'
     refute_includes gemfile, 'tag: "v0.18.0"'
-    refute_includes gemfile, 'tag: "v0.17.0"'
+    refute_includes gemfile, 'tag: "v0.16.1"'
+    refute_includes gemfile, 'tag: "v0.15.1"'
+    refute_includes gemfile, 'tag: "v0.23.4"'
+    refute_includes gemfile, 'tag: "v7.0.0"'
+    refute_includes gemfile, 'tag: "v4.1.1"'
     refute_includes gemfile, 'tag: "v0.13.0"'
     refute_includes gemfile, 'tag: "v0.10.1"'
     refute_includes gemfile, 'tag: "v0.10.0"'
@@ -168,6 +171,14 @@ class RecordingStudioLocationTest < Minitest::Test
     assert_includes migration, "change_column_null :recording_studio_events, :root_recording_id, false"
     assert_includes schema, 't.uuid "root_recording_id", null: false'
     assert_includes schema, "index_rs_events_on_root_and_timeline"
+    timeline = File.read(
+      File.expand_path(
+        "dummy/db/migrate/20261116120000_add_recording_studio_events_timeline_index.rb",
+        __dir__
+      )
+    )
+    assert_includes timeline, 'name: "index_rs_events_on_timeline"'
+    assert_includes schema, 'name: "index_rs_events_on_timeline"'
   end
 
   def test_template_does_not_ship_copied_core_hooks_or_base_service
@@ -263,17 +274,17 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v7.0.0`"
-    assert_includes readme, "Recording Studio API `v0.23.4`"
+    assert_includes readme, "Recording Studio `v7.3.0`"
+    assert_includes readme, "Recording Studio API `v1.1.0`"
     assert_includes readme, "FlatPack `0.1.366`"
     refute_includes readme, "Recording Studio `v4.7.0`"
     refute_includes readme, "FlatPack `v0.1.213`"
-    assert_includes readme, "Accessible `v0.43.1`"
-    assert_includes readme, "Root Switchable `v0.15.1`"
-    assert_includes readme, "Metrics `v0.8.0`"
+    assert_includes readme, "Accessible `v0.44.0`"
+    assert_includes readme, "Root Switchable `v0.16.0`"
+    assert_includes readme, "Metrics `v0.9.0`"
     refute_includes readme, "Root Switchable `v0.9.0`"
     refute_includes readme, "Metrics `v0.2.0`"
-    assert_includes readme, "Trashable `v0.16.1`"
+    assert_includes readme, "Trashable `v0.17.0`"
     assert_includes readme, "Admin `v2.16.0`"
     assert_includes readme, "Cache `v0.6.3`"
     refute_includes readme, "Recording Studio `v4.6.0`"

@@ -168,7 +168,7 @@ host-defined deprecated `recording_studio_location.*` key wins via plain
 `I18n.t` with main's `default:` chain; otherwise the nested gem key is used via
 `RecordingStudio.t`. The gem no longer ships a legacy locale file. User and
 database content is not translated. Hosts override by defining the same nested
-keys in their own `config/locales`. Requires RecordingStudio `>= 7.0, < 8.0`. A plain
+keys in their own `config/locales`. Requires RecordingStudio `>= 7.1, < 8.0`. A plain
 caller `default:` with no interpolation is returned as a plain (non-html_safe)
 String, so views will escape it.
 

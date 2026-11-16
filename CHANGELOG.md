@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-16
+
+### Changed
+
+- Requires Recording Studio `>= 7.1, < 8.0`. Development and dummy pins use tag `v7.3.0`.
+- When Recording Studio API is loaded, Location requires `>= 1.1, < 2.0`. The gemspec does not depend on that gem. Dummy pin is tag `v1.1.0`.
+- `location_geocode` and `location_reverse` register `recordable_type` `RecordingStudio::Location::Location` and `required_role: :edit`. The API scopes `:id` and authorizes before the handler. Handlers read `context.recording`.
+- Dummy pins move to Accessible `v0.44.0`, Logs `v0.8.0`, Metrics `v0.9.0`, Moveable `v5.0.0`, Root Switchable `v0.16.0`, and Trashable `v0.17.0`. Admin `v2.16.0`, Cache `v0.6.3`, Icons `v0.2.1`, and FlatPack `v0.1.366` stay.
+- The dummy app copies Recording Studio `20261116120000_add_recording_studio_events_timeline_index`.
+- Lockfiles update `puma` to `8.1.1`. `8.0.2` is covered by the Puma advisories fixed in `8.0.3`.
+
+### Upgrade notes
+
+- Bump to `0.12.0`. No Location migration.
+- Hosts need Recording Studio `>= 7.1, < 8.0`. On 7.2 or newer, run `20261116120000_add_recording_studio_events_timeline_index`.
+- Hosts that mount Recording Studio API need `>= 1.1, < 2.0`. A foreign id, a wrong recordable type, or a trashed location returns 404 before the handler runs.
+
 ## [0.11.0] - 2026-11-15
 
 ### Changed
@@ -325,7 +342,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.8.3...v0.9.0

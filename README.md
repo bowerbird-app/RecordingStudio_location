@@ -33,7 +33,7 @@ Several locations under one parent are several Location recordings. Order them w
 ## Installation
 
 ```ruby
-gem "recording_studio", ">= 7.0", "< 8.0"
+gem "recording_studio", ">= 7.1", "< 8.0"
 gem "recording_studio_location"
 gem "flat_pack", ">= 0.1.315"
 ```
@@ -403,7 +403,7 @@ Location does not reimplement those behaviors.
 
 ## JSON API and MCP
 
-When Recording Studio API is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. MCP hosts that wrap that API see the named endpoint tools. Place search and place details stay on the HTML engine only.
+When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. Each path `:id` is a Location recording (`recordable_type`) with `required_role: :edit`. MCP hosts that wrap that API see the named endpoint tools. Place search and place details stay on the HTML engine only.
 
 | Name | Verb | Path | Access |
 | --- | --- | --- | --- |
@@ -412,7 +412,7 @@ When Recording Studio API is loaded, this gem registers two named lookups on eac
 
 Reverse takes optional `force`. `location_geocode` and `location_reverse` call the existing bang methods inside a location revision.
 
-Geocode and reverse resolve the location through Accessible recordings and authorize `:edit`. They call the host geocoder (paid traffic). Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises.
+Recording Studio API scopes `:id` to a Location recording and authorizes `:edit` before the handler runs. Handlers read `context.recording` and call the host geocoder (paid traffic). Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises. A foreign id, another recordable type, or a trashed location is 404.
 
 Install Recording Studio API in the host if you want the JSON surface:
 
@@ -428,7 +428,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v7.0.0`, Accessible `v0.43.1`, Root Switchable `v0.15.1`, Metrics `v0.8.0`, Trashable `v0.16.1`, Cache `v0.6.3`, Recording Studio API `v0.23.4`, Admin `v2.16.0`, Logs `v0.7.4`, Moveable `v4.1.1`, Icons `v0.2.1`, and FlatPack `0.1.366`. Location is `0.11.0`. The dummy copies core migration `20261114090000_add_root_recording_id_to_recording_studio_events` so events store `root_recording_id`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
+The dummy app pins Recording Studio `v7.3.0`, Accessible `v0.44.0`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v0.17.0`, Cache `v0.6.3`, Recording Studio API `v1.1.0`, Admin `v2.16.0`, Logs `v0.8.0`, Moveable `v5.0.0`, Icons `v0.2.1`, and FlatPack `0.1.366`. Location is `0.12.0`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

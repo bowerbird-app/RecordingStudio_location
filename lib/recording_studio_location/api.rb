@@ -16,6 +16,12 @@ module RecordingStudioLocation
     def register!
       return unless defined?(::RecordingStudioApi)
 
+      version = Gem::Version.new(::RecordingStudioApi::VERSION)
+      unless Gem::Requirement.new(">= 1.1", "< 2.0").satisfied_by?(version)
+        raise ::RecordingStudioApi::ConfigurationError,
+              "Recording Studio Location needs Recording Studio API >= 1.1, < 2.0"
+      end
+
       ::RecordingStudioApi.configuration.each_api { |api| register_api(api) }
     end
 
@@ -40,14 +46,17 @@ module RecordingStudioLocation
     def ours?(existing, definition)
       existing.handler == definition.fetch(:handler) &&
         existing.http_verb == definition.fetch(:http_verb) &&
-        existing.path == definition.fetch(:path)
+        existing.path == definition.fetch(:path) &&
+        existing.recordable_type == TYPE &&
+        existing.required_role == definition.fetch(:required_role)
     end
 
     def endpoint_options(api, definition)
       {
         api: api.name, http_verb: definition.fetch(:http_verb), path: definition.fetch(:path),
         handler: definition.fetch(:handler), serializer: definition[:serializer],
-        input_contract: definition[:input_contract], openapi: definition.fetch(:openapi)
+        input_contract: definition[:input_contract], openapi: definition.fetch(:openapi),
+        recordable_type: TYPE, required_role: definition.fetch(:required_role)
       }
     end
   end

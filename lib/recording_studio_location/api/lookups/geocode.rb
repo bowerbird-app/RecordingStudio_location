@@ -18,9 +18,7 @@ module RecordingStudioLocation
 
         def self.call(context)
           Errors.wrap do
-            recording = Lookups.location_recording(context)
-            Lookups.authorize!(context, recording:, role: :edit)
-            Lookups.revise_location(recording, actor: context.access_grant.actor, &:geocode!)
+            Lookups.revise_location(context.recording, actor: context.access_grant.actor, &:geocode!)
           end
         end
       end
