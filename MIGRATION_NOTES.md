@@ -5,13 +5,14 @@
 - Ruby 3.3 or newer
 - Rails 8.1 or newer
 - Recording Studio `>= 7.1, < 8.0` (gemspec floor; dummy GitHub tag `v7.3.0`)
-- Accessible dummy tag `v0.44.0`, Root Switchable dummy tag `v0.16.0`, Metrics `v0.9.0`, Trashable `v0.17.0`, Cache `v0.6.3`
-- Recording Studio API dummy tag `v1.1.0` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.16.0`, Logs `v0.8.0`, Moveable `v5.0.0`, Icons `v0.2.1`
-- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.1.366`)
+- Accessible dummy tag `v0.45.1`, Root Switchable dummy tag `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`
+- Recording Studio API dummy tag `v1.2.1` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`
+- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.1.377`)
 - Public RubyGems and GitHub access for dependency installation
 
 ## Upgrades
 
+- 0.13.0 moves dummy pins to the latest GitHub releases. No Location migration. Gemspec floors stay Recording Studio `>= 7.1, < 8.0` and FlatPack `>= 0.1.315`. When Recording Studio API is loaded, still require `>= 1.1, < 2.0`.
 - 0.12.0 requires Recording Studio `>= 7.1, < 8.0`. No Location migration. Copy `20261116120000_add_recording_studio_events_timeline_index` on Recording Studio 7.2 or newer. When Recording Studio API is loaded, require `>= 1.1, < 2.0`. `location_geocode` and `location_reverse` register a Location `recordable_type` and `required_role: :edit`.
 - 0.11.0 requires Recording Studio `>= 7.0, < 8.0`. No Location migration. `root_recording_for` only finds a root. Seeds and setup that created a root by looking it up call `create_root_recording!`. `authorize_write` must allow that create when `root_recording` is nil.
 - Dummy apps on Recording Studio 6.9+ copy `20261114090000_add_root_recording_id_to_recording_studio_events` before writing events. Location itself has no new migration.

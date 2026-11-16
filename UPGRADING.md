@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.13.0
+
+Bump to `0.13.0`. No Location migration. The gemspec still requires Recording Studio `>= 7.1, < 8.0` and FlatPack `>= 0.1.315`. When Recording Studio API is loaded, this gem still requires `>= 1.1, < 2.0`.
+
+Dummy pins: Recording Studio `v7.3.0`, Accessible `v0.45.1`, Trashable `v1.0.0`, Cache `v0.7.0`, API `v1.2.1`, Admin `v2.18.0`, Moveable `v6.0.0`, Icons `v0.4.0`, and FlatPack `v0.1.377`. Metrics `v0.9.0`, Logs `v0.8.0`, and Root Switchable `v0.16.0` stay.
+
 ## 0.12.0
 
 Bump to `0.12.0` with Recording Studio `>= 7.1, < 8.0`. No Location migration. On Recording Studio 7.2 or newer, run `20261116120000_add_recording_studio_events_timeline_index`.
