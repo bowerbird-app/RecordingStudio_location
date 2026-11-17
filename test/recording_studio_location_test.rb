@@ -4,7 +4,7 @@ require "test_helper"
 
 class RecordingStudioLocationTest < Minitest::Test
   def test_version_matches_release
-    assert_equal "0.12.0", ::RecordingStudioLocation::VERSION
+    assert_equal "0.12.1", ::RecordingStudioLocation::VERSION
   end
 
   def test_engine_exists
@@ -51,7 +51,8 @@ class RecordingStudioLocationTest < Minitest::Test
   def test_dummy_gemfile_pins_recording_studio_7
     gemfile = File.read(File.expand_path("dummy/Gemfile", __dir__))
 
-    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v7.3.0"'
+    assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio", tag: "v7.4.0"'
+    refute_includes gemfile, 'tag: "v7.3.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_accessible", tag: "v0.45.1"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_root_switchable", tag: "v0.16.0"'
     assert_includes gemfile, 'github: "bowerbird-app/RecordingStudio_metrics", tag: "v0.9.0"'
@@ -282,7 +283,8 @@ class RecordingStudioLocationTest < Minitest::Test
     readme = File.read(File.expand_path("../README.md", __dir__))
 
     assert_includes readme, "RecordingStudio::Location::Location"
-    assert_includes readme, "Recording Studio `v7.3.0`"
+    assert_includes readme, "Recording Studio `v7.4.0`"
+    refute_includes readme, "Recording Studio `v7.3.0`"
     assert_includes readme, "Recording Studio API `v1.2.1`"
     assert_includes readme, "FlatPack `0.1.377`"
     refute_includes readme, "Recording Studio `v4.7.0`"
