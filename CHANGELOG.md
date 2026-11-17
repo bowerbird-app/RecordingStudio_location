@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Development and dummy pins use Recording Studio tag `v7.4.0`. The gemspec floor stays `>= 7.1, < 8.0`.
+
 ## [0.12.0] - 2026-11-16
 
 ### Changed
