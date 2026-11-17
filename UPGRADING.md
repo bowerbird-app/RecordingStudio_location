@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.12.3
+
+Bump to `0.12.3`. No Location migration.
+
+`location_geocode` and `location_reverse` keep the same names, paths, inputs, and authorization. Their OpenAPI tag is `Location`. Summaries are `Look up coordinates` and `Fill address from coordinates`, with no trailing period. Descriptions are unchanged.
+
 ## 0.12.2
 
 Bump to `0.12.2`. No Location migration.

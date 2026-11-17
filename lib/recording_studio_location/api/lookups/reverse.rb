@@ -16,7 +16,8 @@ module RecordingStudioLocation
 
         OPENAPI = {
           title: "Location - Reverse Geocode",
-          summary: "Fill address fields from saved coordinates.",
+          summary: "Fill address from coordinates",
+          tags: ["Location"],
           description: Lookups.reverse_description,
           parameters: [Lookups::PATH_ID]
         }.freeze

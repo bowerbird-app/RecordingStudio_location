@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.12.3] - 2026-11-17
+
+### Changed
+
+- `location_geocode` and `location_reverse` use the OpenAPI tag `Location`. Summaries are `Look up coordinates` and `Fill address from coordinates`, with no trailing period. Descriptions still say geocode reads a saved address, and reverse fills address fields from saved coordinates.
+
+### Upgrade notes
+
+- Bump to `0.12.3`. No migration. Names, paths, inputs, and authorization are unchanged.
+
 ## [0.12.2] - 2026-11-17
 
 ### Changed
@@ -358,7 +368,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.2...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...HEAD
+[0.12.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.11.0...v0.12.0

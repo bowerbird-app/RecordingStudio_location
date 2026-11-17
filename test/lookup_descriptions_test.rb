@@ -5,6 +5,13 @@ require "test_helper"
 class LookupDescriptionsTest < Minitest::Test
   Lookups = RecordingStudioLocation::Api::Lookups
 
+  SUMMARIES = {
+    location_geocode: "Look up coordinates",
+    location_reverse: "Fill address from coordinates"
+  }.freeze
+
+  GROUP = "Location"
+
   FORBIDDEN = [
     "Path parameter id.",
     "geocode!",
@@ -30,7 +37,9 @@ class LookupDescriptionsTest < Minitest::Test
       assert_includes description, "When no geocoder is configured, the call fails with Missing."
       assert_includes description, "Assign RecordingStudio::Location.geocoder before geocoding"
       assert_includes description, Lookups.response_description
-      assert_sentence summary
+      assert_equal SUMMARIES.fetch(name), summary
+      assert_equal [GROUP], openapi.fetch(:tags)
+      refute_match(/\.\z/, summary)
       assert_sentence description
       refute_equal name.to_s.tr("_", " "), description
     end
@@ -57,6 +66,7 @@ class LookupDescriptionsTest < Minitest::Test
     reverse = Lookups::Reverse::OPENAPI.fetch(:description)
 
     assert_includes geocode, "Use location_reverse when the location already has coordinates"
+    assert_includes geocode, "saved location from its address"
     assert_includes geocode, "Save an address on the location first."
     assert_includes geocode, "It writes latitude and longitude only."
     assert_includes geocode, "\"Geocoding needs an address\""
@@ -64,6 +74,7 @@ class LookupDescriptionsTest < Minitest::Test
     assert_includes geocode, "fails with NotFound"
 
     assert_includes reverse, "Use location_geocode when the location has an address"
+    assert_includes reverse, "address fields of a saved location from its coordinates"
     assert_includes reverse, "Save both latitude and longitude on the location first."
     assert_includes reverse, "Existing address text stays unless force is true."
     assert_includes reverse, "Only location_geocode writes latitude and longitude."

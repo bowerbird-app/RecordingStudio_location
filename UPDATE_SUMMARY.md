@@ -12,6 +12,6 @@
 - Optional geocoder/search adapter (Google built-in, Fake for tests), `geocode!` / `reverse!`, plus `#search` / `#details`
 - Gemspec: `add_dependency "recording_studio", ">= 7.1", "< 8.0"` and `flat_pack >= 0.1.315`
 - Dummy GitHub pins: Recording Studio `v7.4.0`, Accessible `v0.45.1`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`, Recording Studio API `v1.2.1`, Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`, FlatPack `0.1.377`
-- Location is `0.12.2`
+- Location is `0.12.3`
 
 Installing the gem does not enable Location on every type. Enable `:location` on each parent that may contain a place.

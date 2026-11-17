@@ -182,6 +182,33 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert paths.key?("/recording_studio_api/api/v1/location/reverse/{id}")
   end
 
+  test "location lookups render under Location with short titles" do
+    geocode = RecordingStudioApi.registered_endpoint(:location_geocode)
+    reverse = RecordingStudioApi.registered_endpoint(:location_reverse)
+
+    assert_equal [ "Location" ], geocode.openapi_tags
+    assert_equal [ "Location" ], reverse.openapi_tags
+    assert_equal "Look up coordinates", geocode.openapi.fetch(:summary)
+    assert_equal "Fill address from coordinates", reverse.openapi.fetch(:summary)
+    refute_match(/\.\z/, geocode.openapi.fetch(:summary))
+    refute_match(/\.\z/, reverse.openapi.fetch(:summary))
+
+    document = RecordingStudioApi::Services::OpenapiDocument.call
+    paths = document.fetch(:paths)
+    geocode_operation = paths.fetch("/recording_studio_api/api/v1/location/geocode/{id}").fetch("post")
+    reverse_operation = paths.fetch("/recording_studio_api/api/v1/location/reverse/{id}").fetch("post")
+
+    assert_equal [ "Location" ], geocode_operation.fetch(:tags)
+    assert_equal [ "Location" ], reverse_operation.fetch(:tags)
+    assert_equal "Look up coordinates", geocode_operation.fetch(:summary)
+    assert_equal "Fill address from coordinates", reverse_operation.fetch(:summary)
+    refute_includes geocode_operation.fetch(:tags), "Endpoints"
+    refute_includes reverse_operation.fetch(:tags), "Endpoints"
+
+    tag_names = document.fetch(:tags).map { |tag| tag.fetch(:name) }
+    assert_includes tag_names, "Location"
+  end
+
   test "geocode returns the documented recording and place fields" do
     @adapter.stub_geocode(
       "12 Smith Street, Fitzroy, VIC, 3065, Australia",
