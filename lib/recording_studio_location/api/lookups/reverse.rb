@@ -9,17 +9,16 @@ module RecordingStudioLocation
           fields: {
             force: {
               type: :boolean,
-              description: "Overwrite address fields that already have text."
+              description: Lookups::FORCE_DESCRIPTION
             }
           }
         }.freeze
 
         OPENAPI = {
           title: "Location - Reverse Geocode",
-          summary: "Fill blank address fields from coordinates",
-          description: "Call reverse! inside a location revision. Blank address fields are filled. " \
-                       "Pass force to overwrite text that is already there. " \
-                       "Calls the host geocoder provider (paid traffic). Authorize :edit on the location."
+          summary: "Fill address fields from saved coordinates.",
+          description: Lookups.reverse_description,
+          parameters: [Lookups::PATH_ID]
         }.freeze
 
         def self.call(context)

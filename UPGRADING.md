@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.12.2
+
+Bump to `0.12.2`. No Location migration.
+
+`location_geocode` and `location_reverse` keep the same names, paths, and inputs. Their OpenAPI descriptions now say when to use each tool, that `:id` is the Location recording id, and what the call returns. `force` still keeps existing address text unless it is true.
+
 ## 0.12.0
 
 Bump to `0.12.0` with Recording Studio `>= 7.1, < 8.0`. No Location migration. On Recording Studio 7.2 or newer, run `20261116120000_add_recording_studio_events_timeline_index`.
