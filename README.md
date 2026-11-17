@@ -410,9 +410,11 @@ When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two name
 | `location_geocode` | POST | `/recording_studio_api/api/v1/location/geocode/:id` | `:edit` on the location |
 | `location_reverse` | POST | `/recording_studio_api/api/v1/location/reverse/:id` | `:edit` on the location |
 
-Reverse takes optional `force`. `location_geocode` and `location_reverse` call the existing bang methods inside a location revision.
+`:id` is the Location recording id returned when the location was created or listed. `location_geocode` reads the saved address (`address_line_1`, `address_line_2`, `locality`, `region`, `postal_code`, `country_code`) and writes latitude and longitude only. Save an address first. `location_reverse` reads saved latitude and longitude and fills blank address fields. Existing address text stays unless `force` is true. Save both coordinates first. Each call needs edit access, uses the host geocoder, and may cost money. The write is a new revision, so the previous coordinates or address stay in history.
 
-Recording Studio API scopes `:id` to a Location recording and authorizes `:edit` before the handler runs. Handlers read `context.recording` and call the host geocoder (paid traffic). Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises. A foreign id, another recordable type, or a trashed location is 404.
+Both return the recording fields `id`, `type`, `parent_id`, `root_id`, `created_at`, and `updated_at`, merged with `api_payload` (`title`, `location_type`, `icon`, `name`, the address fields, `latitude`, `longitude`, `resolved_icon`, `display_name`, `full_address`, and `coordinates`). With no geocoder configured, the response is `invalid_input` and the message is `Assign RecordingStudio::Location.geocoder before geocoding`. That failure is `Missing`. A blank address, or a reverse call that is missing a coordinate, is also `invalid_input`. A lookup that finds nothing is `not_found`. That failure is `NotFound`.
+
+Recording Studio API scopes `:id` to a Location recording and checks edit access before the handler runs. Handlers read `context.recording`. Google HTTP stays in the geocoder adapter. A second gem that registers the same endpoint name raises. A foreign id, another recordable type, or a trashed location is 404.
 
 Install Recording Studio API in the host if you want the JSON surface:
 
@@ -428,7 +430,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v7.4.0`, Accessible `v0.45.1`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`, Recording Studio API `v1.2.1`, Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`, and FlatPack `0.1.377`. Location is `0.12.1`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
+The dummy app pins Recording Studio `v7.4.0`, Accessible `v0.45.1`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`, Recording Studio API `v1.2.1`, Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`, and FlatPack `0.1.377`. Location is `0.12.2`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

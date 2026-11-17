@@ -149,9 +149,20 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert reverse.scopes_recording?
     assert_equal RecordingStudioLocation::Api::Lookups::Geocode, geocode.handler
     assert_equal RecordingStudioLocation::Api::Lookups::Reverse, reverse.handler
-    assert_includes geocode.openapi.fetch(:description), "paid traffic"
-    assert_includes reverse.openapi.fetch(:description), "paid traffic"
+    assert_includes geocode.openapi.fetch(:description), "may cost money"
+    assert_includes reverse.openapi.fetch(:description), "may cost money"
     assert_equal false, geocode.input_contract.as_json.fetch(:reject_unknown)
+    assert_lookup_copy(geocode, reverse)
+
+    paths = RecordingStudioApi::Services::OpenapiDocument.call.fetch(:paths)
+    assert_equal(
+      RecordingStudioLocation::Api::Lookups::RECORDING_ID_DESCRIPTION,
+      path_id_description(paths, "location/geocode/{id}")
+    )
+    assert_equal(
+      RecordingStudioLocation::Api::Lookups::RECORDING_ID_DESCRIPTION,
+      path_id_description(paths, "location/reverse/{id}")
+    )
 
     RecordingStudioLocation::Api.register!
 
@@ -169,6 +180,66 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     paths = RecordingStudioApi::Services::OpenapiDocument.call.fetch(:paths)
     assert paths.key?("/recording_studio_api/api/v1/location/geocode/{id}")
     assert paths.key?("/recording_studio_api/api/v1/location/reverse/{id}")
+  end
+
+  test "geocode returns the documented recording and place fields" do
+    @adapter.stub_geocode(
+      "12 Smith Street, Fitzroy, VIC, 3065, Australia",
+      { latitude: -37.798, longitude: 144.978 }
+    )
+
+    geocoded = call(:post, "/location/geocode/#{@location.id}", @editor_token)
+
+    assert_response :success
+    assert_equal documented_response_fields, geocoded.keys
+    assert_equal documented_place_fields, @location.reload.recordable.api_payload.keys.map(&:to_s)
+    assert_equal @location.id.to_s, geocoded.fetch("id")
+  end
+
+  test "documented lookup errors match the response" do
+    description = RecordingStudioApi.registered_endpoint(:location_geocode).openapi.fetch(:description)
+    reverse_description = RecordingStudioApi.registered_endpoint(:location_reverse).openapi.fetch(:description)
+
+    RecordingStudio::Location.geocoder = nil
+    missing = call(:post, "/location/geocode/#{@location.id}", @editor_token)
+    assert_response :unprocessable_entity
+    assert_equal "invalid_input", missing.dig("error", "code")
+    assert_equal "Assign RecordingStudio::Location.geocoder before geocoding", missing.dig("error", "message")
+    assert_includes description, missing.dig("error", "message")
+
+    RecordingStudio::Location.geocoder = @adapter
+    blank = record_location(@workspace) { |location| location.title = "No address yet" }
+    blank_body = call(:post, "/location/geocode/#{blank.id}", @editor_token)
+    assert_response :unprocessable_entity
+    assert_equal "Geocoding needs an address", blank_body.dig("error", "message")
+    assert_includes description, blank_body.dig("error", "message")
+
+    @adapter.stub_geocode(
+      "12 Smith Street, Fitzroy, VIC, 3065, Australia",
+      { latitude: nil, longitude: nil }
+    )
+    empty = call(:post, "/location/geocode/#{@location.id}", @editor_token)
+    assert_response :not_found
+    assert_equal "not_found", empty.dig("error", "code")
+    assert_equal "Geocoding returned no coordinates", empty.dig("error", "message")
+    assert_includes description, empty.dig("error", "message")
+
+    missing_coordinates = call(:post, "/location/reverse/#{@location.id}", @editor_token)
+    assert_response :unprocessable_entity
+    assert_equal "Reverse geocoding needs latitude and longitude", missing_coordinates.dig("error", "message")
+    assert_includes reverse_description, missing_coordinates.dig("error", "message")
+
+    @adapter.stub_geocode(
+      "12 Smith Street, Fitzroy, VIC, 3065, Australia",
+      { latitude: -37.798, longitude: 144.978 }
+    )
+    call(:post, "/location/geocode/#{@location.id}", @editor_token)
+    assert_response :success
+    missed = call(:post, "/location/reverse/#{@location.id}", @editor_token)
+    assert_response :not_found
+    assert_equal "not_found", missed.dig("error", "code")
+    assert_includes missed.dig("error", "message"), "No fake reverse result"
+    assert_includes reverse_description, "fails with NotFound"
   end
 
   private
@@ -238,17 +309,50 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     Current.actor = previous
   end
 
+  def assert_lookup_copy(geocode, reverse)
+    id_description = RecordingStudioLocation::Api::Lookups::RECORDING_ID_DESCRIPTION
+
+    [geocode, reverse].each do |endpoint|
+      parameter = endpoint.openapi_path_parameters.find { |entry| entry[:name] == "id" }
+      assert_equal id_description, parameter.fetch(:description)
+      refute_includes parameter.fetch(:description), "Path parameter"
+      refute_includes endpoint.openapi.fetch(:description), "Path parameter id."
+    end
+
+    force = reverse.input_contract.as_json.dig(:fields, :force)
+    assert_equal RecordingStudioLocation::Api::Lookups::FORCE_DESCRIPTION, force.fetch(:description)
+  end
+
+  def path_id_description(paths, suffix)
+    operation = paths.fetch("/recording_studio_api/api/v1/#{suffix}").fetch("post")
+    parameter = operation.fetch(:parameters).find { |entry| entry.fetch("name") == "id" }
+    parameter.fetch("description")
+  end
+
+  def documented_response_fields
+    RecordingStudioLocation::Api::Lookups::RECORDING_RESPONSE_FIELDS +
+      RecordingStudioLocation::Api::Lookups::PLACE_RESPONSE_FIELDS
+  end
+
+  def documented_place_fields
+    RecordingStudioLocation::Api::Lookups::PLACE_RESPONSE_FIELDS
+  end
+
   def record_location(root, actor: @owner)
     previous = Current.actor
     Current.actor = actor
     root.record(RecordingStudio::Location::Location, actor:) do |location|
-      location.title = "Office HQ"
-      location.location_type = "office"
-      location.address_line_1 = "12 Smith Street"
-      location.locality = "Fitzroy"
-      location.region = "VIC"
-      location.postal_code = "3065"
-      location.country_code = "AU"
+      if block_given?
+        yield location
+      else
+        location.title = "Office HQ"
+        location.location_type = "office"
+        location.address_line_1 = "12 Smith Street"
+        location.locality = "Fitzroy"
+        location.region = "VIC"
+        location.postal_code = "3065"
+        location.country_code = "AU"
+      end
     end
   ensure
     Current.actor = previous

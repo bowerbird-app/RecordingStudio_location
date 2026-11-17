@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lookups/support"
+require_relative "lookups/descriptions"
 require_relative "lookups/geocode"
 require_relative "lookups/reverse"
 
