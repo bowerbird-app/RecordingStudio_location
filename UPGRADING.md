@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.12.4
+
+Bump to `0.12.4`. No Location migration.
+
+`location.api_payload` returns `latitude` and `longitude` as numbers, or null when absent. Hosts that read these two fields as strings now get numbers. Stored columns are unchanged.
+
 ## 0.12.3
 
 Bump to `0.12.3`. No Location migration.
