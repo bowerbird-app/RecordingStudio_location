@@ -4,14 +4,15 @@
 
 - Ruby 3.3 or newer
 - Rails 8.1 or newer
-- Recording Studio `>= 7.1, < 8.0` (gemspec floor; dummy GitHub tag `v7.4.0`)
-- Accessible dummy tag `v0.45.1`, Root Switchable dummy tag `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`
-- Recording Studio API dummy tag `v1.2.1` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`
-- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.1.377`)
+- Recording Studio `>= 7.1, < 8.0` (gemspec floor; dummy GitHub tag `v7.7.1`)
+- Accessible dummy tag `v0.54.0`, Root Switchable dummy tag `v0.16.0`, Metrics `v0.9.1`, Trashable `v1.2.0`, Cache `v0.7.0`
+- Recording Studio API dummy tag `v1.15.0` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.19.0`, Logs `v0.8.1`, Moveable `v6.0.1`, Icons `v0.4.1`
+- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.1.378`)
 - Public RubyGems and GitHub access for dependency installation
 
 ## Upgrades
 
+- 0.12.4 moves development and dummy pins to Recording Studio `v7.7.1` and FlatPack `v0.1.378`. Dummy Accessible is `v0.54.0`, API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.1`, Moveable `v6.0.1`, Icons `v0.4.1`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay. No Location migration. The dummy copies Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients` so API clients can store an owner. Hosts that mount Recording Studio API 1.12 or newer need `config/recording_studio_api.yml` (`shared: {}` is enough to boot). Hosts on API 1.15 copy that owner migration.
 - 0.12.3 sets the OpenAPI tag `Location` on `location_geocode` and `location_reverse` and shortens their summaries. No migration.
 - 0.12.2 rewrites the `location_geocode` and `location_reverse` tool descriptions. No migration.
 - 0.12.0 requires Recording Studio `>= 7.1, < 8.0`. No Location migration. Copy `20261116120000_add_recording_studio_events_timeline_index` on Recording Studio 7.2 or newer. When Recording Studio API is loaded, require `>= 1.1, < 2.0`. `location_geocode` and `location_reverse` register a Location `recordable_type` and `required_role: :edit`.
