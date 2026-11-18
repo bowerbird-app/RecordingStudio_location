@@ -1,5 +1,15 @@
 # Upgrading
 
+## 0.12.5
+
+Bump to `0.12.5`. No Location migration. Names, paths, inputs, and authorization are unchanged.
+
+Development and dummy pins use Recording Studio `v7.7.1` and FlatPack `v0.1.378`. Gemspec floors stay `recording_studio >= 7.1, < 8.0` and `flat_pack >= 0.1.315`.
+
+Dummy pins: Accessible `v0.54.0`, API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.2`, Moveable `v6.0.1`, Icons `v0.4.2`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay.
+
+Hosts that mount Recording Studio API 1.12 or newer need `config/recording_studio_api.yml`. `shared: {}` is enough to boot. Hosts on API 1.15 copy `20261117000024_add_owner_to_recording_studio_api_api_clients`.
+
 ## 0.12.4
 
 Bump to `0.12.4`. No Location migration.

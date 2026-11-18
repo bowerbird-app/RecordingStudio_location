@@ -1,0 +1,2 @@
+# Minimal boot settings for Recording Studio API. Add environment keys when a host needs them.
+shared: {}
