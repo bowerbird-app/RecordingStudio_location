@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.12.4] - 2026-11-18
+
+### Fixed
+
+- API and MCP JSON returns `latitude` and `longitude` as numbers. Blank values are null. They were strings because the stored decimals are BigDecimal.
+
+### Upgrade notes
+
+- Bump to `0.12.4`. No migration. Hosts that read these two fields as strings now get numbers.
+
 ## [0.12.3] - 2026-11-17
 
 ### Changed
@@ -368,7 +378,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...HEAD
+[0.12.4]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...v0.12.4
 [0.12.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.0...v0.12.1

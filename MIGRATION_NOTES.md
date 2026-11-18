@@ -12,6 +12,7 @@
 
 ## Upgrades
 
+- 0.12.4 returns `latitude` and `longitude` in API and MCP JSON as numbers, or null when absent. Hosts that read these two fields as strings now get numbers. No migration.
 - 0.12.3 sets the OpenAPI tag `Location` on `location_geocode` and `location_reverse` and shortens their summaries. No migration.
 - 0.12.2 rewrites the `location_geocode` and `location_reverse` tool descriptions. No migration.
 - 0.12.0 requires Recording Studio `>= 7.1, < 8.0`. No Location migration. Copy `20261116120000_add_recording_studio_events_timeline_index` on Recording Studio 7.2 or newer. When Recording Studio API is loaded, require `>= 1.1, < 2.0`. `location_geocode` and `location_reverse` register a Location `recordable_type` and `required_role: :edit`.

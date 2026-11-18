@@ -82,7 +82,7 @@ class LocationIdentityMethodsTest < Minitest::Test
     include RecordingStudio::Location::Formatting
     include RecordingStudio::Location::Identity
 
-    PERMITTED_ATTRIBUTES = %i[title location_type icon name].freeze
+    PERMITTED_ATTRIBUTES = %i[title location_type icon name latitude longitude].freeze
 
     attr_accessor :title, :location_type, :icon, :name, :address_line_1, :address_line_2,
                   :locality, :region, :postal_code, :country_code, :latitude, :longitude
@@ -121,6 +121,31 @@ class LocationIdentityMethodsTest < Minitest::Test
     assert_equal "star", payload[:resolved_icon]
     assert_equal "Office HQ", payload[:display_name]
     assert_includes payload.keys, :coordinates
+  end
+
+  def test_api_payload_json_emits_latitude_and_longitude_as_numbers
+    place = Place.new(title: "Office HQ", latitude: BigDecimal("-37.798"), longitude: BigDecimal("144.978"))
+    body = JSON.parse(place.api_payload.to_json)
+
+    assert_instance_of Float, body.fetch("latitude")
+    assert_instance_of Float, body.fetch("longitude")
+    assert_in_delta(-37.798, body.fetch("latitude"))
+    assert_in_delta 144.978, body.fetch("longitude")
+    assert_instance_of Float, body.fetch("coordinates").fetch(0)
+    assert_instance_of Float, body.fetch("coordinates").fetch(1)
+    assert_equal "Office HQ", body.fetch("title")
+
+    absent = JSON.parse(Place.new(title: "No pin", latitude: "", longitude: nil).api_payload.to_json)
+    assert_nil absent.fetch("latitude")
+    assert_nil absent.fetch("longitude")
+    assert_nil absent.fetch("coordinates")
+    assert_equal "No pin", absent.fetch("title")
+
+    zeros = JSON.parse(Place.new(latitude: BigDecimal("0"), longitude: 0).api_payload.to_json)
+    assert_instance_of Float, zeros.fetch("latitude")
+    assert_instance_of Float, zeros.fetch("longitude")
+    assert_equal 0.0, zeros.fetch("latitude")
+    assert_equal 0.0, zeros.fetch("longitude")
   end
 
   def test_type_mode_clears_a_submitted_icon
