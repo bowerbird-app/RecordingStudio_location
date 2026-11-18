@@ -1,5 +1,11 @@
 # Upgrading
 
+## 0.13.0
+
+Bump to `0.13.0`. No Location migration.
+
+`config.register_api_endpoints_on` chooses which Recording Studio APIs receive `location_geocode` and `location_reverse`. The default `:all` registers both endpoints on every API. A list of API names registers both only on those APIs. `false` or `[]` registers neither. Names, paths, inputs, and authorization are unchanged.
+
 ## 0.12.5
 
 Bump to `0.12.5`. No Location migration. Names, paths, inputs, and authorization are unchanged.

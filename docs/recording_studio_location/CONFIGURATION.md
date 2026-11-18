@@ -79,6 +79,26 @@ Engine controllers call `recording_studio_layout { RecordingStudioLocation.confi
 
 Search endpoints identify the caller, then require Accessible `:view` on a workspace. Set `config.authenticate` to a proc if the host is not Devise. Default is `authenticate_user!` when that method exists, otherwise `401`. After that, missing Accessible or no grant is `403`.
 
+### API endpoints
+
+`config.register_api_endpoints_on` chooses which Recording Studio APIs receive `location_geocode` and `location_reverse`.
+
+| Value | Registration |
+| --- | --- |
+| `:all` (default) | Both endpoints on every API |
+| A list of API names | Both endpoints on those APIs |
+| `false` or `[]` | Neither endpoint |
+
+Names are the names you pass to `config.api` inside `RecordingStudioApi.configure`. The built-in API name is `public`. `"all"` is the same as `:all`.
+
+```ruby
+config.register_api_endpoints_on = :all
+config.register_api_endpoints_on = [:public]
+config.register_api_endpoints_on = false
+```
+
+Location reads the setting when it registers the endpoints. A later change can add them to an API that is now allowed. Endpoints that are already registered stay where they are.
+
 ## Credentials
 
 On the installing app:
@@ -122,7 +142,7 @@ production:
   map:
 ```
 
-The engine loads it with `Rails.application.config_for(:recording_studio_location)` when the file exists. Unknown keys are ignored. `geocoder` and `map` from YAML are not live adapter objects.
+The engine loads it with `Rails.application.config_for(:recording_studio_location)` when the file exists. Unknown keys are ignored. `geocoder` and `map` from YAML are not live adapter objects. `register_api_endpoints_on` accepts `all`, a list of API names, or `false`.
 
 You can also set `config.x.recording_studio_location` in Rails config. The initializer wins last.
 
@@ -138,6 +158,7 @@ The UI and engine endpoints only call the geocoder adapter interface: `#search`,
 RecordingStudioLocation.configuration.geocoder
 RecordingStudioLocation.configuration.map
 RecordingStudioLocation.configuration.lookup_depth
+RecordingStudioLocation.configuration.register_api_endpoints_on
 RecordingStudioLocation.configuration.icon_mode
 RecordingStudioLocation.configuration.location_types
 RecordingStudioLocation.configuration.to_h

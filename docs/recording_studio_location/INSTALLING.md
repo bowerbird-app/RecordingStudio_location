@@ -41,7 +41,7 @@ Mount line:
 mount RecordingStudioLocation::Engine, at: "/recording_studio_location"
 ```
 
-The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API `>= 1.1, < 2.0` is loaded, `location_geocode` and `location_reverse` register as named endpoints with Location `recordable_type` and `required_role: :edit`. Place search and place details stay on those HTML engine routes.
+The engine root is a tiny home page. Host screens should render `recording_studio_location_fields` or `recording_studio_location_search_fields`, plus `recording_studio_location_display`. Search also uses `GET /recording_studio_location/searches` and `GET /recording_studio_location/places`. When Recording Studio API `>= 1.1, < 2.0` is loaded, `location_geocode` and `location_reverse` register as named endpoints with Location `recordable_type` and `required_role: :edit`. `config.register_api_endpoints_on` chooses which APIs receive them. `:all` is the default. Place search and place details stay on those HTML engine routes.
 
 ## Enable it on a parent
 

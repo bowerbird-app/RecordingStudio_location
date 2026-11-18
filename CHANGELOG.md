@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-18
+
+### Added
+
+- `config.register_api_endpoints_on` chooses which Recording Studio APIs receive `location_geocode` and `location_reverse`. `:all` (the default) registers both on every API. A list of API names registers both only on those APIs. `false` or `[]` registers neither.
+
+### Upgrade notes
+
+- Bump to `0.13.0`. No Location migration. The default `:all` keeps both endpoints on every API. Set the option in the Location initializer to limit that list or to register neither endpoint. Names, paths, inputs, and authorization are unchanged.
+
 ## [0.12.5] - 2026-11-18
 
 ### Changed
@@ -392,7 +402,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.5...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.5...v0.13.0
 [0.12.5]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...v0.12.5
 [0.12.4]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...v0.12.4
 [0.12.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.2...v0.12.3
