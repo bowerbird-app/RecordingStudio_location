@@ -40,7 +40,10 @@ module RecordingStudio
       end
 
       def api_payload
-        self.class::PERMITTED_ATTRIBUTES.index_with { |attribute| public_send(attribute) }.merge(
+        payload = self.class::PERMITTED_ATTRIBUTES.index_with { |attribute| public_send(attribute) }
+        payload[:latitude] = coordinate_number(payload[:latitude]) if payload.key?(:latitude)
+        payload[:longitude] = coordinate_number(payload[:longitude]) if payload.key?(:longitude)
+        payload.merge(
           resolved_icon: resolved_icon,
           display_name: display_name,
           full_address: full_address,
@@ -49,6 +52,12 @@ module RecordingStudio
       end
 
       private
+
+      def coordinate_number(number)
+        return if number.blank?
+
+        number.to_f
+      end
 
       def clear_icon_unless_choose
         return if RecordingStudioLocation.configuration.icon_mode_choose?

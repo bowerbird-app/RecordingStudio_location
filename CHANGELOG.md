@@ -2,19 +2,29 @@
 
 ## [Unreleased]
 
-## [0.12.4] - 2026-11-18
+## [0.12.5] - 2026-11-18
 
 ### Changed
 
 - Development and dummy pins use Recording Studio tag `v7.7.1` and FlatPack tag `v0.1.378`. The gemspec floors stay `recording_studio >= 7.1, < 8.0` and `flat_pack >= 0.1.315`.
-- Dummy pins move to Accessible `v0.54.0`, Recording Studio API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.1`, Moveable `v6.0.1`, Icons `v0.4.1`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay.
+- Dummy pins move to Accessible `v0.54.0`, Recording Studio API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.2`, Moveable `v6.0.1`, Icons `v0.4.2`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay.
 - The dummy app adds `config/recording_studio_api.yml` with `shared: {}` so Recording Studio API 1.12 and newer can boot.
 - The dummy app copies Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients`.
 
 ### Upgrade notes
 
-- Bump to `0.12.4`. No Location migration. Names, paths, inputs, and authorization are unchanged.
+- Bump to `0.12.5`. No Location migration. Names, paths, inputs, and authorization are unchanged.
 - Hosts that mount Recording Studio API 1.12 or newer need `config/recording_studio_api.yml`. A minimal file is `shared: {}`.
+
+## [0.12.4] - 2026-11-18
+
+### Fixed
+
+- API and MCP JSON returns `latitude` and `longitude` as numbers. Blank values are null. They were strings because the stored decimals are BigDecimal.
+
+### Upgrade notes
+
+- Bump to `0.12.4`. No migration. Hosts that read these two fields as strings now get numbers.
 
 ## [0.12.3] - 2026-11-17
 
@@ -382,7 +392,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.5...HEAD
+[0.12.5]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...v0.12.5
 [0.12.4]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...v0.12.4
 [0.12.3]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.1...v0.12.2

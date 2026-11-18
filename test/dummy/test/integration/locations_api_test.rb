@@ -221,6 +221,21 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_equal documented_response_fields, geocoded.keys
     assert_equal documented_place_fields, @location.reload.recordable.api_payload.keys.map(&:to_s)
     assert_equal @location.id.to_s, geocoded.fetch("id")
+    assert_json_coordinate_numbers response.body, latitude: -37.798, longitude: 144.978
+
+    stored = @location.recordable
+    assert_instance_of BigDecimal, stored.latitude
+    assert_instance_of BigDecimal, stored.longitude
+
+    absent = record_location(@workspace) { |location| location.title = "No pin yet" }
+    absent_json = absent.recordable.api_payload.to_json
+    absent_body = JSON.parse(absent_json)
+    assert_nil absent_body.fetch("latitude")
+    assert_nil absent_body.fetch("longitude")
+    assert_nil absent_body.fetch("coordinates")
+    assert_equal "No pin yet", absent_body.fetch("title")
+    assert_includes absent_json, '"latitude":null'
+    assert_includes absent_json, '"longitude":null'
   end
 
   test "documented lookup errors match the response" do
@@ -363,6 +378,21 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
 
   def documented_place_fields
     RecordingStudioLocation::Api::Lookups::PLACE_RESPONSE_FIELDS
+  end
+
+  def assert_json_coordinate_numbers(json, latitude:, longitude:)
+    body = JSON.parse(json)
+
+    assert_instance_of Float, body.fetch("latitude")
+    assert_instance_of Float, body.fetch("longitude")
+    assert_in_delta latitude, body.fetch("latitude")
+    assert_in_delta longitude, body.fetch("longitude")
+    assert_instance_of Float, body.fetch("coordinates").fetch(0)
+    assert_instance_of Float, body.fetch("coordinates").fetch(1)
+    assert_instance_of String, body.fetch("title")
+    assert_instance_of String, body.fetch("locality")
+    refute_match(/"latitude"\s*:\s*"/, json)
+    refute_match(/"longitude"\s*:\s*"/, json)
   end
 
   def record_location(root, actor: @owner)

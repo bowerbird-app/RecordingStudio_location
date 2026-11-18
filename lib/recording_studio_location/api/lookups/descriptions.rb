@@ -58,6 +58,7 @@ module RecordingStudioLocation
         "It returns the updated location. " \
           "The recording fields are #{RECORDING_RESPONSE_FIELDS.join(', ')}. " \
           "The place fields are #{PLACE_RESPONSE_FIELDS.join(', ')}. " \
+          "The latitude and longitude fields are numbers, or null when absent. " \
           "The coordinates field is a latitude and longitude pair, or null when either value is missing."
       end
 

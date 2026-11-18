@@ -58,10 +58,10 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_icons.git
-  revision: 2ec644886c875f5f567ee6296a7bae00236797b5
-  tag: v0.4.1
+  revision: dd5184eaf12113aad49ffa2a2d7e77132653e1b4
+  tag: v0.4.2
   specs:
-    recording_studio_icons (0.4.1)
+    recording_studio_icons (0.4.2)
       rails (>= 8.1.0)
       recording_studio (>= 7.0, < 8.0)
 
@@ -77,10 +77,10 @@ GIT
 
 GIT
   remote: https://github.com/bowerbird-app/RecordingStudio_metrics.git
-  revision: 08a69c82cdd42ed7b7a78e9ea31ed26c6b36467a
-  tag: v0.9.1
+  revision: d9b9b2074a66a20d463477b83c5c12548830b99d
+  tag: v0.9.2
   specs:
-    recording_studio_metrics (0.9.1)
+    recording_studio_metrics (0.9.2)
       rails (~> 8.1.0)
       recording_studio (>= 7.0, < 8.0)
 
@@ -136,7 +136,7 @@ GIT
 PATH
   remote: ../..
   specs:
-    recording_studio_location (0.12.4)
+    recording_studio_location (0.12.5)
       flat_pack (>= 0.1.315)
       rails (~> 8.1.0)
       recording_studio (>= 7.1, < 8.0)
@@ -704,10 +704,10 @@ CHECKSUMS
   recording_studio_admin (2.19.0)
   recording_studio_api (1.15.0)
   recording_studio_cache (0.7.0)
-  recording_studio_icons (0.4.1)
-  recording_studio_location (0.12.4)
+  recording_studio_icons (0.4.2)
+  recording_studio_location (0.12.5)
   recording_studio_logs (0.8.1)
-  recording_studio_metrics (0.9.1)
+  recording_studio_metrics (0.9.2)
   recording_studio_moveable (6.0.1)
   recording_studio_root_switchable (0.16.0)
   recording_studio_trashable (1.2.0)

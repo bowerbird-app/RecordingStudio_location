@@ -37,6 +37,7 @@ class LookupDescriptionsTest < Minitest::Test
       assert_includes description, "When no geocoder is configured, the call fails with Missing."
       assert_includes description, "Assign RecordingStudio::Location.geocoder before geocoding"
       assert_includes description, Lookups.response_description
+      assert_includes description, "The latitude and longitude fields are numbers, or null when absent."
       assert_equal SUMMARIES.fetch(name), summary
       assert_equal [GROUP], openapi.fetch(:tags)
       refute_match(/\.\z/, summary)
