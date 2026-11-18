@@ -18,6 +18,11 @@ RecordingStudioLocation.configure do |config|
   # Override per form with recording_studio_location_search_fields(form, lookup: :address).
   config.lookup_depth = :full
 
+  # Which Recording Studio APIs get location_geocode and location_reverse.
+  # :all (default) is every API. A list of API names is only those APIs.
+  # false or [] is neither. Names match RecordingStudioApi config.api.
+  # config.register_api_endpoints_on = :all
+
   # Optional. Proc receives the engine controller. Default is Devise
   # authenticate_user! when present, otherwise 401. Search then requires
   # Accessible :view on a workspace (403 when Accessible is missing or there

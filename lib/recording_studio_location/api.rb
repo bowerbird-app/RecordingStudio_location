@@ -22,7 +22,16 @@ module RecordingStudioLocation
               "Recording Studio Location needs Recording Studio API >= 1.1, < 2.0"
       end
 
-      ::RecordingStudioApi.configuration.each_api { |api| register_api(api) }
+      ::RecordingStudioApi.configuration.each_api { |api| register_api(api) if register_on_api?(api) }
+    end
+
+    def register_on_api?(api)
+      choice = RecordingStudioLocation.configuration.register_api_endpoints_on
+      return true if choice == :all
+
+      apis = ::RecordingStudioApi.configuration
+      target = apis.canonical_api_name(api.name)
+      choice.any? { |name| apis.canonical_api_name(name) == target }
     end
 
     def register_api(api)

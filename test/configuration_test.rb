@@ -53,6 +53,7 @@ class ConfigurationTest < Minitest::Test
     assert_nil configuration.authenticate
     assert_nil configuration.layout
     assert_equal :full, configuration.lookup_depth
+    assert_equal :all, configuration.register_api_endpoints_on
     assert_equal :type, configuration.icon_mode
     assert_equal %w[home building-office map-pin star briefcase], configuration.allowed_icons
     assert_equal "map-pin", configuration.default_icon
@@ -78,6 +79,7 @@ class ConfigurationTest < Minitest::Test
     assert_nil result.fetch(:map)
     assert_nil result.fetch(:authenticate)
     assert_equal :full, result.fetch(:lookup_depth)
+    assert_equal :all, result.fetch(:register_api_endpoints_on)
     assert_equal :type, result.fetch(:icon_mode)
     assert_equal "map-pin", result.fetch(:default_icon)
     assert_equal 2, result.fetch(:hooks_registered).fetch(:before_initialize)
@@ -167,6 +169,40 @@ class ConfigurationTest < Minitest::Test
     end
 
     assert_match(/controller:/, error.message)
+  end
+
+  def test_register_api_endpoints_on_accepts_every_api_a_list_or_none
+    @configuration.register_api_endpoints_on = " ALL "
+    assert_equal :all, @configuration.register_api_endpoints_on
+
+    names = [:public, " operations "]
+    @configuration.register_api_endpoints_on = names
+    names << "staff"
+    assert_equal %w[public operations], @configuration.register_api_endpoints_on
+
+    @configuration.register_api_endpoints_on = false
+    assert_empty @configuration.register_api_endpoints_on
+
+    @configuration.register_api_endpoints_on = []
+    assert_empty @configuration.register_api_endpoints_on
+  end
+
+  def test_register_api_endpoints_on_rejects_a_bare_name_or_a_blank_entry
+    error = assert_raises(ArgumentError) do
+      @configuration.register_api_endpoints_on = :public
+    end
+    assert_match(/list of API names/, error.message)
+
+    assert_raises(ArgumentError) { @configuration.register_api_endpoints_on = nil }
+    assert_raises(ArgumentError) { @configuration.register_api_endpoints_on = [""] }
+    assert_raises(ArgumentError) { @configuration.register_api_endpoints_on = [1] }
+  end
+
+  def test_merge_updates_register_api_endpoints_on
+    @configuration.merge!("register_api_endpoints_on" => ["public"])
+
+    assert_equal ["public"], @configuration.register_api_endpoints_on
+    assert_equal ["public"], @configuration.to_h.fetch(:register_api_endpoints_on)
   end
 
   def test_blank_default_icon_falls_back

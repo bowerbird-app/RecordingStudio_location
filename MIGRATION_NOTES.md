@@ -12,6 +12,7 @@
 
 ## Upgrades
 
+- 0.13.0 adds `config.register_api_endpoints_on`. `:all` (the default) registers `location_geocode` and `location_reverse` on every Recording Studio API. A list of API names registers them only on those APIs. `false` or `[]` registers neither. No Location migration. Names, paths, inputs, and authorization are unchanged.
 - 0.12.5 moves development and dummy pins to Recording Studio `v7.7.1` and FlatPack `v0.1.378`. Dummy Accessible is `v0.54.0`, API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.2`, Moveable `v6.0.1`, Icons `v0.4.2`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay. No Location migration. The dummy copies Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients` so API clients can store an owner. Hosts that mount Recording Studio API 1.12 or newer need `config/recording_studio_api.yml` (`shared: {}` is enough to boot). Hosts on API 1.15 copy that owner migration.
 - 0.12.4 returns `latitude` and `longitude` in API and MCP JSON as numbers, or null when absent. Hosts that read these two fields as strings now get numbers. No migration.
 - 0.12.3 sets the OpenAPI tag `Location` on `location_geocode` and `location_reverse` and shortens their summaries. No migration.

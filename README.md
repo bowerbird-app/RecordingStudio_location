@@ -324,6 +324,7 @@ RecordingStudioLocation.configure do |config|
   config.geocoder = RecordingStudioLocation::Geocoder.from_rails_credentials
   config.map = RecordingStudioLocation::Map.from_rails_credentials
   config.lookup_depth = :full
+  config.register_api_endpoints_on = :all
   config.location_types = {
     office: {label: "Office", icon: "building-office"},
     home: {label: "Home", icon: "home"},
@@ -335,6 +336,15 @@ RecordingStudioLocation.configure do |config|
   config.default_icon = "map-pin"
 end
 ```
+
+`register_api_endpoints_on` chooses which Recording Studio APIs receive
+`location_geocode` and `location_reverse`. `:all` is the default and registers
+both endpoints on every API. A list of API names registers both only on those
+APIs. `false` or `[]` registers neither. Use the same name you pass to
+`RecordingStudioApi` `config.api`. The built-in API is `public`. `"all"` matches
+`:all`. Location reads the setting when it registers the endpoints. A later
+change adds the endpoints to an API you add to the list. Endpoints already
+registered stay in place.
 
 Those identity values are the defaults. Type labels go through i18n
 `recording_studio.location.location_types.*`. The config `label` is the fallback
@@ -403,7 +413,7 @@ Location does not reimplement those behaviors.
 
 ## JSON API and MCP
 
-When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. Each path `:id` is a Location recording (`recordable_type`) with `required_role: :edit`. MCP hosts that wrap that API see the named endpoint tools. Both use the OpenAPI tag `Location`. The summaries are `Look up coordinates` and `Fill address from coordinates`. Place search and place details stay on the HTML engine only.
+When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two named lookups on each API that `config.register_api_endpoints_on` allows. The default `:all` registers both on every API. Location is not an API recordable type. Each path `:id` is a Location recording (`recordable_type`) with `required_role: :edit`. MCP hosts that wrap that API see the named endpoint tools. Both use the OpenAPI tag `Location`. The summaries are `Look up coordinates` and `Fill address from coordinates`. Place search and place details stay on the HTML engine only.
 
 | Name | Verb | Path | Access |
 | --- | --- | --- | --- |
@@ -430,7 +440,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v7.7.1`, Accessible `v0.54.0`, Root Switchable `v0.16.0`, Metrics `v0.9.2`, Trashable `v1.2.0`, Cache `v0.7.0`, Recording Studio API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Moveable `v6.0.1`, Icons `v0.4.2`, and FlatPack `0.1.378`. Location is `0.12.5`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`, and Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
+The dummy app pins Recording Studio `v7.7.1`, Accessible `v0.54.0`, Root Switchable `v0.16.0`, Metrics `v0.9.2`, Trashable `v1.2.0`, Cache `v0.7.0`, Recording Studio API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Moveable `v6.0.1`, Icons `v0.4.2`, and FlatPack `0.1.378`. Location is `0.13.0`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`, and Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 
