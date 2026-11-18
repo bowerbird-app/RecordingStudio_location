@@ -403,7 +403,7 @@ Location does not reimplement those behaviors.
 
 ## JSON API and MCP
 
-When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. Each path `:id` is a Location recording (`recordable_type`) with `required_role: :edit`. MCP hosts that wrap that API see the named endpoint tools. Place search and place details stay on the HTML engine only.
+When Recording Studio API `>= 1.1, < 2.0` is loaded, this gem registers two named lookups on each API. Location is not an API recordable type. Each path `:id` is a Location recording (`recordable_type`) with `required_role: :edit`. MCP hosts that wrap that API see the named endpoint tools. Both use the OpenAPI tag `Location`. The summaries are `Look up coordinates` and `Fill address from coordinates`. Place search and place details stay on the HTML engine only.
 
 | Name | Verb | Path | Access |
 | --- | --- | --- | --- |
@@ -430,7 +430,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v7.4.0`, Accessible `v0.45.1`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`, Recording Studio API `v1.2.1`, Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`, and FlatPack `0.1.377`. Location is `0.12.2`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
+The dummy app pins Recording Studio `v7.4.0`, Accessible `v0.45.1`, Root Switchable `v0.16.0`, Metrics `v0.9.0`, Trashable `v1.0.0`, Cache `v0.7.0`, Recording Studio API `v1.2.1`, Admin `v2.18.0`, Logs `v0.8.0`, Moveable `v6.0.0`, Icons `v0.4.0`, and FlatPack `0.1.377`. Location is `0.12.3`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

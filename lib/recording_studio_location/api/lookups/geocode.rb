@@ -11,7 +11,8 @@ module RecordingStudioLocation
 
         OPENAPI = {
           title: "Location - Geocode",
-          summary: "Look up coordinates from a saved address.",
+          summary: "Look up coordinates",
+          tags: ["Location"],
           description: Lookups.geocode_description,
           parameters: [Lookups::PATH_ID]
         }.freeze
