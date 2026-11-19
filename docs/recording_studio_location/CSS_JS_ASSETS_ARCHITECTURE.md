@@ -32,6 +32,8 @@ pin_all_from RecordingStudioLocation::Engine.root.join("app/javascript/recording
 
 The engine adds `app/javascript` to `config.assets.paths`. Dummy `config/importmap.rb` has the same pin. Controller identifiers are `recording-studio-location--place-search` and `recording-studio-location--identity`.
 
+FlatPack 0.2 renders icons on the server. The dummy importmap does not pin `flat_pack/heroicons` and does not register `flat-pack--icon`.
+
 Host apps already lazy-load `controllers` the way they load FlatPack.
 
 ## Tailwind
