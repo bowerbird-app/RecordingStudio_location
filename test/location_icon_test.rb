@@ -36,9 +36,12 @@ class LocationIconTest < Minitest::Test
   end
 
   def test_default_icons_exist_in_flatpack
-    heroicons = File.read(
-      File.join(Gem.loaded_specs.fetch("flat_pack").full_gem_path, "app/javascript/flat_pack/heroicons.js")
+    paths = JSON.parse(
+      File.read(
+        File.join(Gem.loaded_specs.fetch("flat_pack").full_gem_path, "lib/flat_pack/heroicons/paths.json")
+      ).sub(%r{\A\s*//.*\n}, "")
     )
+    outline = paths.fetch("outline")
     icons = (
       RecordingStudioLocation::Configuration::DEFAULT_ALLOWED_ICONS +
       RecordingStudioLocation::Configuration::DEFAULT_LOCATION_TYPES.values.map { |entry| entry[:icon] } +
@@ -46,7 +49,7 @@ class LocationIconTest < Minitest::Test
     ).uniq
 
     icons.each do |name|
-      assert_includes heroicons, %("#{name}"), "#{name} is not a FlatPack icon"
+      assert outline.key?(name), "#{name} is not a FlatPack icon"
     end
   end
 

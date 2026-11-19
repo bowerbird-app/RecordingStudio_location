@@ -128,7 +128,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select "input[role='combobox'][value='']"
     assert_select "input[role='combobox'][placeholder='Search for a place or address']"
     search_field = css_select("input[role='combobox']").first.parent
-    assert_includes search_field.to_html, "magnifying-glass"
+    assert_includes search_field.to_html, "m21 21-5.197-5.197"
     refute_includes search_field.to_html, "chevron-down"
     assert_select "[data-modal-id]", count: 0
     assert_select "[aria-label='Clear location']"
@@ -239,7 +239,7 @@ class LocationsFlowTest < ActionDispatch::IntegrationTest
     assert_select "[data-modal-id]", count: 0
     assert_select "input[role='combobox'][value='Seeded Hall']"
     search_field = css_select("input[role='combobox']").first.parent
-    assert_includes search_field.to_html, "magnifying-glass"
+    assert_includes search_field.to_html, "m21 21-5.197-5.197"
     refute_includes search_field.to_html, "chevron-down"
     assert_includes response.body, ">Location</label>"
     refute_includes response.body, "Enter address"

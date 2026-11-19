@@ -4,14 +4,15 @@
 
 - Ruby 3.3 or newer
 - Rails 8.1 or newer
-- Recording Studio `>= 7.1, < 8.0` (gemspec floor; dummy GitHub tag `v7.7.1`)
-- Accessible dummy tag `v0.54.0`, Root Switchable dummy tag `v0.16.0`, Metrics `v0.9.2`, Trashable `v1.2.0`, Cache `v0.7.0`
-- Recording Studio API dummy tag `v1.15.0` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.19.0`, Logs `v0.8.1`, Moveable `v6.0.1`, Icons `v0.4.2`
-- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.1.378`)
+- Recording Studio `>= 7.1, < 8.0` (gemspec floor; dummy GitHub tag `v7.8.0`)
+- Accessible dummy tag `v0.55.0`, Root Switchable dummy tag `v0.16.1`, Metrics `v0.9.2`, Trashable `v1.2.3`, Cache `v0.7.1`
+- Recording Studio API dummy tag `v1.19.0` when that gem is loaded (`>= 1.1, < 2.0`; not a gemspec dependency), Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Icons `v0.4.2`
+- FlatPack `>= 0.1.315` (dummy GitHub tag `v0.2.0`)
 - Public RubyGems and GitHub access for dependency installation
 
 ## Upgrades
 
+- 0.14.0 moves development and dummy pins to Recording Studio `v7.8.0` and FlatPack `v0.2.0`. Dummy Accessible is `v0.55.0`, API `v1.19.0`, Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Trashable `v1.2.3`, Cache `v0.7.1`, and Root Switchable `v0.16.1`. Metrics `v0.9.2` and Icons `v0.4.2` stay. No Location migration. Hosts MUST run the Recording Studio 7.4, 7.5 and 7.7 migrations if they have not. flat_pack 0.2.0 is supported; hosts moving to 0.2 must remove the manual `flat_pack/heroicons` importmap pin and any `flat-pack--icon` controller registration. The dummy does not copy those Recording Studio core migrations.
 - 0.13.0 adds `config.register_api_endpoints_on`. `:all` (the default) registers `location_geocode` and `location_reverse` on every Recording Studio API. A list of API names registers them only on those APIs. `false` or `[]` registers neither. No Location migration. Names, paths, inputs, and authorization are unchanged.
 - 0.12.5 moves development and dummy pins to Recording Studio `v7.7.1` and FlatPack `v0.1.378`. Dummy Accessible is `v0.54.0`, API `v1.15.0`, Admin `v2.19.0`, Logs `v0.8.1`, Metrics `v0.9.2`, Moveable `v6.0.1`, Icons `v0.4.2`, and Trashable `v1.2.0`. Cache `v0.7.0` and Root Switchable `v0.16.0` stay. No Location migration. The dummy copies Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients` so API clients can store an owner. Hosts that mount Recording Studio API 1.12 or newer need `config/recording_studio_api.yml` (`shared: {}` is enough to boot). Hosts on API 1.15 copy that owner migration.
 - 0.12.4 returns `latitude` and `longitude` in API and MCP JSON as numbers, or null when absent. Hosts that read these two fields as strings now get numbers. No migration.

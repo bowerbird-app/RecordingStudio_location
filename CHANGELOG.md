@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-19
+
+### Changed
+
+- Development and dummy pins use Recording Studio tag `v7.8.0` and FlatPack tag `v0.2.0`. The gemspec floors stay `recording_studio >= 7.1, < 8.0` and `flat_pack >= 0.1.315`.
+- Dummy pins move to Accessible `v0.55.0`, Recording Studio API `v1.19.0`, Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Trashable `v1.2.3`, Cache `v0.7.1`, and Root Switchable `v0.16.1`. Metrics `v0.9.2` and Icons `v0.4.2` stay.
+- The dummy importmap drops the `flat_pack/heroicons` pin. FlatPack 0.2 renders icons on the server.
+
+### Upgrade notes
+
+- Bump to `0.14.0`. No Location migration.
+- Hosts MUST run the Recording Studio 7.4, 7.5 and 7.7 migrations if they have not.
+- flat_pack 0.2.0 is supported; hosts moving to 0.2 must remove the manual `flat_pack/heroicons` importmap pin and any `flat-pack--icon` controller registration.
+
 ## [0.13.0] - 2026-11-18
 
 ### Added
@@ -402,7 +416,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.5...v0.13.0
 [0.12.5]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...v0.12.5
 [0.12.4]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.3...v0.12.4

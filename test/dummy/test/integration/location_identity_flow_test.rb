@@ -38,8 +38,8 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Home"
     assert_includes response.body, "flat-pack-radio-group-wrapper"
     assert_includes response.body, "sr-only"
-    assert_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
-    assert_includes response.body, 'data-flat-pack--icon-name-value="home"'
+    assert_includes response.body, "M3.75 21h16.5M4.5 3h15"
+    assert_includes response.body, "m2.25 12 8.954-8.955"
     assert_includes response.body, ">Location</label>"
     refute_includes response.body, "recording-studio-location--identity"
     refute_includes response.body, 'name="location[icon]"'
@@ -126,7 +126,7 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     refute_includes response.body, "Sign out"
     refute_includes response.body, "recording_studio_root_switchable"
     refute_includes response.body, "This is recording"
-    refute_includes response.body, 'data-flat-pack--icon-name-value="building-office"'
+    refute_includes response.body, "M3.75 21h16.5M4.5 3h15"
     assert_select "h3", count: 0
     assert_select ".fp-card", count: 0
   end
@@ -151,7 +151,7 @@ class LocationIdentityFlowTest < ActionDispatch::IntegrationTest
     assert_equal "star", location.icon
     assert_equal "star", location.resolved_icon
     follow_redirect!
-    refute_includes response.body, 'data-flat-pack--icon-name-value="star"'
+    refute_includes response.body, "M11.48 3.499a.562.562 0 0 1 1.04 0"
   ensure
     RecordingStudioLocation.configuration.icon_mode = :type
   end

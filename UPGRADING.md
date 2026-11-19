@@ -1,5 +1,17 @@
 # Upgrading
 
+## 0.14.0
+
+Bump to `0.14.0`. No Location migration.
+
+Development and dummy pins use Recording Studio `v7.8.0` and FlatPack `v0.2.0`. Gemspec floors stay `recording_studio >= 7.1, < 8.0` and `flat_pack >= 0.1.315`.
+
+Dummy pins: Accessible `v0.55.0`, API `v1.19.0`, Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Trashable `v1.2.3`, Cache `v0.7.1`, and Root Switchable `v0.16.1`. Metrics `v0.9.2` and Icons `v0.4.2` stay.
+
+Hosts MUST run the Recording Studio 7.4, 7.5 and 7.7 migrations if they have not.
+
+flat_pack 0.2.0 is supported; hosts moving to 0.2 must remove the manual `flat_pack/heroicons` importmap pin and any `flat-pack--icon` controller registration.
+
 ## 0.13.0
 
 Bump to `0.13.0`. No Location migration.
