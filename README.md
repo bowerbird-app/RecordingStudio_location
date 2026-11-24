@@ -109,13 +109,13 @@ end
 | `locality` | City, suburb, or town. |
 | `region` | State, province, or region. |
 | `postal_code` | Optional. |
-| `country_code` | ISO 3166-1 alpha-2, such as `AU`. Stored as the code, not the country name. |
+| `country_code` | A code on the built-in country list, such as `AU` or `XK`. Stored as the code, not the country name. Blank is allowed. |
 | `latitude` | Optional decimal, precision 10 scale 7. |
 | `longitude` | Optional decimal, precision 11 scale 7. |
 
 A location is valid with any subset of these. `Melbourne, Victoria, Australia` is enough. Coordinates alone are enough. A full street address is not required. Existing rows stay valid: the new columns are nullable.
 
-`location_type` must be a configured key when present. `icon` must be in `allowed_icons` when present. `country_code` must be two letters when it is present. Latitude must be between -90 and 90, and longitude between -180 and 180, when present. One coordinate without the other is stored, but `coordinates` returns nil until both exist.
+`location_type` must be a configured key when present. `icon` must be in `allowed_icons` when present. `country_code`, when present, must be two letters and a key on the built-in country list. Blank is valid. A saved code is checked again only when that field changes. Latitude must be between -90 and 90, and longitude between -180 and 180, when present. One coordinate without the other is stored, but `coordinates` returns nil until both exist.
 
 Indexes: `country_code`, `locality`, and `name`. There is no PostGIS column and no radius search.
 
@@ -146,7 +146,7 @@ location.coordinates
 
 `full_address` joins the street lines, then locality, region, and postal code as one segment, then the country name. It is a simple formatter, not a country-specific postal layout.
 
-Country names come from a built-in ISO list. An unknown two-letter code is shown as the code.
+Country names come from a built-in list. A code on the list is shown as its name. A saved code that is not on the list is shown as the code.
 
 `recordable_name` returns `display_name`, so Recording Studio's recording label follows the same text.
 
@@ -440,7 +440,7 @@ Turn on `:api_access_point` on roots that should hold API clients, and add `Reco
 
 Engine internals for install, config, migrations, and local setup live in `docs/recording_studio_location/`.
 
-The dummy app pins Recording Studio `v7.8.0`, Accessible `v0.55.0`, Root Switchable `v0.16.1`, Metrics `v0.9.2`, Trashable `v1.2.3`, Cache `v0.7.1`, Recording Studio API `v1.19.0`, Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Icons `v0.4.2`, and FlatPack `0.2.0`. Location is `0.14.0`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`, and Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients`. It does not copy the Recording Studio 7.4, 7.5, or 7.7 migrations. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
+The dummy app pins Recording Studio `v7.8.0`, Accessible `v0.55.0`, Root Switchable `v0.16.1`, Metrics `v0.9.2`, Trashable `v1.2.3`, Cache `v0.7.1`, Recording Studio API `v1.19.0`, Admin `v2.19.1`, Logs `v0.8.2`, Moveable `v6.0.3`, Icons `v0.4.2`, and FlatPack `0.2.0`. Location is `0.15.0`. The dummy copies core migrations `20261114090000_add_root_recording_id_to_recording_studio_events` and `20261116120000_add_recording_studio_events_timeline_index`, and Recording Studio API `20261117000024_add_owner_to_recording_studio_api_api_clients`. It does not copy the Recording Studio 7.4, 7.5, or 7.7 migrations. `RecordingStudio.root_recording_for` only finds a root. Seeds call `create_root_recording!`.
 
 Dummy credentials (`test/dummy/config/credentials.yml.enc`) are encrypted with the shared RecordingStudio_* development master key. Set `RAILS_MASTER_KEY` or put that key in `test/dummy/config/master.key` (gitignored). Keep the encrypted file; do not generate a per-repo dummy key.
 

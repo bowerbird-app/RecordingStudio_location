@@ -58,6 +58,7 @@ module RecordingStudio
 
         ADDRESS_FIELDS.each do |field|
           value = result.public_send(field)
+          value = Countries.country_code_on_list(value) if field == :country_code
           next if value.blank?
           next unless force || public_send(field).blank?
 

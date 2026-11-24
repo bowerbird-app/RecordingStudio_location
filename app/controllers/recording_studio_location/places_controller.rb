@@ -5,7 +5,7 @@ module RecordingStudioLocation
     before_action :authenticate_location_request!
 
     def show
-      render json: Geocoder::Result.wrap(place_result).as_json
+      render json: place_details
     rescue Geocoder::Missing, Geocoder::QueryError, Geocoder::NotFound
       render json: { error: "not_found" }, status: :not_found
     rescue Geocoder::RequestError
@@ -20,6 +20,12 @@ module RecordingStudioLocation
         depth: params[:lookup].presence || RecordingStudioLocation.configuration.lookup_depth,
         session: params[:session]
       )
+    end
+
+    def place_details
+      payload = Geocoder::Result.wrap(place_result).as_json
+      code = RecordingStudio::Location::Countries.country_code_on_list(payload["country_code"])
+      payload.merge("country_code" => code)
     end
   end
 end

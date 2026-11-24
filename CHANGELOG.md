@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-24
+
+### Changed
+
+- `country_code` must be a key on the built-in country list when the field is set or changed. Blank stays valid. A saved code is checked again only when that field changes.
+- The list includes `XK` (Kosovo).
+
+### Upgrade notes
+
+- Bump to `0.15.0`. No Location migration.
+- A country code that used to save, such as `ZZ`, is now rejected when the field is set or changed. An existing row is checked only when its country code changes.
+- `reverse!` does not write a country code that is not on the list. A blank `country_code` stays blank. Place search returns that field blank. Neither raises.
+
 ## [0.14.0] - 2026-11-19
 
 ### Changed
@@ -416,7 +429,8 @@
 
 Maps, geocoding, spatial search, and domain-specific parent models are intentionally absent.
 
-[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.5...v0.13.0
 [0.12.5]: https://github.com/bowerbird-app/RecordingStudio_location/compare/v0.12.4...v0.12.5

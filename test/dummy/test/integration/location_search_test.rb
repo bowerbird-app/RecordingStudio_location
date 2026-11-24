@@ -83,6 +83,35 @@ class LocationSearchTest < ActionDispatch::IntegrationTest
     refute payload.key?("place_id")
   end
 
+  test "place details omit a country code that is not on the list" do
+    @adapter.stub_details(
+      "unknown-country",
+      name: "Somewhere",
+      locality: "Somewhere",
+      country_code: "ZZ",
+      latitude: 1.0,
+      longitude: 2.0
+    )
+
+    get recording_studio_location.places_path, params: { id: "unknown-country", lookup: "full" }, as: :json
+
+    assert_response :success
+    payload = response.parsed_body
+    assert_nil payload["country_code"]
+    assert_equal "Somewhere", payload["locality"]
+    assert_equal "Somewhere", payload["name"]
+  end
+
+  test "place details keep a country code that is on the list" do
+    @adapter.stub_details("kosovo-place", name: "Pristina", country_code: "xk")
+
+    get recording_studio_location.places_path, params: { id: "kosovo-place", lookup: "full" }, as: :json
+
+    assert_response :success
+    assert_equal "XK", response.parsed_body["country_code"]
+    assert_equal "Pristina", response.parsed_body["name"]
+  end
+
   test "unknown place details are not found" do
     get recording_studio_location.places_path, params: { id: "missing" }, as: :json
 

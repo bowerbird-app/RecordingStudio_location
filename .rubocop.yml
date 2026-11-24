@@ -33,6 +33,10 @@ Metrics/ModuleLength:
   Exclude:
     - 'lib/recording_studio/location/countries.rb'
 
+Metrics/CollectionLiteralLength:
+  Exclude:
+    - 'lib/recording_studio/location/countries.rb'
+
 Metrics/AbcSize:
   Exclude:
     - 'test/**/*'

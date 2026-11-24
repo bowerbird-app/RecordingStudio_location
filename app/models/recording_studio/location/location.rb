@@ -18,6 +18,7 @@ module RecordingStudio
     class Location < ActiveRecord::Base
       include Formatting
       include Identity
+      include CountryCode
       include RecordingStudio::Location::Geocoding
 
       self.table_name = "recording_studio_locations"
@@ -55,12 +56,6 @@ module RecordingStudio
 
       validates :name, :address_line_1, :address_line_2, :locality, :region, :postal_code, :icon,
                 length: { maximum: 255 },
-                allow_blank: true
-      validates :country_code,
-                format: {
-                  with: /\A[A-Z]{2}\z/,
-                  message: ->(*) { RecordingStudioLocation::Copy.country_code_iso }
-                },
                 allow_blank: true
       validates :latitude,
                 numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 },

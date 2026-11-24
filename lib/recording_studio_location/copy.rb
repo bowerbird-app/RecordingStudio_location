@@ -46,6 +46,10 @@ module RecordingStudioLocation
       t("errors.country_code_iso")
     end
 
+    def country_code_not_in_list
+      t("errors.country_code_not_in_list")
+    end
+
     def must_be_a_number
       t("errors.must_be_a_number")
     end
