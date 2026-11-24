@@ -8,6 +8,8 @@
 
 - `country_code` must be a key on the built-in country list when the field is set or changed. Blank stays valid. A saved code is checked again only when that field changes.
 - The list includes `XK` (Kosovo).
+- Lockfiles update `puma` to `8.1.2` (GHSA-4v6q-hvv7-49h9, GHSA-rhww-p99c-hgj9). The dummy lockfile updates `net-ssh` to `7.3.10` (GHSA-hjwv-j52r-xcg7, GHSA-qcf4-j55x-72hv) and `brakeman` to `8.1.1`.
+- Development and dummy Ruby pins are `3.3.14` (CVE-2026-132825). Brakeman `8.1.1` reports `3.3.6` through `3.3.13`.
 
 ### Upgrade notes
 
