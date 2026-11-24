@@ -21,7 +21,7 @@ bin/rails db:migrate
 | `name` | Optional venue or place name |
 | `address_line_1`, `address_line_2` | Optional street lines |
 | `locality`, `region`, `postal_code` | Optional |
-| `country_code` | ISO 3166-1 alpha-2, two characters |
+| `country_code` | Two characters. Blank is allowed. A new or changed value must be a key on the built-in country list. |
 | `latitude` | Decimal, precision 10 scale 7 |
 | `longitude` | Decimal, precision 11 scale 7 |
 

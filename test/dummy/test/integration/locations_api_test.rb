@@ -74,6 +74,23 @@ class LocationsApiTest < ActionDispatch::IntegrationTest
     assert_equal "12 Smith Street", @location.recordable.address_line_1
   end
 
+  test "reverse leaves an unknown country code blank" do
+    recording = record_location(@workspace) do |location|
+      location.latitude = 42.0
+      location.longitude = -71.0
+    end
+    @adapter.stub_reverse(42.0, -71.0, locality: "Cambridge", country_code: "ZZ")
+
+    reversed = call(:post, "/location/reverse/#{recording.id}", @editor_token)
+
+    assert_response :success, response.body
+    assert_nil reversed["country_code"]
+    assert_equal "Cambridge", reversed["locality"]
+    recording.reload
+    assert_nil recording.recordable.country_code
+    assert_equal "Cambridge", recording.recordable.locality
+  end
+
   test "view is forbidden from geocode and reverse" do
     assert RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :view)
     refute RecordingStudioAccessible.authorized?(actor: @viewer_client, recording: @location, role: :edit)

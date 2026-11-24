@@ -112,11 +112,67 @@ class LocationTest < ActiveSupport::TestCase
 
     assert_not location.valid?
     assert_includes location.errors[:country_code], "must be a two-letter ISO country code"
+    assert_equal [{ error: :invalid, value: "AUSTRALIA" }], location.errors.details[:country_code]
     assert_includes location.errors[:latitude], "must be less than or equal to 90"
     assert_includes location.errors[:longitude], "must be a number"
     assert_same adapter, RecordingStudio::Location.geocoder
   ensure
     RecordingStudio::Location.geocoder = previous
+  end
+
+  test "a country code is accepted when it is on the country list" do
+    ph = RecordingStudio::Location::Location.new(country_code: "PH")
+    kosovo = RecordingStudio::Location::Location.new(country_code: "XK")
+    lowercase = RecordingStudio::Location::Location.new(country_code: "ph")
+    blank = RecordingStudio::Location::Location.new(country_code: "  ")
+    unknown = RecordingStudio::Location::Location.new(country_code: "ZZ")
+
+    assert_predicate ph, :valid?
+    assert_predicate kosovo, :valid?
+    assert_equal "Kosovo", kosovo.country_name
+    assert_predicate lowercase, :valid?
+    assert_equal "PH", lowercase.country_code
+    assert_predicate blank, :valid?
+    assert_nil blank.country_code
+    refute_predicate unknown, :valid?
+    assert_includes unknown.errors[:country_code], "is not in the list of countries"
+    assert_equal [{ error: :inclusion, value: "ZZ" }], unknown.errors.details[:country_code]
+    assert_includes unknown.errors.full_messages.to_sentence, "is not in the list of countries"
+  end
+
+  test "a saved unknown country code can stay while another field changes" do
+    root = create_workspace_root!(Workspace.create!(name: unique_name("Legacy country")))
+    recording = record_child(
+      RecordingStudio::Location::Location.new(locality: "Old town", country_code: "PH"),
+      root,
+      root
+    )
+    RecordingStudio::Location::Location.where(id: recording.recordable_id).update_all(country_code: "ZZ")
+    recording.reload
+
+    revised = root.revise(recording) do |location|
+      location.locality = "New town"
+      location.name = "Kept code"
+    end
+
+    assert_equal "ZZ", revised.recordable.country_code
+    assert_equal "Kept code", revised.recordable.name
+    assert_equal "New town", revised.recordable.locality
+
+    resubmitted = root.revise(revised) do |location|
+      location.title = "Still ZZ"
+      location.country_code = "ZZ"
+    end
+    assert_equal "ZZ", resubmitted.recordable.country_code
+    assert_equal "Still ZZ", resubmitted.recordable.title
+
+    error = assert_raises(ActiveRecord::RecordInvalid) do
+      root.revise(resubmitted) { |location| location.country_code = "YY" }
+    end
+    assert_includes error.record.errors.full_messages.to_sentence, "is not in the list of countries"
+
+    accepted = root.revise(resubmitted) { |location| location.country_code = "PH" }
+    assert_equal "PH", accepted.recordable.country_code
   end
 
   test "an empty location is valid" do

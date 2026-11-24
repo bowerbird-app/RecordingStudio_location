@@ -101,6 +101,30 @@ class LocationGeocodeTest < ActiveSupport::TestCase
     assert_in_delta 144.9, location.longitude
   end
 
+  test "reverse! leaves an unknown country code blank and the place stays valid" do
+    @fake.stub_reverse(
+      -37.8,
+      144.9,
+      locality: "Fitzroy",
+      country_code: "ZZ"
+    )
+    location = RecordingStudio::Location::Location.new(latitude: -37.8, longitude: 144.9)
+
+    location.reverse!
+
+    assert_nil location.country_code
+    assert_equal "Fitzroy", location.locality
+    assert_predicate location, :valid?
+
+    location.country_code = "PH"
+    @fake.stub_reverse(-37.8, 144.9, country_code: "ZZ", locality: "Carlton")
+    location.reverse!(force: true)
+
+    assert_equal "PH", location.country_code
+    assert_equal "Carlton", location.locality
+    assert_predicate location, :valid?
+  end
+
   test "geocode! and reverse! raise when the adapter is missing or the query is blank" do
     RecordingStudio::Location.geocoder = nil
     location = RecordingStudio::Location::Location.new(locality: "Melbourne", country_code: "AU")

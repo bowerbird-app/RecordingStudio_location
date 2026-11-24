@@ -178,7 +178,9 @@ include RecordingStudio::Capabilities::Location.to
 
 Gem views and helpers wrap static labels, placeholders, help text, search chrome,
 and map titles in `recording_studio.location.*` keys. Validation messages live
-under `recording_studio.location.errors.*` and resolve at validation time through
+under `recording_studio.location.errors.*`. A country code that is not two letters
+uses `errors.country_code_iso`. A two-letter code that is not on the built-in list
+uses `errors.country_code_not_in_list`. Messages resolve at validation time through
 `RecordingStudio.t` (no hand-copied English `default:`). English ships in
 `config/locales/en.yml` only. The engine registers that file at boot with
 `RecordingStudio::Translation.register_shipped_english` so missing active-locale

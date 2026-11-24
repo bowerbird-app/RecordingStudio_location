@@ -1,5 +1,13 @@
 # Upgrading
 
+## 0.15.0
+
+Bump to `0.15.0`. No Location migration.
+
+A `country_code` that is not on the built-in country list is rejected when that field is set or changed. Blank stays valid. An existing row is checked only when its country code changes. A code such as `ZZ`, which used to save, is now rejected on that change. The list includes `XK` (Kosovo).
+
+`reverse!` does not write a country code that is not on the list. A blank `country_code` stays blank. Place search returns that field blank. Neither raises.
+
 ## 0.14.0
 
 Bump to `0.14.0`. No Location migration.

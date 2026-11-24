@@ -2,8 +2,9 @@
 
 module RecordingStudio
   module Location
-    # English short names for ISO 3166-1 alpha-2 codes.
-    # Unknown codes stay displayable; they are not rejected.
+    # English short names for the country codes this gem accepts.
+    # A new or changed country_code must be a key. A code already stored is
+    # still shown as the code when it is not a key.
     module Countries
       NAMES = {
         "AD" => "Andorra",
@@ -250,6 +251,7 @@ module RecordingStudio
         "VU" => "Vanuatu",
         "WF" => "Wallis and Futuna",
         "WS" => "Samoa",
+        "XK" => "Kosovo",
         "YE" => "Yemen",
         "YT" => "Mayotte",
         "ZA" => "South Africa",
@@ -264,6 +266,11 @@ module RecordingStudio
         return if normalized.empty?
 
         NAMES[normalized] || normalized
+      end
+
+      def country_code_on_list(code)
+        normalized = code.to_s.strip.upcase
+        NAMES.key?(normalized) ? normalized : nil
       end
 
       def select_options

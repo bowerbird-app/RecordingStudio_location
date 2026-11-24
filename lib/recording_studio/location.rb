@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "recording_studio/location/countries"
+require "recording_studio/location/country_code"
 require "recording_studio/location/formatting"
 require "recording_studio/location/geocoding"
 require "recording_studio/location/identity"

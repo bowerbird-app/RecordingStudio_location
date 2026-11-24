@@ -61,6 +61,7 @@ class LocalesTest < ActiveSupport::TestCase
     "location_type_not_in_list" => "is not in the list of types",
     "icon_not_in_list" => "is not in the list of icons",
     "country_code_iso" => "must be a two-letter ISO country code",
+    "country_code_not_in_list" => "is not in the list of countries",
     "must_be_a_number" => "must be a number"
   }.freeze
 
